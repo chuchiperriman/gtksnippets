@@ -1,0 +1,28 @@
+
+INCLUDES = \
+	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
+	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
+	$(PACKAGE_CFLAGS)
+
+AM_CFLAGS =\
+	 -Wall\
+	 -g
+	 
+lib_LTLIBRARIES = \
+	libgtksourceviewsnippets.la
+
+libgtksourceviewsnippets_la_SOURCES = \
+	gtk-snippets-loader.c     \
+	gtk-snippets-loader.h     \
+	gtk-snippet.c 
+
+libgtksourceviewsnippets_la_LIBADD = \
+	$(PACKAGE_LIBS) 
+	
+libgtksourceviewsnippets_la_LDFLAGS = \
+	-version-info 1:0:0 -module
+
+## File created by the gnome-build tools
+
+
