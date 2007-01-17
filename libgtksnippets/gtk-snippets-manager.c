@@ -137,8 +137,37 @@ gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
 		
 		/*void        gtk_window_set_position         (GtkWindow *window,
                                              GtkWindowPosition position);*/
-		
+		GdkWindow *win;
+		GtkTextMark* insert_mark;
+		GtkTextBuffer* text_buffer;
+		GtkTextIter start;
+		GdkRectangle location;
+		gint win_x, win_y;
+		gint x, y;
+
+		GtkSourceView *source_view = GTK_SOURCE_VIEW(widget);
+		text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+		insert_mark = gtk_text_buffer_get_insert(text_buffer);
+		gtk_text_buffer_get_iter_at_mark(text_buffer,&start,insert_mark);
+		gtk_text_view_get_iter_location(GTK_TEXT_VIEW(source_view),
+															&start,
+															&location );
+		g_debug("location x: %i",location.x);
+		g_debug("location y: %i",location.y);
+		gtk_text_view_buffer_to_window_coords (GTK_TEXT_VIEW (source_view),
+                                         GTK_TEXT_WINDOW_WIDGET,
+                                         location.x, location.y,
+                                         &win_x, &win_y);
+		g_printf ("Window: %d, %d\n", win_x, win_y);
+		win = gtk_text_view_get_window (GTK_TEXT_VIEW (source_view), 
+                                  GTK_TEXT_WINDOW_WIDGET);
+		gdk_window_get_origin (win, &x, &y);
+
+		gtk_window_move (GTK_WINDOW (manager->priv->popup), win_x + x, 
+                   win_y + y + location.height);
+
 		gtk_widget_show(manager->priv->popup);
+		gtk_widget_grab_focus(manager->priv->popup);
 		
 	}
 	
