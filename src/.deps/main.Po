@@ -350,7 +350,7 @@ main.o main.o: main.c /usr/include/sys/types.h /usr/include/features.h \
   /usr/include/libglade-2.0/glade/glade-init.h \
   /usr/include/libglade-2.0/glade/glade-xml.h \
   ../libgtksnippets/gtk-snippets-loader.h ../libgtksnippets/gtk-snippet.h \
-  ../libgtksnippets/gtk-snippet-source-view-listener.h \
+  ../libgtksnippets/gtk-snippets-manager.h \
   /usr/include/gtksourceview-1.0/gtksourceview/gtksourceview.h \
   /usr/include/gtksourceview-1.0/gtksourceview/gtksourcebuffer.h \
   /usr/include/gtksourceview-1.0/gtksourceview/gtksourcetagtable.h \
@@ -1177,7 +1177,7 @@ main.o main.o: main.c /usr/include/sys/types.h /usr/include/features.h \
 
 ../libgtksnippets/gtk-snippet.h:
 
-../libgtksnippets/gtk-snippet-source-view-listener.h:
+../libgtksnippets/gtk-snippets-manager.h:
 
 /usr/include/gtksourceview-1.0/gtksourceview/gtksourceview.h:
 

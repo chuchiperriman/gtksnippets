@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.0.2 on Sun Jan 14 20:45:08 2007 by perriman@portatil-->
+<!--*- mode: xml -*-->
 <glade-interface>
   <widget class="GtkWindow" id="snippets_popup_dialog">
-    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="can_focus">True</property>
+    <property name="has_focus">True</property>
+    <property name="is_focus">True</property>
+    <property name="decorated">False</property>
+    <property name="deletable">False</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <child>
           <widget class="GtkEntry" id="snippets_text_entry">
             <property name="visible">True</property>
+            <property name="has_focus">True</property>
           </widget>
           <packing>
             <property name="expand">False</property>

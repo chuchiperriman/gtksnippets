@@ -14,6 +14,7 @@
 
 
 
+
 srcdir = .
 top_srcdir = ..
 
@@ -51,12 +52,12 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
-	gtk-snippet-source-view-listener.lo
+	gtk-snippet-source-view-listener.lo gtk-snippets-manager.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -71,17 +72,19 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgtksnippets_la_SOURCES)
 DIST_SOURCES = $(libgtksnippets_la_SOURCES)
+gladeDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(glade_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
 AWK = mawk
 CATALOGS = 
 CATOBJEXT = .gmo
@@ -130,7 +133,7 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
@@ -184,7 +187,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/perriman/Projects/gtksnippets/install-sh
+install_sh = /home/chuchi/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -200,6 +203,8 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
+gladedir = $(datadir)/libgtksnippets/glade
+glade_DATA = libgtksnippets.glade
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -221,7 +226,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
 	gtk-snippet-source-view-listener.h	\
-	gtk-snippet-source-view-listener.c
+	gtk-snippet-source-view-listener.c      \
+	gtk-snippets-manager.h      \
+	gtk-snippets-manager.c 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -230,6 +237,7 @@ libgtksnippets_la_LDFLAGS = \
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs gtksourceview-1.0`
 
+EXTRA_DIST = $(glade_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -302,6 +310,7 @@ distclean-compile:
 include ./$(DEPDIR)/gtk-snippet-source-view-listener.Plo
 include ./$(DEPDIR)/gtk-snippet.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
+include ./$(DEPDIR)/gtk-snippets-manager.Plo
 
 .c.o:
 	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -333,6 +342,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-gladeDATA: $(glade_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(gladedir)" || $(mkdir_p) "$(DESTDIR)$(gladedir)"
+	@list='$(glade_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(gladeDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(gladedir)/$$f'"; \
+	  $(gladeDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(gladedir)/$$f"; \
+	done
+
+uninstall-gladeDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(glade_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(gladedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(gladedir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -411,9 +437,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -461,7 +487,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-gladeDATA
 
 install-exec-am: install-libLTLIBRARIES
 
@@ -489,20 +515,21 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
+uninstall-am: uninstall-gladeDATA uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
+	install-exec-am install-gladeDATA install-info install-info-am \
 	install-libLTLIBRARIES install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	tags uninstall uninstall-am uninstall-gladeDATA \
+	uninstall-info-am uninstall-libLTLIBRARIES
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

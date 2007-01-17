@@ -34,7 +34,7 @@
 #include <glade/glade.h>
 
 #include "libgtksnippets/gtk-snippets-loader.h"
-#include "libgtksnippets/gtk-snippet-source-view-listener.h"
+#include "libgtksnippets/gtk-snippets-manager.h"
 
 
 
@@ -66,8 +66,8 @@
 
 /* For testing propose use the local (not installed) glade file */
 /* #define GLADE_FILE PACKAGE_DATA_DIR"/gtk-source-view-snippets/glade/gtk-source-view-snippets.glade" */
-#define GLADE_FILE "gtk-source-view-snippets.glade"
-#define GLADE_FILE2 "src/gtk-source-view-snippets.glade"
+#define GLADE_FILE "gtksnippets.glade"
+#define GLADE_FILE2 "src/gtksnippets.glade"
 	
 static GtkWidget *source;
 
@@ -119,15 +119,17 @@ main (int argc, char *argv[])
 	
 	gtk_snippets_loader_load_default(loader);
 	
-	gtk_snippet_source_view_listener_new(loader,source);
+	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
-	g_object_unref(loader);
-	
-	
+	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
 	
 	gtk_widget_show (window);
 
 	gtk_main ();
+	
+	g_object_unref(loader);
+	g_object_unref(manager);
+	
 	g_print("Fin");
 	return 0;
 }

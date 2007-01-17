@@ -1,4 +1,7 @@
 
+gladedir = $(datadir)/libgtksnippets/glade
+glade_DATA = libgtksnippets.glade
+
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -20,7 +23,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
 	gtk-snippet-source-view-listener.h	\
-	gtk-snippet-source-view-listener.c
+	gtk-snippet-source-view-listener.c      \
+	gtk-snippets-manager.h      \
+	gtk-snippets-manager.c 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -28,6 +33,8 @@ libgtksnippets_la_LIBADD = \
 libgtksnippets_la_LDFLAGS = \
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs gtksourceview-1.0`
+
+EXTRA_DIST = $(glade_DATA)
 	
 ## File created by the gnome-build tools
 

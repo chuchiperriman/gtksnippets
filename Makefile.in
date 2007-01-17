@@ -208,9 +208,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = src po \
-	libgtksnippets 
-
+SUBDIRS = libgtksnippets src po 
 gtksnippetsdocdir = ${prefix}/doc/gtksnippets
 gtksnippetsdoc_DATA = \
 	README\
