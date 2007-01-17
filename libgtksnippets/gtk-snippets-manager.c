@@ -27,7 +27,7 @@
 #include "gtk-snippets-manager.h"
 
 //TODO: Temporal, habrá que poner la ruta bien (pero no sé como)
-#define GLADE_FILE "/home/chuchi/Projects/gtksnippets/libgtksnippets/libgtksnippets.glade"
+#define GLADE_FILE GLADE_DIR"/libgtksnippets.glade"
 
 static GObjectClass* parent_class = NULL;
 

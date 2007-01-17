@@ -6,6 +6,7 @@ INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
+	-DGLADE_DIR=\""$(gladedir)"\" \
 	$(PACKAGE_CFLAGS) \
 	`pkg-config --cflags gtksourceview-1.0` \
 	`pkg-config --cflags libglade-2.0`

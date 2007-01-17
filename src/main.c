@@ -66,8 +66,7 @@
 
 /* For testing propose use the local (not installed) glade file */
 /* #define GLADE_FILE PACKAGE_DATA_DIR"/gtk-source-view-snippets/glade/gtk-source-view-snippets.glade" */
-#define GLADE_FILE "gtksnippets.glade"
-#define GLADE_FILE2 "src/gtksnippets.glade"
+#define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
 	
 static GtkWidget *source;
 
@@ -79,9 +78,6 @@ create_window (void)
 	g_print("Hola");
 	
 	gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
-	
-	if (gxml==NULL)
-		gxml = glade_xml_new (GLADE_FILE2, NULL, NULL);
 	
 	/* This is important */
 	glade_xml_signal_autoconnect (gxml);
