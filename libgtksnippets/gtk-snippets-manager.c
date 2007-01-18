@@ -22,47 +22,17 @@
  * 	Boston, MA  02110-1301, USA.
  */
 
-#include <glade/glade.h>
 #include <gdk/gdkkeysyms.h>
 #include "gtk-snippets-manager.h"
-
-//TODO: Temporal, habrá que poner la ruta bien (pero no sé como)
-#define GLADE_FILE GLADE_DIR"/libgtksnippets.glade"
+#include "gtk-snippets-popup-dialog.h"
 
 static GObjectClass* parent_class = NULL;
 
 struct _GtkSnippetsManagerPrivate {
 	/* Place Private Members Here */
 	GtkSnippetsLoader *loader;
-	GtkWidget *popup;
-	GtkWidget *popup_text_entry;
-	GtkWidget *popup_list_view;
+	GtkSnippetsPopupDialog *popup;
 };
-
-///////////////////TODO esto tiene que ir a un fichero aparte!!
-gboolean
-on_snippets_popup_dialog_focus_out_event(GtkWidget     *widget,
-                                         GdkEventFocus *event,
-                                         gpointer       user_data)
-{
-
-	g_debug("Perdemos el foco");
-	gtk_widget_hide(widget);
-
-}
-///////////////////////////////////////////////////////////////
-static void
-gtk_snippets_manager_load_list_ui(GtkSnippetsManager *manager)
-{
-	GladeXML *gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
-	
-	glade_xml_signal_autoconnect (gxml);
-	manager->priv->popup = glade_xml_get_widget (gxml, "snippets_popup_dialog");
-	manager->priv->popup_text_entry = glade_xml_get_widget(gxml,"snippets_text_entry");
-	manager->priv->popup_list_view = glade_xml_get_widget(gxml,"snippets_list_view");
-	
-	g_debug("Construido UI de la lista de snippets");	
-}
 
 static void
 gtk_snippets_manager_init (GtkSnippetsManager *object)
@@ -70,9 +40,9 @@ gtk_snippets_manager_init (GtkSnippetsManager *object)
 	g_debug("Construido GtkSnippetsManager");
 	/* TODO: Add initialization code here */
 	object->priv = g_new0(GtkSnippetsManagerPrivate, 1);
-	
+	object->priv->loader = NULL;
 	// TODO: Esto habrá que ponerlo la primera vez que lo usen
-	gtk_snippets_manager_load_list_ui(object);
+	object->priv->popup = gtk_snippets_popup_dialog_new();
 }
 
 static void
@@ -84,11 +54,7 @@ gtk_snippets_manager_finalize (GObject *object)
 	
 	g_object_unref(cobj->priv->loader);
 	
-	if (cobj->priv->popup != NULL)
-	{
-		g_debug("Destruido UI de la lista de snippets");
-		gtk_widget_destroy(cobj->priv->popup);
-	}
+	g_object_unref(cobj->priv->popup);
 	
 	g_free(cobj->priv);
 	
@@ -160,15 +126,9 @@ gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
 	{	
-		if (manager->priv->popup == NULL)
-		{
-			g_debug("Loading snippet list UI");
-			gtk_snippets_manager_load_list_ui(manager);
-		}
-		
-		/*void        gtk_window_set_position         (GtkWindow *window,
-                                             GtkWindowPosition position);*/
+	
 		GdkWindow *win;
+		GtkWidget *popup_window;
 		GtkTextMark* insert_mark;
 		GtkTextBuffer* text_buffer;
 		GtkTextIter start;
@@ -183,22 +143,24 @@ gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
 		gtk_text_view_get_iter_location(GTK_TEXT_VIEW(source_view),
 															&start,
 															&location );
-		g_debug("location x: %i",location.x);
-		g_debug("location y: %i",location.y);
 		gtk_text_view_buffer_to_window_coords (GTK_TEXT_VIEW (source_view),
                                          GTK_TEXT_WINDOW_WIDGET,
                                          location.x, location.y,
                                          &win_x, &win_y);
-		g_printf ("Window: %d, %d\n", win_x, win_y);
+
 		win = gtk_text_view_get_window (GTK_TEXT_VIEW (source_view), 
                                   GTK_TEXT_WINDOW_WIDGET);
 		gdk_window_get_origin (win, &x, &y);
+		
+		//TODO esto lo tendrá que hacer el propio popupdialog
+		popup_window = gtk_snippets_popup_dialog_get_window(manager->priv->popup);
+		
 
-		gtk_window_move (GTK_WINDOW (manager->priv->popup), win_x + x, 
+		gtk_window_move (GTK_WINDOW (popup_window), win_x + x, 
                    win_y + y + location.height);
 
-		gtk_widget_show(manager->priv->popup);
-		gtk_widget_grab_focus(manager->priv->popup_text_entry);
+		gtk_widget_show(popup_window);
+		//gtk_widget_grab_focus(manager->priv->popup_text_entry);
 		
 	}
 	

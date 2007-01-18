@@ -57,7 +57,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
-	gtk-snippets-manager.lo
+	gtk-snippets-manager.lo gtk-snippets-popup-dialog.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -227,7 +227,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
 	gtk-snippets-manager.h      \
-	gtk-snippets-manager.c 
+	gtk-snippets-manager.c      \
+	gtk-snippets-popup-dialog.h      \
+	gtk-snippets-popup-dialog.c 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -309,6 +311,7 @@ distclean-compile:
 include ./$(DEPDIR)/gtk-snippet.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
 include ./$(DEPDIR)/gtk-snippets-manager.Plo
+include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
 
 .c.o:
 	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
