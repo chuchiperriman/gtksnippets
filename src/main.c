@@ -75,7 +75,6 @@ create_window (void)
 {
 	GtkWidget *window;
 	GladeXML *gxml;
-	g_print("Hola");
 	
 	gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 	
@@ -117,13 +116,15 @@ main (int argc, char *argv[])
 	
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
+	g_object_unref(loader);
+	
 	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
 	
 	gtk_widget_show (window);
 
 	gtk_main ();
 	
-	g_object_unref(loader);
+	
 	g_object_unref(manager);
 	
 	g_print("Fin");

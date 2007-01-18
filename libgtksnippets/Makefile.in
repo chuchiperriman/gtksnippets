@@ -57,7 +57,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
-	gtk-snippet-source-view-listener.lo gtk-snippets-manager.lo
+	gtk-snippets-manager.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -226,8 +226,6 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-loader.h     \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
-	gtk-snippet-source-view-listener.h	\
-	gtk-snippet-source-view-listener.c      \
 	gtk-snippets-manager.h      \
 	gtk-snippets-manager.c 
 
@@ -308,7 +306,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippet-source-view-listener.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-loader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-manager.Plo@am__quote@

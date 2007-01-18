@@ -23,8 +23,6 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-loader.h     \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
-	gtk-snippet-source-view-listener.h	\
-	gtk-snippet-source-view-listener.c      \
 	gtk-snippets-manager.h      \
 	gtk-snippets-manager.c 
 

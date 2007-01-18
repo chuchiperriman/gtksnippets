@@ -6,11 +6,14 @@
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
     <property name="is_focus">True</property>
+    <property name="modal">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
+    <signal name="focus_out_event" handler="on_snippets_popup_dialog_focus_out_event"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="border_width">2</property>
         <child>
           <widget class="GtkEntry" id="snippets_text_entry">
             <property name="visible">True</property>
