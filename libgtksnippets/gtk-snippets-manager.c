@@ -115,7 +115,6 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 	return obj;	
 }
 
-
 static gboolean
 gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
 										GdkEventKey *event,
@@ -126,42 +125,7 @@ gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
 	{	
-	
-		GdkWindow *win;
-		GtkWidget *popup_window;
-		GtkTextMark* insert_mark;
-		GtkTextBuffer* text_buffer;
-		GtkTextIter start;
-		GdkRectangle location;
-		gint win_x, win_y;
-		gint x, y;
-
-		GtkSourceView *source_view = GTK_SOURCE_VIEW(widget);
-		text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
-		insert_mark = gtk_text_buffer_get_insert(text_buffer);
-		gtk_text_buffer_get_iter_at_mark(text_buffer,&start,insert_mark);
-		gtk_text_view_get_iter_location(GTK_TEXT_VIEW(source_view),
-															&start,
-															&location );
-		gtk_text_view_buffer_to_window_coords (GTK_TEXT_VIEW (source_view),
-                                         GTK_TEXT_WINDOW_WIDGET,
-                                         location.x, location.y,
-                                         &win_x, &win_y);
-
-		win = gtk_text_view_get_window (GTK_TEXT_VIEW (source_view), 
-                                  GTK_TEXT_WINDOW_WIDGET);
-		gdk_window_get_origin (win, &x, &y);
-		
-		//TODO esto lo tendrá que hacer el propio popupdialog
-		popup_window = gtk_snippets_popup_dialog_get_window(manager->priv->popup);
-		
-
-		gtk_window_move (GTK_WINDOW (popup_window), win_x + x, 
-                   win_y + y + location.height);
-
-		gtk_widget_show(popup_window);
-		//gtk_widget_grab_focus(manager->priv->popup_text_entry);
-		
+		gtk_snippets_popup_dialog_show_from_text_view(manager->priv->popup, GTK_TEXT_VIEW(widget));		
 	}
 	
 	return FALSE;

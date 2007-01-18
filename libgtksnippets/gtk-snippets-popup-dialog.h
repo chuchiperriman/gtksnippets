@@ -52,8 +52,22 @@ struct _GtkSnippetsPopupDialog
 };
 
 GType gtk_snippets_popup_dialog_get_type (void) G_GNUC_CONST;
+
 GtkSnippetsPopupDialog* gtk_snippets_popup_dialog_new (void);
-GtkWidget* gtk_snippets_popup_dialog_get_window(GtkSnippetsPopupDialog* popupDialog);
+
+GtkWidget* gtk_snippets_popup_dialog_get_window(GtkSnippetsPopupDialog* popup_dialog);
+
+void 
+gtk_snippets_popup_dialog_set_pos(GtkSnippetsPopupDialog* popup_dialog, gint x, gint y);
+
+void 
+gtk_snippets_popup_dialog_set_pos_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view);
+
+void
+gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog, const gchar *word);
+
+void
+gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view);
 
 G_END_DECLS
 

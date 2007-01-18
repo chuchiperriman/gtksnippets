@@ -22,6 +22,7 @@
  * 	Boston, MA  02110-1301, USA.
  */
 
+#include <gtk/gtk.h>
 #include <glade/glade.h>
 #include "gtk-snippets-popup-dialog.h"
 
@@ -32,6 +33,8 @@ struct _GtkSnippetsPopupDialogPrivate
 	GtkWidget* window;
 	GtkWidget* entry;
 	GtkWidget* list;
+	gint x;
+	gint y;
 };
 
 #define GTK_SNIPPETS_POPUP_DIALOG_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogPrivate))
@@ -39,10 +42,12 @@ struct _GtkSnippetsPopupDialogPrivate
 static GObjectClass* parent_class = NULL;
 
 static void
-gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *object)
+gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 {
 	g_debug("Construido GtkSnippetsPopupDialog");
-	object->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
+	popup_dialog->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
+	popup_dialog->priv->x = 0;
+	popup_dialog->priv->y = 0;
 }
 
 static void
@@ -107,6 +112,7 @@ on_snippets_popup_dialog_focus_out_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	gtk_widget_hide(widget);
+	return FALSE;
 }
 
 static void
@@ -136,7 +142,89 @@ gtk_snippets_popup_dialog_new (void)
 }
 
 GtkWidget*
-gtk_snippets_popup_dialog_get_window(GtkSnippetsPopupDialog* popupDialog)
+gtk_snippets_popup_dialog_get_window(GtkSnippetsPopupDialog* popup_dialog)
 {
-	return popupDialog->priv->window;
+	return popup_dialog->priv->window;
+}
+
+void 
+gtk_snippets_popup_dialog_set_pos(GtkSnippetsPopupDialog* popup_dialog, gint x, gint y)
+{
+	popup_dialog->priv->x = x;
+	popup_dialog->priv->y = y;
+}
+
+void 
+gtk_snippets_popup_dialog_set_pos_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view)
+{
+	GdkWindow *win;
+	GtkTextMark* insert_mark;
+	GtkTextBuffer* text_buffer;
+	GtkTextIter start;
+	GdkRectangle location;
+	gint win_x, win_y;
+	gint x, y;
+
+	text_buffer = gtk_text_view_get_buffer(text_view);
+	insert_mark = gtk_text_buffer_get_insert(text_buffer);
+	gtk_text_buffer_get_iter_at_mark(text_buffer,&start,insert_mark);
+	gtk_text_view_get_iter_location(text_view,
+														&start,
+														&location );
+	gtk_text_view_buffer_to_window_coords (text_view,
+                                        GTK_TEXT_WINDOW_WIDGET,
+                                        location.x, location.y,
+                                        &win_x, &win_y);
+
+	win = gtk_text_view_get_window (text_view, 
+                                GTK_TEXT_WINDOW_WIDGET);
+	gdk_window_get_origin (win, &x, &y);
+	
+	gtk_snippets_popup_dialog_set_pos(popup_dialog,
+									win_x + x,
+									win_y + y + location.height);
+	
+	
+}
+
+void
+gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog,
+								const gchar *word)
+{
+
+	gtk_window_move (GTK_WINDOW (popup_dialog->priv->window),popup_dialog->priv->x,popup_dialog->priv->y);
+	gtk_entry_set_text (GTK_ENTRY(popup_dialog->priv->entry),word);
+	gtk_widget_show (popup_dialog->priv->window);
+	gtk_widget_grab_focus(popup_dialog->priv->entry);
+
+}
+void
+gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view)
+{
+	GtkTextMark* insert_mark;
+	GtkTextBuffer* text_buffer;
+	GtkTextIter actual,ini_word;
+	gchar* text;
+	
+	
+	
+	text_buffer = gtk_text_view_get_buffer(text_view);
+	insert_mark = gtk_text_buffer_get_insert(text_buffer);
+	gtk_text_buffer_get_iter_at_mark(text_buffer,&actual,insert_mark);
+	
+	ini_word = actual;
+	
+	//TODO Habría que comprobar si el caracter anterior es un blanco o una línea,
+	//Entonces ponemos un blanco (la llamada a backward_word_start nos coge una palabra de la línea anterior)
+	if (!gtk_text_iter_backward_word_start (&ini_word))
+		text = "";
+	else
+	{
+		text = gtk_text_iter_get_text (&ini_word, &actual);
+		g_strstrip (text);
+	}
+	
+	gtk_snippets_popup_dialog_set_pos_from_text_view(popup_dialog,text_view);
+	gtk_snippets_popup_dialog_show(popup_dialog,text);
+	//g_free(text);
 }
