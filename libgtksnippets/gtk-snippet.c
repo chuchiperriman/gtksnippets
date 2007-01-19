@@ -31,7 +31,7 @@ static void gtk_snippet_finalize(GObject *object);
 struct _GtkSnippetPrivate {
 	/* Place Private Members Here */
 	gchar *name;
-	gchar *mime_type;
+	gchar *language;
 	gchar *tag;
 	gchar *description;
 	gchar *text;
@@ -83,7 +83,7 @@ gtk_snippet_init(GtkSnippet *obj)
 	obj->priv = g_new0(GtkSnippetPrivate, 1);
 	/* Initialize private members, etc. */
 	obj->priv->name = NULL;
-	obj->priv->mime_type = NULL;
+	obj->priv->language = NULL;
 	obj->priv->tag = NULL;
 	obj->priv->description = NULL;
 	obj->priv->text = NULL;
@@ -98,7 +98,7 @@ gtk_snippet_finalize(GObject *object)
 	
 	/* Free private members, etc. */
 	g_free(cobj->priv->name);
-	g_free(cobj->priv->mime_type);
+	g_free(cobj->priv->language);
 	g_free(cobj->priv->tag);
 	g_free(cobj->priv->description);
 	g_free(cobj->priv->text);
@@ -111,7 +111,7 @@ gtk_snippet_finalize(GObject *object)
 
 GtkSnippet*
 gtk_snippet_new(gchar *name,
-				gchar *mime_type,
+				gchar *language,
 				gchar *tag,
 				gchar *description,
 				gchar *text)
@@ -124,7 +124,7 @@ gtk_snippet_new(gchar *name,
 	obj = GTK_SNIPPET(g_object_new(GTK_TYPE_SNIPPET, NULL));
 	
 	obj->priv->name = g_strdup(name);
-	obj->priv->mime_type = g_strdup(mime_type);
+	obj->priv->language = g_strdup(language);
 	obj->priv->tag = g_strdup(tag);
 	obj->priv->description = g_strdup(description);
 	obj->priv->text = g_strdup(text);
@@ -133,7 +133,13 @@ gtk_snippet_new(gchar *name,
 }
 
 gchar*
-gtk_snippet_get_mime_type(GtkSnippet *snippet)
+gtk_snippet_get_language(GtkSnippet *snippet)
 {
-	return snippet->priv->mime_type;
+	return snippet->priv->language;
+}
+
+gchar*
+gtk_snippet_get_name(GtkSnippet *snippet)
+{
+	return snippet->priv->name;
 }

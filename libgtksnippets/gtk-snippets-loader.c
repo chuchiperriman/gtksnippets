@@ -22,6 +22,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <glib/gprintf.h>
+
 #include "gtk-snippets-loader.h"
  
 static void gtk_snippets_loader_class_init(GtkSnippetsLoaderClass *klass);
@@ -134,21 +136,39 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 	//Leer ficheros .xml
 	//Parsear cada uno
 	//Generar las listas de snippets
-	GtkSnippet *snippets_temp[] = {
-		gtk_snippet_new("nombre","C","for","bucle for","for(int i=0;i<10;i++){}"),
-		gtk_snippet_new("nombre2","C","if","sentencia if","if .... (int i=0;i<10;i++){}"),
-		gtk_snippet_new("nombre3","C","ifero","otra sentencia if","ifero ....(int i=0;i<10;i++){}"),
-		gtk_snippet_new("nombre4","C","while","bucle while","while(int i=0;i<10;i++){}")
-	};
+	
+	
+	//AHORA ESTAN PUESTAS COCHINADAS PARA DEPURAR
+	gint num_snippets = 50;
+	gchar temp[255];
+	gchar temp2[255];
+	gchar temp3[255];
 	int i;
-	for (i=0;i<4;i++)
-		g_hash_table_insert(loader->priv->snippets_by_name, gtk_snippet_get_mime_type(snippets_temp[i]), snippets_temp[i]);
+	for (i=0;i<num_snippets;i++){
+		g_sprintf(temp,"nombre%d",i);
+		g_sprintf(temp2,"descripcion%d",i);
+		g_sprintf(temp3,"sentencia%d",i);
+		g_hash_table_insert(
+			loader->priv->snippets_by_name,
+			g_strdup(temp),
+			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
+	}
+	
+	for (i=0;i<num_snippets;i++){
+		g_sprintf(temp,"PYTHONnombre%d",i);
+		g_sprintf(temp2,"PYTHONdescripcion%d",i);
+		g_sprintf(temp3,"PYTHONsentencia%d",i);
+		g_hash_table_insert(
+			loader->priv->snippets_by_name,
+			g_strdup(temp),
+			(gpointer)gtk_snippet_new(g_strdup(temp),"PYTHON",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
+	}
 }
 
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader)
 {
-	return NULL;
+	return loader->priv->snippets_by_name;
 }
 
 GList*

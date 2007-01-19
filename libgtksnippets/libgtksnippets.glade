@@ -3,6 +3,7 @@
 <!--*- mode: xml -*-->
 <glade-interface>
   <widget class="GtkWindow" id="snippets_popup_dialog">
+    <property name="height_request">200</property>
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
     <property name="is_focus">True</property>
@@ -31,6 +32,7 @@
             <child>
               <widget class="GtkTreeView" id="snippets_tree_view">
                 <property name="visible">True</property>
+                <property name="headers_visible">False</property>
               </widget>
             </child>
           </widget>

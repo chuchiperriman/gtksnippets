@@ -55,13 +55,17 @@ GType gtk_snippet_get_type();
 
 GtkSnippet*
 gtk_snippet_new(gchar *name,
-				gchar *mime_type,
+				gchar *language,
 				gchar *tag,
 				gchar *description,
 				gchar *text);
 				
 gchar*
-gtk_snippet_get_mime_type(GtkSnippet *snippet);
+gtk_snippet_get_language(GtkSnippet *snippet);
+
+gchar*
+gtk_snippet_get_name(GtkSnippet *snippet);
+
 
 G_END_DECLS
 

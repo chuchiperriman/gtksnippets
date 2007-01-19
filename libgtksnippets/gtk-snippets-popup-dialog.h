@@ -57,6 +57,13 @@ GtkSnippetsPopupDialog* gtk_snippets_popup_dialog_new (void);
 
 GtkWidget* gtk_snippets_popup_dialog_get_window(GtkSnippetsPopupDialog* popup_dialog);
 
+/**
+* Asigna los snippets a la lista. Limpia todo lo que había antes
+* Espera un hash con el formato <nombre,snippet>
+*/
+void
+gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHashTable* snippets);
+
 void 
 gtk_snippets_popup_dialog_set_pos(GtkSnippetsPopupDialog* popup_dialog, gint x, gint y);
 
@@ -68,6 +75,9 @@ gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog, const gchar
 
 void
 gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view);
+
+void
+gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language);
 
 G_END_DECLS
 

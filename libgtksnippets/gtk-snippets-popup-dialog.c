@@ -22,17 +22,24 @@
  * 	Boston, MA  02110-1301, USA.
  */
 
+#include <string.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include "gtk-snippet.h"
 #include "gtk-snippets-popup-dialog.h"
 
 #define GLADE_FILE GLADE_DIR"/libgtksnippets.glade"
+
+#define COL_LANGUAGE 0
+#define COL_NAME 1
+#define COL_SNIPPET 2
 
 struct _GtkSnippetsPopupDialogPrivate
 {
 	GtkWidget* window;
 	GtkWidget* entry;
-	GtkWidget* list;
+	GtkWidget* tree_view;
+	GtkListStore *complete_list_store;
 	gint x;
 	gint y;
 };
@@ -48,6 +55,7 @@ gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 	popup_dialog->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
 	popup_dialog->priv->x = 0;
 	popup_dialog->priv->y = 0;
+	popup_dialog->priv->complete_list_store = NULL;
 }
 
 static void
@@ -59,6 +67,8 @@ gtk_snippets_popup_dialog_finalize (GObject *object)
 
 	//Si destruimos la ventana se destruyen los hijos
 	gtk_widget_destroy(cobj->priv->window);
+	
+	g_object_unref(cobj->priv->complete_list_store);
 	
 	g_free(cobj->priv);
 	
@@ -123,7 +133,7 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	glade_xml_signal_autoconnect (gxml);
 	obj->priv->window = glade_xml_get_widget (gxml, "snippets_popup_dialog");
 	obj->priv->entry = glade_xml_get_widget(gxml,"snippets_text_entry");
-	obj->priv->list = glade_xml_get_widget(gxml,"snippets_list_view");
+	obj->priv->tree_view = glade_xml_get_widget(gxml,"snippets_tree_view");
 	
 	g_object_unref(gxml);
 }
@@ -206,8 +216,6 @@ gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dial
 	GtkTextIter actual,ini_word;
 	gchar* text;
 	
-	
-	
 	text_buffer = gtk_text_view_get_buffer(text_view);
 	insert_mark = gtk_text_buffer_get_insert(text_buffer);
 	gtk_text_buffer_get_iter_at_mark(text_buffer,&actual,insert_mark);
@@ -227,4 +235,142 @@ gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dial
 	gtk_snippets_popup_dialog_set_pos_from_text_view(popup_dialog,text_view);
 	gtk_snippets_popup_dialog_show(popup_dialog,text);
 	//g_free(text);
+}
+
+static void
+gspd_hash_for_each_add_snippet (gpointer key,
+		gpointer value,
+		gpointer user_data)
+{
+
+	GtkTreeIter iter;
+	GtkSnippet *snippet;
+	
+	g_assert(user_data!=NULL);
+	g_assert(value!=NULL);
+	g_assert(key!=NULL);
+	
+	snippet = GTK_SNIPPET(value);
+	
+	
+	g_debug("for each add Snippet");
+	
+	//Insertamos los datos
+	gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
+	
+	g_debug("obtenido iter");
+	
+	gtk_list_store_set (GTK_LIST_STORE(user_data), 
+						&iter,
+						COL_LANGUAGE, gtk_snippet_get_language(snippet),
+						COL_NAME, gtk_snippet_get_name(snippet),
+						COL_SNIPPET, value,
+						-1);
+						
+	g_debug("fin for each add Snippet");
+
+}
+
+void
+gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHashTable* snippets)
+{
+
+	g_assert(popup_dialog!=NULL);
+	
+	if (snippets != NULL)
+	{
+		g_debug("Asignan nuevos snippets");
+
+		GtkCellRenderer *renderer;
+		GtkTreeViewColumn *column;
+		GtkListStore *list_store;
+		
+		
+		//lenguaje,nombreSnippet,GtkSnippet
+		list_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+		
+		/* crea una columna */
+		column = gtk_tree_view_column_new();
+		
+		/* coloca el nombre a la columna */
+		//gtk_tree_view_column_set_title(column, "Snippet");
+
+		/* crea un render tipo texto */
+		renderer = gtk_cell_renderer_text_new ();
+		gtk_tree_view_column_pack_start (column, renderer, FALSE);
+		gtk_tree_view_column_set_attributes (column,renderer,"text",1,NULL);
+
+		/* agrega la columna al arbol */
+		gtk_tree_view_append_column (GTK_TREE_VIEW(popup_dialog->priv->tree_view), column);
+		
+		g_hash_table_foreach (snippets,gspd_hash_for_each_add_snippet,list_store);
+		
+		popup_dialog->priv->complete_list_store = g_object_ref(list_store);
+		
+		g_debug("Asignamos el modelo");
+		gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),GTK_TREE_MODEL(list_store));
+	}
+	else
+	{
+		g_debug("Se quisieron añadir snippets pero son NULL");
+	}	
+}
+
+static gboolean
+gspd_filter_by_language_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+{
+	GValue value = {0,};
+	gchar *snippet_language;
+	
+	if (data == NULL)
+	{
+		return TRUE;
+	}
+	else
+	{
+		//g_value_init(&value,G_TYPE_POINTER);
+		
+		g_debug("Filtro de un Snippet");
+		
+		gtk_tree_model_get_value(model,iter,COL_SNIPPET,&value);
+		
+		snippet_language = gtk_snippet_get_language(GTK_SNIPPET(g_value_get_pointer(&value)));
+		
+		if (strcmp((gchar*)data,snippet_language) == 0)
+			return TRUE;
+		else
+			return FALSE;
+	}
+}	
+	
+void
+gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language)
+{
+	g_debug("Iniciamos filtrado");
+	GtkTreeModel *model_filter;
+	GtkTreeModel *model_actual;
+		
+	model_actual = gtk_tree_view_get_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view));
+	
+	//TODO comprobar si el lenguaje que mandan es por el que ya está filtrado, entonces no hacemos nada
+	if (GTK_IS_TREE_MODEL_FILTER(model_actual))
+	{
+		//Cogemos el modelo hijo (el que tiene todos los datos)
+		model_filter = gtk_tree_model_filter_new (gtk_tree_model_filter_get_model(model_actual), NULL);
+	}
+	else
+	{
+		model_filter = gtk_tree_model_filter_new (model_actual, NULL);
+	}
+	
+	gtk_tree_model_filter_set_visible_func(
+		GTK_TREE_MODEL_FILTER(model_filter),
+		gspd_filter_by_language_func,
+		language,
+		NULL);
+		
+	gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(model_filter));
+			
+	gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),model_filter);
+
 }

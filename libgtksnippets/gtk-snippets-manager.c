@@ -34,6 +34,12 @@ struct _GtkSnippetsManagerPrivate {
 	GtkSnippetsPopupDialog *popup;
 };
 
+typedef struct{
+	GtkSnippetsManager *manager;
+	GtkWidget *editor;
+	gchar* language;
+} EditorData ;
+
 static void
 gtk_snippets_manager_init (GtkSnippetsManager *object)
 {
@@ -112,20 +118,36 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 	
 	obj->priv->loader = loader;
 	
+	gtk_snippets_popup_dialog_set_snippets(
+		obj->priv->popup,
+		gtk_snippets_loader_get_snippets(obj->priv->loader));
+	
 	return obj;	
 }
 
 static gboolean
-gtk_snippet_manager_sw_key_release_event(GtkWidget *widget,
+gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 										GdkEventKey *event,
 										gpointer user_data)
 {
 
-	GtkSnippetsManager *manager = GTK_SNIPPETS_MANAGER(user_data);
+	static gboolean es_c = TRUE;
+
+	EditorData *data =(EditorData*)user_data;
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
-	{	
-		gtk_snippets_popup_dialog_show_from_text_view(manager->priv->popup, GTK_TEXT_VIEW(widget));		
+	{
+	
+		//TODO Hay que filtrar por lenguaje...	
+		//gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, data->language);
+		if (es_c)
+			gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, "PYTHON");
+		else
+			gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, "C");
+			
+		es_c = !es_c;
+		
+		gtk_snippets_popup_dialog_show_from_text_view(data->manager->priv->popup, GTK_TEXT_VIEW(data->editor));
 	}
 	
 	return FALSE;
@@ -135,19 +157,29 @@ static void
 gtk_snippet_manager_sw_destroy_event (GtkObject *object, 
 										gpointer   user_data)
 {
+	g_free(user_data);
 	g_debug("Han destruido un editor");
 }
 
 void
-gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje)
+gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* language)
 {
+
+	EditorData *data;
+	
+	data = g_new0(EditorData,1);
+	
 	/* TODO: Poner esto genérico, no solo para el gtksourceview */
 	GtkSourceView *source_view = GTK_SOURCE_VIEW(editor);
 	
-	g_signal_connect(GTK_WIDGET(source_view), "key-release-event",
-		G_CALLBACK(gtk_snippet_manager_sw_key_release_event),(gpointer) manager);
+	data->language = language;
+	data->editor = editor;
+	data->manager = manager;
+	
+	g_signal_connect(GTK_WIDGET(source_view), "key-press-event",
+		G_CALLBACK(gtk_snippet_manager_sw_key_press_event),(gpointer) data);
 	
 	g_signal_connect(GTK_WIDGET(source_view), "destroy",
-		G_CALLBACK(gtk_snippet_manager_sw_destroy_event),(gpointer) manager);
+		G_CALLBACK(gtk_snippet_manager_sw_destroy_event),(gpointer) data);
 	
 }
