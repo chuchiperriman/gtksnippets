@@ -136,29 +136,31 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 	static gboolean es_c = TRUE;
 	gchar* word;
 	gint x, y;
+	FilterData filter_data;
 	EditorData *data =(EditorData*)user_data;
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
 	{
-	
-		//TODO Hay que filtrar por lenguaje...	
-		//gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, data->language);
-		if (es_c)
-			gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, "PYTHON");
-		else
-			gtk_snippets_popup_dialog_filter_by_language(data->manager->priv->popup, "C");
-			
-		es_c = !es_c;
 		
 		word = gtk_snippets_gsv_get_last_word(GTK_TEXT_VIEW(data->editor));
+		
+		filter_data.tag = word;
+		if (es_c)
+			filter_data.language = "C";
+		else
+			filter_data.language = "PYTHON";
+		
+		es_c = !es_c;
+			
+		gtk_snippets_popup_dialog_filter(
+				data->manager->priv->popup,
+				&filter_data);
 		
 		gtk_snippets_gsv_get_screen_pos(GTK_TEXT_VIEW(data->editor), &x, &y);
 		
 		gtk_snippets_popup_dialog_set_pos(data->manager->priv->popup, x, y);
 		
 		gtk_snippets_popup_dialog_show(data->manager->priv->popup,word);
-		
-		//gtk_snippets_popup_dialog_show_from_text_view(data->manager->priv->popup, GTK_TEXT_VIEW(data->editor));
 		
 	}
 	

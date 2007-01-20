@@ -121,6 +121,8 @@ main (int argc, char *argv[])
 	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
 	
 	gtk_widget_show (window);
+	
+	gtk_widget_grab_focus(source);
 
 	gtk_main ();
 	

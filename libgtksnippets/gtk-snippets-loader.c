@@ -155,6 +155,16 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 	}
 	
 	for (i=0;i<num_snippets;i++){
+		g_sprintf(temp,"aaanombre%d",i);
+		g_sprintf(temp2,"aaadescripcion%d",i);
+		g_sprintf(temp3,"aaasentencia%d",i);
+		g_hash_table_insert(
+			loader->priv->snippets_by_name,
+			g_strdup(temp),
+			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
+	}
+	
+	for (i=0;i<num_snippets;i++){
 		g_sprintf(temp,"PYTHONnombre%d",i);
 		g_sprintf(temp2,"PYTHONdescripcion%d",i);
 		g_sprintf(temp3,"PYTHONsentencia%d",i);

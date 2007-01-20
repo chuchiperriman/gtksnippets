@@ -43,11 +43,6 @@ struct _GtkSnippetsPopupDialogPrivate
 	gint y;
 };
 
-struct _FilterData{
-	gchar* language;
-	gchar* tag;
-};
-
 #define GTK_SNIPPETS_POPUP_DIALOG_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogPrivate))
 
 static GObjectClass* parent_class = NULL;
@@ -283,7 +278,7 @@ gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 	if (show == TRUE && filter_data->tag != NULL)
 	{
 		snippet_tag = gtk_snippet_get_tag(snippet);
-		if (strcmp(filter_data->tag, snippet_tag) != 0)
+		if (strncmp(filter_data->tag, snippet_tag, strlen(filter_data->tag)) != 0)
 		{
 			show = FALSE;
 		}

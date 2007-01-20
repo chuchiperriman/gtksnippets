@@ -52,6 +52,11 @@ struct _GtkSnippetsPopupDialog
 	GtkSnippetsPopupDialogPrivate *priv;
 };
 
+struct _FilterData{
+	gchar* language;
+	gchar* tag;
+};
+
 GType gtk_snippets_popup_dialog_get_type (void) G_GNUC_CONST;
 
 GtkSnippetsPopupDialog* gtk_snippets_popup_dialog_new (void);
