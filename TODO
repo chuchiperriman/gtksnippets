@@ -1,0 +1,14 @@
+GtkTextView:
+
+	.- When we get the last word, if is blank or \n then return the previous word in the line or the previous word in the previous line
+	.- If the word has a number, return only the number (chuchi6 return 6 an may return chuchi6)
+
+Popup List:
+
+	.- Study how response when select a snippet. How notify to add the snippet text to the editor
+
+Loader:
+
+	.- Make the loader, now it return some test snippets. The may load snippets from the xml
+
+

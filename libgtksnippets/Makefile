@@ -52,7 +52,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)" \
+	"$(DESTDIR)$(snippetsdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
@@ -74,7 +75,8 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 SOURCES = $(libgtksnippets_la_SOURCES)
 DIST_SOURCES = $(libgtksnippets_la_SOURCES)
 gladeDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(glade_DATA)
+snippetsDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(glade_DATA) $(snippets_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -206,11 +208,14 @@ sysconfdir = ${prefix}/etc
 target_alias = 
 gladedir = $(datadir)/libgtksnippets/glade
 glade_DATA = libgtksnippets.glade
+snippetsdir = $(datadir)/libgtksnippets/snippets
+snippets_DATA = snippets/c.xml
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DGLADE_DIR=\""$(gladedir)"\" \
+	-DSNIPPETS_DIR=\""$(snippetsdir)"\" \
 	$(PACKAGE_CFLAGS) \
 	`pkg-config --cflags gtksourceview-1.0` \
 	`pkg-config --cflags libglade-2.0`
@@ -241,7 +246,7 @@ libgtksnippets_la_LDFLAGS = \
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs gtksourceview-1.0`
 
-EXTRA_DIST = $(glade_DATA)
+EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -364,6 +369,23 @@ uninstall-gladeDATA:
 	  echo " rm -f '$(DESTDIR)$(gladedir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(gladedir)/$$f"; \
 	done
+install-snippetsDATA: $(snippets_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(snippetsdir)" || $(mkdir_p) "$(DESTDIR)$(snippetsdir)"
+	@list='$(snippets_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(snippetsDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(snippetsdir)/$$f'"; \
+	  $(snippetsDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(snippetsdir)/$$f"; \
+	done
+
+uninstall-snippetsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(snippets_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(snippetsdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(snippetsdir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -414,6 +436,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
+	$(mkdir_p) $(distdir)/snippets
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -444,7 +467,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)" "$(DESTDIR)$(snippetsdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -492,7 +515,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-gladeDATA
+install-data-am: install-gladeDATA install-snippetsDATA
 
 install-exec-am: install-libLTLIBRARIES
 
@@ -521,7 +544,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-gladeDATA uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	uninstall-libLTLIBRARIES uninstall-snippetsDATA
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
@@ -529,12 +552,13 @@ uninstall-am: uninstall-gladeDATA uninstall-info-am \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-gladeDATA install-info install-info-am \
-	install-libLTLIBRARIES install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-gladeDATA \
-	uninstall-info-am uninstall-libLTLIBRARIES
+	install-libLTLIBRARIES install-man install-snippetsDATA \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-gladeDATA uninstall-info-am uninstall-libLTLIBRARIES \
+	uninstall-snippetsDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

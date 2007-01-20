@@ -2,11 +2,15 @@
 gladedir = $(datadir)/libgtksnippets/glade
 glade_DATA = libgtksnippets.glade
 
+snippetsdir = $(datadir)/libgtksnippets/snippets
+snippets_DATA = snippets/c.xml
+
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DGLADE_DIR=\""$(gladedir)"\" \
+	-DSNIPPETS_DIR=\""$(snippetsdir)"\" \
 	$(PACKAGE_CFLAGS) \
 	`pkg-config --cflags gtksourceview-1.0` \
 	`pkg-config --cflags libglade-2.0`
@@ -37,7 +41,7 @@ libgtksnippets_la_LDFLAGS = \
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs gtksourceview-1.0`
 
-EXTRA_DIST = $(glade_DATA)
+EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
 	
 ## File created by the gnome-build tools
 

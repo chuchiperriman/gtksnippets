@@ -23,8 +23,18 @@
  */
 
 #include <glib/gprintf.h>
-
+#include <libxml/xmlreader.h>
 #include "gtk-snippets-loader.h"
+
+#define DEFAULT_SNIPPETS_DIR SNIPPETS_DIR
+
+#define TAG_SNIPPETS (const xmlChar *)"snippets"
+#define ATT_LANGUAGE (const xmlChar *)"language"
+#define ATT_ID (const xmlChar *)"id"
+#define TAG_SNIPPET (const xmlChar *)"snippet"
+#define TAG_TAG (const xmlChar *)"tag"
+#define TAG_DESCRIPTION (const xmlChar *)"description"
+#define TAG_TEXT (const xmlChar *)"text"
  
 static void gtk_snippets_loader_class_init(GtkSnippetsLoaderClass *klass);
 static void gtk_snippets_loader_init(GtkSnippetsLoader *sp);
@@ -130,6 +140,89 @@ gtk_snippets_loader_new()
 	return obj;
 }
 
+static gboolean
+gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node)
+{
+	g_debug("XML Snippet found");
+	return TRUE;
+}
+
+static gboolean
+gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node)
+{
+	xmlChar *value;
+	xmlNode *cur_node = NULL;
+	gboolean res = TRUE;
+	
+	value = xmlGetProp(a_node, ATT_LANGUAGE);
+	
+	if (value != NULL)
+	{
+		g_debug("attribute language: %s",value);
+		for (cur_node = a_node->children; cur_node; cur_node = cur_node->next)
+		{
+			if (cur_node->type == XML_ELEMENT_NODE)
+			{
+				if (xmlStrcmp(cur_node->name, TAG_SNIPPET)==0)
+				{
+					if (!gsl_parse_snippet(loader,cur_node))
+					{
+						res = FALSE;
+						break;
+					}
+				}
+			}
+			
+		}
+	}
+	else
+	{
+		g_warning("snippets xml have not a language attribute!");
+		res = FALSE;
+	}
+	
+	return res;
+}
+
+/**
+* Devuelve FALSE si no puede cargarlos
+* TODO: Ver cómo tratar mejor los errores
+*/
+gboolean
+gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, gchar *file)
+{
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	gboolean res = TRUE;
+	
+	if (!g_file_test (file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) 
+	{
+		g_debug("File not found: %s",file);
+		res =  FALSE;
+	}
+	else
+	{
+		doc = xmlReadFile(file, NULL, 0);
+		
+		if (doc!=NULL)
+		{
+			root_element = xmlDocGetRootElement(doc);
+			
+			res = gsl_parse_root(loader,root_element);
+			
+			xmlFreeDoc(doc);
+			xmlCleanupParser();
+		}
+		else
+		{
+			g_debug("Cannot load the file: %s", file);
+			res = FALSE;
+		}
+	}	
+	return res;
+	
+}
+
 void
 gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 {
@@ -138,7 +231,7 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 	//Generar las listas de snippets
 	
 	
-	//AHORA ESTAN PUESTAS COCHINADAS PARA DEPURAR
+	//TODO AHORA ESTAN PUESTAS COCHINADAS PARA DEPURAR
 	gint num_snippets = 50;
 	gchar temp[255];
 	gchar temp2[255];
@@ -173,6 +266,10 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 			g_strdup(temp),
 			(gpointer)gtk_snippet_new(g_strdup(temp),"PYTHON",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
 	}
+	
+	
+	gtk_snippets_loader_load_from_file(loader,SNIPPETS_DIR"/c.xml");
+	
 }
 
 GHashTable*

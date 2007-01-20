@@ -187,13 +187,8 @@ gspd_hash_for_each_add_snippet (gpointer key,
 	
 	snippet = GTK_SNIPPET(value);
 	
-	
-	g_debug("for each add Snippet");
-	
 	//Insertamos los datos
 	gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
-	
-	g_debug("obtenido iter");
 	
 	gtk_list_store_set (GTK_LIST_STORE(user_data), 
 						&iter,
@@ -201,8 +196,6 @@ gspd_hash_for_each_add_snippet (gpointer key,
 						COL_NAME, gtk_snippet_get_name(snippet),
 						COL_SNIPPET, value,
 						-1);
-						
-	g_debug("fin for each add Snippet");
 
 }
 
