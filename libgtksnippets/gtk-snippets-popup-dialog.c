@@ -39,9 +39,13 @@ struct _GtkSnippetsPopupDialogPrivate
 	GtkWidget* window;
 	GtkWidget* entry;
 	GtkWidget* tree_view;
-	GtkListStore *complete_list_store;
 	gint x;
 	gint y;
+};
+
+struct _FilterData{
+	gchar* language;
+	gchar* tag;
 };
 
 #define GTK_SNIPPETS_POPUP_DIALOG_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogPrivate))
@@ -55,7 +59,6 @@ gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 	popup_dialog->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
 	popup_dialog->priv->x = 0;
 	popup_dialog->priv->y = 0;
-	popup_dialog->priv->complete_list_store = NULL;
 }
 
 static void
@@ -67,8 +70,6 @@ gtk_snippets_popup_dialog_finalize (GObject *object)
 
 	//Si destruimos la ventana se destruyen los hijos
 	gtk_widget_destroy(cobj->priv->window);
-	
-	g_object_unref(cobj->priv->complete_list_store);
 	
 	g_free(cobj->priv);
 	
@@ -164,39 +165,6 @@ gtk_snippets_popup_dialog_set_pos(GtkSnippetsPopupDialog* popup_dialog, gint x, 
 	popup_dialog->priv->y = y;
 }
 
-void 
-gtk_snippets_popup_dialog_set_pos_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view)
-{
-	GdkWindow *win;
-	GtkTextMark* insert_mark;
-	GtkTextBuffer* text_buffer;
-	GtkTextIter start;
-	GdkRectangle location;
-	gint win_x, win_y;
-	gint x, y;
-
-	text_buffer = gtk_text_view_get_buffer(text_view);
-	insert_mark = gtk_text_buffer_get_insert(text_buffer);
-	gtk_text_buffer_get_iter_at_mark(text_buffer,&start,insert_mark);
-	gtk_text_view_get_iter_location(text_view,
-														&start,
-														&location );
-	gtk_text_view_buffer_to_window_coords (text_view,
-                                        GTK_TEXT_WINDOW_WIDGET,
-                                        location.x, location.y,
-                                        &win_x, &win_y);
-
-	win = gtk_text_view_get_window (text_view, 
-                                GTK_TEXT_WINDOW_WIDGET);
-	gdk_window_get_origin (win, &x, &y);
-	
-	gtk_snippets_popup_dialog_set_pos(popup_dialog,
-									win_x + x,
-									win_y + y + location.height);
-	
-	
-}
-
 void
 gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog,
 								const gchar *word)
@@ -207,34 +175,6 @@ gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog,
 	gtk_widget_show (popup_dialog->priv->window);
 	gtk_widget_grab_focus(popup_dialog->priv->entry);
 
-}
-void
-gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view)
-{
-	GtkTextMark* insert_mark;
-	GtkTextBuffer* text_buffer;
-	GtkTextIter actual,ini_word;
-	gchar* text;
-	
-	text_buffer = gtk_text_view_get_buffer(text_view);
-	insert_mark = gtk_text_buffer_get_insert(text_buffer);
-	gtk_text_buffer_get_iter_at_mark(text_buffer,&actual,insert_mark);
-	
-	ini_word = actual;
-	
-	//TODO Habría que comprobar si el caracter anterior es un blanco o una línea,
-	//Entonces ponemos un blanco (la llamada a backward_word_start nos coge una palabra de la línea anterior)
-	if (!gtk_text_iter_backward_word_start (&ini_word))
-		text = "";
-	else
-	{
-		text = gtk_text_iter_get_text (&ini_word, &actual);
-		g_strstrip (text);
-	}
-	
-	gtk_snippets_popup_dialog_set_pos_from_text_view(popup_dialog,text_view);
-	gtk_snippets_popup_dialog_show(popup_dialog,text);
-	//g_free(text);
 }
 
 static void
@@ -305,8 +245,6 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 		
 		g_hash_table_foreach (snippets,gspd_hash_for_each_add_snippet,list_store);
 		
-		popup_dialog->priv->complete_list_store = g_object_ref(list_store);
-		
 		g_debug("Asignamos el modelo");
 		gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),GTK_TREE_MODEL(list_store));
 	}
@@ -317,34 +255,44 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 }
 
 static gboolean
-gspd_filter_by_language_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	GValue value = {0,};
 	gchar *snippet_language;
+	gchar *snippet_tag;
+	FilterData *filter_data;
+	gboolean show = TRUE;
+	GtkSnippet *snippet;
 	
-	if (data == NULL)
+	filter_data = (FilterData*)data;
+	
+	gtk_tree_model_get_value(model,iter,COL_SNIPPET,&value);
+	snippet = GTK_SNIPPET(g_value_get_pointer(&value));
+	
+	//Language filter
+	if (filter_data->language != NULL)
 	{
-		return TRUE;
+		snippet_language = gtk_snippet_get_language(snippet);
+		if (strcmp(filter_data->language, snippet_language) != 0)
+		{
+			show = FALSE;
+		}
 	}
-	else
+	
+	//Tag filter
+	if (show == TRUE && filter_data->tag != NULL)
 	{
-		//g_value_init(&value,G_TYPE_POINTER);
-		
-		g_debug("Filtro de un Snippet");
-		
-		gtk_tree_model_get_value(model,iter,COL_SNIPPET,&value);
-		
-		snippet_language = gtk_snippet_get_language(GTK_SNIPPET(g_value_get_pointer(&value)));
-		
-		if (strcmp((gchar*)data,snippet_language) == 0)
-			return TRUE;
-		else
-			return FALSE;
-	}
+		snippet_tag = gtk_snippet_get_tag(snippet);
+		if (strcmp(filter_data->tag, snippet_tag) != 0)
+		{
+			show = FALSE;
+		}
+	}	
+	return show;
 }	
 	
 void
-gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language)
+gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const FilterData *filter_data)
 {
 	g_debug("Iniciamos filtrado");
 	GtkTreeModel *model_filter;
@@ -356,7 +304,9 @@ gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialo
 	if (GTK_IS_TREE_MODEL_FILTER(model_actual))
 	{
 		//Cogemos el modelo hijo (el que tiene todos los datos)
-		model_filter = gtk_tree_model_filter_new (gtk_tree_model_filter_get_model(model_actual), NULL);
+		model_filter = gtk_tree_model_filter_new (
+				gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(model_actual)), 
+				NULL);
 	}
 	else
 	{
@@ -365,12 +315,21 @@ gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialo
 	
 	gtk_tree_model_filter_set_visible_func(
 		GTK_TREE_MODEL_FILTER(model_filter),
-		gspd_filter_by_language_func,
-		language,
+		gspd_filter_func,
+		(gpointer)filter_data,
 		NULL);
 		
 	gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(model_filter));
 			
 	gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),model_filter);
+}
 
+void
+gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language)
+{
+	FilterData filter_data;
+	filter_data.language = language;
+	filter_data.tag = NULL;
+	gtk_snippets_popup_dialog_filter(popup_dialog,&filter_data);
+	
 }

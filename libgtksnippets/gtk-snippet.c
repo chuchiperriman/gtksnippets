@@ -143,3 +143,9 @@ gtk_snippet_get_name(GtkSnippet *snippet)
 {
 	return snippet->priv->name;
 }
+
+gchar*
+gtk_snippet_get_tag(GtkSnippet *snippet)
+{
+	return snippet->priv->tag;
+}

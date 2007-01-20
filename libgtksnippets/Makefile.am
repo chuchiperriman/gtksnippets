@@ -26,7 +26,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-manager.h      \
 	gtk-snippets-manager.c      \
 	gtk-snippets-popup-dialog.h      \
-	gtk-snippets-popup-dialog.c 
+	gtk-snippets-popup-dialog.c	\
+	gtk-snippets-gsv-utils.h	\
+	gtk-snippets-gsv-utils.c
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 

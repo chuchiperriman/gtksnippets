@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 typedef struct _GtkSnippetsPopupDialogClass GtkSnippetsPopupDialogClass;
 typedef struct _GtkSnippetsPopupDialog GtkSnippetsPopupDialog;
 typedef struct _GtkSnippetsPopupDialogPrivate GtkSnippetsPopupDialogPrivate;
+typedef struct _FilterData FilterData;
 
 struct _GtkSnippetsPopupDialogClass
 {
@@ -67,14 +68,11 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 void 
 gtk_snippets_popup_dialog_set_pos(GtkSnippetsPopupDialog* popup_dialog, gint x, gint y);
 
-void 
-gtk_snippets_popup_dialog_set_pos_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view);
-
 void
 gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog, const gchar *word);
 
 void
-gtk_snippets_popup_dialog_show_from_text_view(GtkSnippetsPopupDialog* popup_dialog, GtkTextView *text_view);
+gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const FilterData *filter_data);
 
 void
 gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language);

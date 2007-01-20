@@ -66,6 +66,8 @@ gtk_snippet_get_language(GtkSnippet *snippet);
 gchar*
 gtk_snippet_get_name(GtkSnippet *snippet);
 
+gchar*
+gtk_snippet_get_tag(GtkSnippet *snippet);
 
 G_END_DECLS
 

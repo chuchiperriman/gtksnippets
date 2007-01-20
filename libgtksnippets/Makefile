@@ -57,7 +57,8 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
-	gtk-snippets-manager.lo gtk-snippets-popup-dialog.lo
+	gtk-snippets-manager.lo gtk-snippets-popup-dialog.lo \
+	gtk-snippets-gsv-utils.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -77,14 +78,14 @@ DATA = $(glade_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
 AWK = mawk
 CATALOGS = 
 CATOBJEXT = .gmo
@@ -133,7 +134,7 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
@@ -187,7 +188,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/chuchi/Projects/gtksnippets/install-sh
+install_sh = /home/perriman/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -229,7 +230,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-manager.h      \
 	gtk-snippets-manager.c      \
 	gtk-snippets-popup-dialog.h      \
-	gtk-snippets-popup-dialog.c 
+	gtk-snippets-popup-dialog.c	\
+	gtk-snippets-gsv-utils.h	\
+	gtk-snippets-gsv-utils.c
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -309,6 +312,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/gtk-snippet.Plo
+include ./$(DEPDIR)/gtk-snippets-gsv-utils.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
 include ./$(DEPDIR)/gtk-snippets-manager.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo

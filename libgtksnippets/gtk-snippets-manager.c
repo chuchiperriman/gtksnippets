@@ -23,8 +23,10 @@
  */
 
 #include <gdk/gdkkeysyms.h>
+#include "gtk-snippets-gsv-utils.h"
 #include "gtk-snippets-manager.h"
 #include "gtk-snippets-popup-dialog.h"
+
 
 static GObjectClass* parent_class = NULL;
 
@@ -132,7 +134,8 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 {
 
 	static gboolean es_c = TRUE;
-
+	gchar* word;
+	gint x, y;
 	EditorData *data =(EditorData*)user_data;
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
@@ -147,7 +150,16 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 			
 		es_c = !es_c;
 		
-		gtk_snippets_popup_dialog_show_from_text_view(data->manager->priv->popup, GTK_TEXT_VIEW(data->editor));
+		word = gtk_snippets_gsv_get_last_word(GTK_TEXT_VIEW(data->editor));
+		
+		gtk_snippets_gsv_get_screen_pos(GTK_TEXT_VIEW(data->editor), &x, &y);
+		
+		gtk_snippets_popup_dialog_set_pos(data->manager->priv->popup, x, y);
+		
+		gtk_snippets_popup_dialog_show(data->manager->priv->popup,word);
+		
+		//gtk_snippets_popup_dialog_show_from_text_view(data->manager->priv->popup, GTK_TEXT_VIEW(data->editor));
+		
 	}
 	
 	return FALSE;
