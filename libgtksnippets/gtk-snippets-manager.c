@@ -114,15 +114,20 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 {
 	GtkSnippetsManager *obj;
 
+	g_debug("Empezamos new");
 	obj = GTK_SNIPPETS_MANAGER(g_object_new(GTK_TYPE_SNIPPETS_MANAGER, NULL));
 	
 	g_object_ref(loader);
 	
 	obj->priv->loader = loader;
 	
+	g_debug("Antes de poner los snippets");
+	
 	gtk_snippets_popup_dialog_set_snippets(
 		obj->priv->popup,
 		gtk_snippets_loader_get_snippets(obj->priv->loader));
+		
+	g_debug("Puestos snippets en el dialog");
 	
 	return obj;	
 }
@@ -148,7 +153,7 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 		if (es_c)
 			filter_data.language = "C";
 		else
-			filter_data.language = "PYTHON";
+			filter_data.language = NULL;
 		
 		es_c = !es_c;
 			

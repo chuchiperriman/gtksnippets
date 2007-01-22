@@ -9,6 +9,7 @@ Popup List:
 
 Loader:
 
-	.- Make the loader, now it return some test snippets. The may load snippets from the xml
+	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
+	.- Snippets hastable key: change. Now the id is the key but the id can be equal for various snippets
 
 

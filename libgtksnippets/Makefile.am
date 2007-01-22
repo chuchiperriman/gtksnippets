@@ -3,7 +3,7 @@ gladedir = $(datadir)/libgtksnippets/glade
 glade_DATA = libgtksnippets.glade
 
 snippetsdir = $(datadir)/libgtksnippets/snippets
-snippets_DATA = snippets/c.xml
+snippets_DATA = snippets/*.xml
 
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \

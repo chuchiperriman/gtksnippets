@@ -85,6 +85,22 @@ GList*
 gtk_snippets_loader_get_snippets_by_mime_type(GtkSnippetsLoader* loader, gchar *mime_type);
 
 
+/**
+* Devuelve FALSE si no puede cargarlos
+* TODO: Ver cómo tratar mejor los errores
+*/
+gboolean
+gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file);
+
+
+/**
+* Lee todos los ficheros .xml del directorio
+* Devuelve FALSE si no puede cargarlos
+* TODO: Ver cómo tratar mejor los errores
+*/
+gboolean
+gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader, const gchar *path);
+
 
 G_END_DECLS
 
