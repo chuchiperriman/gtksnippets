@@ -149,3 +149,9 @@ gtk_snippet_get_tag(GtkSnippet *snippet)
 {
 	return snippet->priv->tag;
 }
+
+gchar*
+gtk_snippet_get_text(GtkSnippet *snippet)
+{
+	return snippet->priv->text;
+}

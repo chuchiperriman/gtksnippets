@@ -122,6 +122,36 @@ on_snippets_popup_dialog_focus_out_event(GtkWidget *widget,
 }
 
 static void
+snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
+		GtkTreePath *path,
+		GtkTreeViewColumn *column,
+		gpointer user_data)
+{
+
+	GtkSnippetsPopupDialog *popup;
+	GtkTreeModel *tree_model;
+	GtkTreeIter iter;
+	GValue value = {0,};
+	GtkSnippet *snippet;
+	
+	popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+	gtk_widget_hide(popup->priv->window);
+	
+	tree_model = gtk_tree_view_get_model(tree_view);
+	
+	if (gtk_tree_model_get_iter(tree_model, &iter, path))
+	{
+		gtk_tree_model_get_value(tree_model, &iter, COL_SNIPPET, &value);
+		snippet = GTK_SNIPPET(g_value_get_pointer(&value));
+		g_debug("Selected item: %s",gtk_snippet_get_tag(snippet));
+		g_debug("item text: %s",gtk_snippet_get_text(snippet));
+	}
+	
+	g_debug("Row selected");
+
+}
+
+static void
 gspd_load_glade(GtkSnippetsPopupDialog *obj)
 {
 	GladeXML *gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
@@ -130,6 +160,9 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	obj->priv->window = glade_xml_get_widget (gxml, "snippets_popup_dialog");
 	obj->priv->entry = glade_xml_get_widget(gxml,"snippets_text_entry");
 	obj->priv->tree_view = glade_xml_get_widget(gxml,"snippets_tree_view");
+	
+	g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "row-activated",
+		G_CALLBACK(snippets_tree_view_row_activated_cb),(gpointer) obj);
 	
 	g_object_unref(gxml);
 }
@@ -321,3 +354,5 @@ gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialo
 	gtk_snippets_popup_dialog_filter(popup_dialog,&filter_data);
 	
 }
+
+
