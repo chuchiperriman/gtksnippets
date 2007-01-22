@@ -42,7 +42,8 @@ static void gtk_snippets_loader_finalize(GObject *object);
 
 struct _GtkSnippetsLoaderPrivate {
 	/* Place Private Members Here */
-	GHashTable *snippets_by_name;
+	GHashTable *snippets_hash;
+	gint snippets_count;
 };
 
 typedef struct _GtkSnippetsLoaderSignal GtkSnippetsLoaderSignal;
@@ -113,7 +114,8 @@ gtk_snippets_loader_init(GtkSnippetsLoader *obj)
 {
 	obj->priv = g_new0(GtkSnippetsLoaderPrivate, 1);
 	/* Initialize private members, etc. */
-	obj->priv->snippets_by_name = g_hash_table_new_full(g_str_hash,g_str_equal,NULL,gtk_snippets_loader_destroy_snippet);
+	obj->priv->snippets_hash = g_hash_table_new_full(g_int_hash,g_int_equal, g_free, gtk_snippets_loader_destroy_snippet);
+	obj->priv->snippets_count = 0;
 	g_debug("Construido snippets loader");
 }
 
@@ -124,7 +126,7 @@ gtk_snippets_loader_finalize(GObject *object)
 	cobj = GTK_SNIPPETSLOADER(object);
 	
 	/* Free private members, etc. */
-	g_hash_table_destroy(cobj->priv->snippets_by_name);
+	g_hash_table_destroy(cobj->priv->snippets_hash);
 	g_free(cobj->priv);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 	g_debug("Destruido snippets loader");
@@ -149,6 +151,7 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 	xmlChar *text = NULL;
 	xmlNode *cur_node = NULL;
 	gboolean res = TRUE;
+	gint* key;
 	GtkSnippet *snippet;
 	
 	name = xmlGetProp(a_node, ATT_ID);
@@ -189,9 +192,13 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 			(gchar*)description,
 			(gchar*)text);
 			
+	//TODO liberar esto
+	key = g_malloc0(sizeof(gint*));
+	*key = loader->priv->snippets_count++;
+	
 	g_hash_table_insert(
-			loader->priv->snippets_by_name,
-			g_strdup((gchar*)name),
+			loader->priv->snippets_hash,
+			key,
 			(gpointer)snippet);
 	
 	xmlFree(name);
@@ -344,7 +351,7 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 		g_sprintf(temp2,"descripcion%d",i);
 		g_sprintf(temp3,"sentencia%d",i);
 		g_hash_table_insert(
-			loader->priv->snippets_by_name,
+			loader->priv->snippets_hash,
 			g_strdup(temp),
 			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
 	}
@@ -354,7 +361,7 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 		g_sprintf(temp2,"aaadescripcion%d",i);
 		g_sprintf(temp3,"aaasentencia%d",i);
 		g_hash_table_insert(
-			loader->priv->snippets_by_name,
+			loader->priv->snippets_hash,
 			g_strdup(temp),
 			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
 	}
@@ -364,7 +371,7 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 		g_sprintf(temp2,"PYTHONdescripcion%d",i);
 		g_sprintf(temp3,"PYTHONsentencia%d",i);
 		g_hash_table_insert(
-			loader->priv->snippets_by_name,
+			loader->priv->snippets_hash,
 			g_strdup(temp),
 			(gpointer)gtk_snippet_new(g_strdup(temp),"PYTHON",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
 	}
@@ -377,11 +384,5 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader)
 {
-	return loader->priv->snippets_by_name;
-}
-
-GList*
-gtk_snippets_loader_get_snippets_by_name_type(GtkSnippetsLoader* loader, gchar *mime_type)
-{
-	return NULL;
+	return loader->priv->snippets_hash;
 }

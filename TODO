@@ -10,6 +10,6 @@ Popup List:
 Loader:
 
 	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
-	.- Snippets hastable key: change. Now the id is the key but the id can be equal for various snippets
+	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the key but the id can be equal for various snippets
 
 
