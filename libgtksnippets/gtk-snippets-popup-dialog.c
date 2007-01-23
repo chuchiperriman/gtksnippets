@@ -45,7 +45,16 @@ struct _GtkSnippetsPopupDialogPrivate
 
 #define GTK_SNIPPETS_POPUP_DIALOG_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogPrivate))
 
+enum _GtkSnippetsPopupDialogSignalType {
+	//Enumerado de las señales que hay
+	SIGNAL_TYPE_SNIPPET_SELECTED,
+	LAST_SIGNAL
+};
+
 static GObjectClass* parent_class = NULL;
+static guint gtk_snippets_popup_dialog_signals[LAST_SIGNAL] = { 0 };
+
+
 
 static void
 gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
@@ -81,6 +90,22 @@ gtk_snippets_popup_dialog_class_init (GtkSnippetsPopupDialogClass *klass)
 	g_type_class_add_private (klass, sizeof (GtkSnippetsPopupDialogPrivate));
 
 	object_class->finalize = gtk_snippets_popup_dialog_finalize;
+	
+	//Señales
+	
+	//Se lanza cuando se selecciona un snippet. EL parámetro 1 es el snippet seleccionado
+	gtk_snippets_popup_dialog_signals[SIGNAL_TYPE_SNIPPET_SELECTED] = 
+			g_signal_new("snippet-selected",
+					G_TYPE_FROM_CLASS(klass),
+					G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+					0,
+					NULL,
+					NULL,
+					g_cclosure_marshal_VOID__VOID,
+					G_TYPE_NONE,
+					1,
+					G_TYPE_POINTER);
+	
 }
 
 GType
@@ -145,6 +170,14 @@ snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
 		snippet = GTK_SNIPPET(g_value_get_pointer(&value));
 		g_debug("Selected item: %s",gtk_snippet_get_tag(snippet));
 		g_debug("item text: %s",gtk_snippet_get_text(snippet));
+		
+		//Lanzamos una señal de que se ha seleccionado un snippet
+		g_signal_emit(
+				popup,
+				gtk_snippets_popup_dialog_signals[SIGNAL_TYPE_SNIPPET_SELECTED],
+				0,
+				snippet);
+		
 	}
 	
 	g_debug("Row selected");
