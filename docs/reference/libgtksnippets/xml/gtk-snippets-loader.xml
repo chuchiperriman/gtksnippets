@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="libgtksnippets-GtkSnippetsLoader">
+<refmeta>
+<refentrytitle role="top_of_page">GtkSnippetsLoader</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>LIBGTKSNIPPETS Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>GtkSnippetsLoader</refname>
+<refpurpose></refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+
+
+            <link linkend="GtkSnippetsLoaderPrivate">GtkSnippetsLoaderPrivate</link>;
+            <link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link>;
+<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link>* <link linkend="gtk-snippets-loader-new">gtk_snippets_loader_new</link>  ();
+<link linkend="void">void</link>        <link linkend="gtk-snippets-loader-load-default">gtk_snippets_loader_load_default</link>
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);
+<link linkend="GHashTable">GHashTable</link>* <link linkend="gtk-snippets-loader-get-snippets">gtk_snippets_loader_get_snippets</link>
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);
+<link linkend="GList">GList</link>*      <link linkend="gtk-snippets-loader-get-snippets-by-mime-type">gtk_snippets_loader_get_snippets_by_mime_type</link>
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             <link linkend="gchar">gchar</link> *mime_type);
+<link linkend="gboolean">gboolean</link>    <link linkend="gtk-snippets-loader-load-from-file">gtk_snippets_loader_load_from_file</link>
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             const <link linkend="gchar">gchar</link> *file);
+<link linkend="gboolean">gboolean</link>    <link linkend="gtk-snippets-loader-load-from-dir">gtk_snippets_loader_load_from_dir</link>
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             const <link linkend="gchar">gchar</link> *path);
+
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GtkSnippetsLoaderPrivate" role="struct"/>GtkSnippetsLoaderPrivate</title>
+<indexterm><primary>GtkSnippetsLoaderPrivate</primary></indexterm><programlisting>typedef struct _GtkSnippetsLoaderPrivate GtkSnippetsLoaderPrivate;</programlisting>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GtkSnippetsLoader" role="struct"/>GtkSnippetsLoader</title>
+<indexterm><primary>GtkSnippetsLoader</primary></indexterm><programlisting>typedef struct {
+	GObject parent;
+	GtkSnippetsLoaderPrivate *priv;
+} GtkSnippetsLoader;
+</programlisting>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-new" role="function"/>gtk_snippets_loader_new ()</title>
+<indexterm><primary>gtk_snippets_loader_new</primary></indexterm><programlisting><link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link>* gtk_snippets_loader_new  ();</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-load-default" role="function"/>gtk_snippets_loader_load_default ()</title>
+<indexterm><primary>gtk_snippets_loader_load_default</primary></indexterm><programlisting><link linkend="void">void</link>        gtk_snippets_loader_load_default
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
+<listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-get-snippets" role="function"/>gtk_snippets_loader_get_snippets ()</title>
+<indexterm><primary>gtk_snippets_loader_get_snippets</primary></indexterm><programlisting><link linkend="GHashTable">GHashTable</link>* gtk_snippets_loader_get_snippets
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-get-snippets-by-mime-type" role="function"/>gtk_snippets_loader_get_snippets_by_mime_type ()</title>
+<indexterm><primary>gtk_snippets_loader_get_snippets_by_mime_type</primary></indexterm><programlisting><link linkend="GList">GList</link>*      gtk_snippets_loader_get_snippets_by_mime_type
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             <link linkend="gchar">gchar</link> *mime_type);</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>mime_type</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-load-from-file" role="function"/>gtk_snippets_loader_load_from_file ()</title>
+<indexterm><primary>gtk_snippets_loader_load_from_file</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    gtk_snippets_loader_load_from_file
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             const <link linkend="gchar">gchar</link> *file);</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>file</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gtk-snippets-loader-load-from-dir" role="function"/>gtk_snippets_loader_load_from_dir ()</title>
+<indexterm><primary>gtk_snippets_loader_load_from_dir</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    gtk_snippets_loader_load_from_dir
+                                            (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader,
+                                             const <link linkend="gchar">gchar</link> *path);</programlisting>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>path</parameter>&nbsp;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
+
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

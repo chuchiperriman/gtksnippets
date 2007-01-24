@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 ## Created by Anjuta
 
+DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
+
 SUBDIRS = libgtksnippets src po 
 
 gtksnippetsdocdir = ${prefix}/doc/gtksnippets
@@ -21,4 +23,3 @@ dist-hook:
 			cp -p $$specfile $(distdir); \
 		fi \
 	done
-

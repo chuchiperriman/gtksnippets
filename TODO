@@ -5,11 +5,24 @@ GtkTextView:
 
 Popup List:
 
-	.- Study how response when select a snippet. How notify to add the snippet text to the editor
+	.- [OK] Study how response when select a snippet. How notify to add the snippet text to the editor
+		.- When select a snippet launch the "snippet-selected" signal
+		.- When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
+		
 
 Loader:
 
 	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
 	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the key but the id can be equal for various snippets
+	.- When load the snippet name, it deletes some characters. Example "bool-1", loader put bool1 or bool
 
+Manager:
 
+	.- When insert the snippet text in the gtktextview, we may remove the previous word. Whe write "if"
+		press control+space, we select the snippet then the "if" word that we wrote may be deleted.
+	.- Implement remove_support: When call remove support, we may disconnect any signal in this editor.
+	
+Other:
+
+	.- Generate gtk-doc
+	.- Put all asserts in the functions

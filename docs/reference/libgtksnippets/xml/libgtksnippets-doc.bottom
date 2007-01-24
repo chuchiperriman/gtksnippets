@@ -1,0 +1,5 @@
+    <xi:include href="xml/gtk-snippet.xml"/>
+    <xi:include href="xml/gtk-snippets-loader.xml"/>
+    <xi:include href="xml/gtk-snippets-manager.xml"/>
+    <xi:include href="xml/gtk-snippets-popup-dialog.xml"/>
+    <xi:include href="xml/gtk-snippets-gsv-utils.xml"/>

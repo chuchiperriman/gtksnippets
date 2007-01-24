@@ -1,0 +1,4 @@
+GtkSnippetClass
+GtkSnippetsLoaderClass
+GtkSnippetsManagerClass
+GtkSnippetsPopupDialogClass

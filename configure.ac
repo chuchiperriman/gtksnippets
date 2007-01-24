@@ -27,11 +27,9 @@ dnl Add the languages which your application supports here.
 ALL_LINGUAS=""
 AM_GLIB_GNU_GETTEXT
 
-
+GTK_DOC_CHECK(1.4)
 
 AM_PROG_LIBTOOL
-
-
 
 PKG_CHECK_MODULES(GTKSNIPPETS, [gtk+-2.0 libglade-2.0    ])
 AC_SUBST(GTKSNIPPETS_CFLAGS)
@@ -78,4 +76,5 @@ Makefile
 src/Makefile
 po/Makefile.in
 libgtksnippets/Makefile
+docs/reference/libgtksnippets/Makefile
 ])

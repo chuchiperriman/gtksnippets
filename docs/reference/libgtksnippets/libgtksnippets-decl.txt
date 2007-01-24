@@ -1,0 +1,330 @@
+<MACRO>
+<NAME>GTK_TYPE_SNIPPET</NAME>
+#define GTK_TYPE_SNIPPET         (gtk_snippet_get_type ())
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPET</NAME>
+#define GTK_SNIPPET(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_SNIPPET, GtkSnippet))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPET_CLASS</NAME>
+#define GTK_SNIPPET_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), GTK_TYPE_SNIPPET, GtkSnippetClass))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPET</NAME>
+#define GTK_IS_SNIPPET(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_SNIPPET))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPET_CLASS</NAME>
+#define GTK_IS_SNIPPET_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), GTK_TYPE_SNIPPET))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPET_GET_CLASS</NAME>
+#define GTK_SNIPPET_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GTK_TYPE_SNIPPET, GtkSnippetClass))
+</MACRO>
+<STRUCT>
+<NAME>GtkSnippet</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetPrivate</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippet</NAME>
+struct _GtkSnippet {
+	GObject parent;
+	GtkSnippetPrivate *priv;
+};
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetClass</NAME>
+struct _GtkSnippetClass {
+	GObjectClass parent_class;
+	/* Add Signal Functions Here */
+};
+</STRUCT>
+<FUNCTION>
+<NAME>gtk_snippet_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippet_new</NAME>
+<RETURNS>GtkSnippet *</RETURNS>
+gchar *name,gchar *language,gchar *tag,gchar *description,gchar *text
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippet_get_language</NAME>
+<RETURNS>gchar *</RETURNS>
+GtkSnippet *snippet
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippet_get_name</NAME>
+<RETURNS>gchar *</RETURNS>
+GtkSnippet *snippet
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippet_get_tag</NAME>
+<RETURNS>gchar *</RETURNS>
+GtkSnippet *snippet
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippet_get_text</NAME>
+<RETURNS>gchar *</RETURNS>
+GtkSnippet *snippet
+</FUNCTION>
+<MACRO>
+<NAME>GTK_TYPE_SNIPPETSLOADER</NAME>
+#define GTK_TYPE_SNIPPETSLOADER         (gtk_snippets_loader_get_type ())
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETSLOADER</NAME>
+#define GTK_SNIPPETSLOADER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_SNIPPETSLOADER, GtkSnippetsLoader))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETSLOADER_CLASS</NAME>
+#define GTK_SNIPPETSLOADER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), GTK_TYPE_SNIPPETSLOADER, GtkSnippetsLoaderClass))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETSLOADER</NAME>
+#define GTK_IS_SNIPPETSLOADER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_SNIPPETSLOADER))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETSLOADER_CLASS</NAME>
+#define GTK_IS_SNIPPETSLOADER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), GTK_TYPE_SNIPPETSLOADER))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETSLOADER_GET_CLASS</NAME>
+#define GTK_SNIPPETSLOADER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GTK_TYPE_SNIPPETSLOADER, GtkSnippetsLoaderClass))
+</MACRO>
+<STRUCT>
+<NAME>GtkSnippetsLoader</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsLoaderPrivate</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsLoaderClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsLoader</NAME>
+struct _GtkSnippetsLoader {
+	GObject parent;
+	GtkSnippetsLoaderPrivate *priv;
+};
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsLoaderClass</NAME>
+struct _GtkSnippetsLoaderClass {
+	GObjectClass parent_class;
+	/* Add Signal Functions Here */
+};
+</STRUCT>
+<FUNCTION>
+<NAME>gtk_snippets_loader_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_new</NAME>
+<RETURNS>GtkSnippetsLoader *</RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_load_default</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsLoader* loader
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_get_snippets</NAME>
+<RETURNS>GHashTable *</RETURNS>
+GtkSnippetsLoader* loader
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_get_snippets_by_mime_type</NAME>
+<RETURNS>GList *</RETURNS>
+GtkSnippetsLoader* loader, gchar *mime_type
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_load_from_file</NAME>
+<RETURNS>gboolean</RETURNS>
+GtkSnippetsLoader* loader, const gchar *file
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_loader_load_from_dir</NAME>
+<RETURNS>gboolean</RETURNS>
+GtkSnippetsLoader* loader, const gchar *path
+</FUNCTION>
+<MACRO>
+<NAME>GTK_TYPE_SNIPPETS_MANAGER</NAME>
+#define GTK_TYPE_SNIPPETS_MANAGER             (gtk_snippets_manager_get_type ())
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_MANAGER</NAME>
+#define GTK_SNIPPETS_MANAGER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManager))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_MANAGER_CLASS</NAME>
+#define GTK_SNIPPETS_MANAGER_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManagerClass))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETS_MANAGER</NAME>
+#define GTK_IS_SNIPPETS_MANAGER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SNIPPETS_MANAGER))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETS_MANAGER_CLASS</NAME>
+#define GTK_IS_SNIPPETS_MANAGER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SNIPPETS_MANAGER))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_MANAGER_GET_CLASS</NAME>
+#define GTK_SNIPPETS_MANAGER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManagerClass))
+</MACRO>
+<STRUCT>
+<NAME>GtkSnippetsManagerClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsManagerPrivate</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsManager</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsManagerClass</NAME>
+struct _GtkSnippetsManagerClass
+{
+	GObjectClass parent_class;
+};
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsManager</NAME>
+struct _GtkSnippetsManager
+{
+	GObject parent_instance;
+	GtkSnippetsManagerPrivate *priv;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>gtk_snippets_manager_get_type</NAME>
+<RETURNS>GType </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_manager_new</NAME>
+<RETURNS>GtkSnippetsManager*</RETURNS>
+GtkSnippetsLoader *loader
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_manager_add_support</NAME>
+<RETURNS>void </RETURNS>
+GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje
+</FUNCTION>
+<MACRO>
+<NAME>GTK_TYPE_SNIPPETS_POPUP_DIALOG</NAME>
+#define GTK_TYPE_SNIPPETS_POPUP_DIALOG             (gtk_snippets_popup_dialog_get_type ())
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_POPUP_DIALOG</NAME>
+#define GTK_SNIPPETS_POPUP_DIALOG(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialog))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_POPUP_DIALOG_CLASS</NAME>
+#define GTK_SNIPPETS_POPUP_DIALOG_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogClass))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETS_POPUP_DIALOG</NAME>
+#define GTK_IS_SNIPPETS_POPUP_DIALOG(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SNIPPETS_POPUP_DIALOG))
+</MACRO>
+<MACRO>
+<NAME>GTK_IS_SNIPPETS_POPUP_DIALOG_CLASS</NAME>
+#define GTK_IS_SNIPPETS_POPUP_DIALOG_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SNIPPETS_POPUP_DIALOG))
+</MACRO>
+<MACRO>
+<NAME>GTK_SNIPPETS_POPUP_DIALOG_GET_CLASS</NAME>
+#define GTK_SNIPPETS_POPUP_DIALOG_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SNIPPETS_POPUP_DIALOG, GtkSnippetsPopupDialogClass))
+</MACRO>
+<STRUCT>
+<NAME>GtkSnippetsPopupDialogClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsPopupDialog</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsPopupDialogPrivate</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>FilterData</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsPopupDialogClass</NAME>
+struct _GtkSnippetsPopupDialogClass
+{
+	GObjectClass parent_class;
+};
+</STRUCT>
+<STRUCT>
+<NAME>GtkSnippetsPopupDialog</NAME>
+struct _GtkSnippetsPopupDialog
+{
+	GObject parent_instance;
+	GtkSnippetsPopupDialogPrivate *priv;
+};
+</STRUCT>
+<STRUCT>
+<NAME>FilterData</NAME>
+struct _FilterData{
+	gchar* language;
+	gchar* tag;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_get_type</NAME>
+<RETURNS>GType </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_new</NAME>
+<RETURNS>GtkSnippetsPopupDialog*</RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_get_window</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_set_snippets</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog, GHashTable* snippets
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_set_pos</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog, gint x, gint y
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_show</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog, const gchar *word
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_filter</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog, const FilterData *filter_data
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_popup_dialog_filter_by_language</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsPopupDialog* popup_dialog,gchar* language
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_gsv_get_last_word</NAME>
+<RETURNS>gchar *</RETURNS>
+GtkTextView *text_view
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_gsv_get_screen_pos</NAME>
+<RETURNS>void</RETURNS>
+GtkTextView *text_view, gint *x, gint *y
+</FUNCTION>

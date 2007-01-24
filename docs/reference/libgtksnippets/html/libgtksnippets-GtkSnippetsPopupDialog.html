@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GtkSnippetsPopupDialog</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="[Insert name here] Reference Manual">
+<link rel="up" href="ch01.html" title="[Insert title here]">
+<link rel="prev" href="libgtksnippets-GtkSnippetsManager.html" title="GtkSnippetsManager">
+<link rel="next" href="libgtksnippets-gtk-snippets-gsv-utils.html" title="gtk-snippets-gsv-utils">
+<meta name="generator" content="GTK-Doc V1.7 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="[Insert title here]">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="libgtksnippets-GtkSnippetsManager.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">[Insert name here] Reference Manual</th>
+<td><a accesskey="n" href="libgtksnippets-gtk-snippets-gsv-utils.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2476794" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id2555074" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="libgtksnippets-GtkSnippetsPopupDialog"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id2476794"></a><span class="refentrytitle">GtkSnippetsPopupDialog</span>
+</h2>
+<p>GtkSnippetsPopupDialog &#8212; </p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+
+
+            <a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialogPrivate">GtkSnippetsPopupDialogPrivate</a>;
+            <a href="libgtksnippets-GtkSnippetsPopupDialog.html#FilterData">FilterData</a>;
+            <a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a>;
+<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a>* <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-new">gtk_snippets_popup_dialog_new</a>
+                                            (void);
+GtkWidget*  <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-get-window">gtk_snippets_popup_dialog_get_window</a>
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog);
+void        <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-set-snippets">gtk_snippets_popup_dialog_set_snippets</a>
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             GHashTable *snippets);
+void        <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-set-pos">gtk_snippets_popup_dialog_set_pos</a>
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             gint x,
+                                             gint y);
+void        <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-show">gtk_snippets_popup_dialog_show</a>  (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             const gchar *word);
+void        <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-filter">gtk_snippets_popup_dialog_filter</a>
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             const <a href="libgtksnippets-GtkSnippetsPopupDialog.html#FilterData">FilterData</a> *filter_data);
+void        <a href="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-filter-by-language">gtk_snippets_popup_dialog_filter_by_language</a>
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             gchar *language);
+
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2555074"></a><h2>Description</h2>
+<p>
+
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2555090"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id2555100"></a><h3>
+<a name="GtkSnippetsPopupDialogPrivate"></a>GtkSnippetsPopupDialogPrivate</h3>
+<a class="indexterm" name="id2555114"></a><pre class="programlisting">typedef struct _GtkSnippetsPopupDialogPrivate GtkSnippetsPopupDialogPrivate;</pre>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2555131"></a><h3>
+<a name="FilterData"></a>FilterData</h3>
+<a class="indexterm" name="id2555143"></a><pre class="programlisting">typedef struct {
+	gchar* language;
+	gchar* tag;
+} FilterData;
+</pre>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2555159"></a><h3>
+<a name="GtkSnippetsPopupDialog"></a>GtkSnippetsPopupDialog</h3>
+<a class="indexterm" name="id2555171"></a><pre class="programlisting">typedef struct {
+	GObject parent_instance;
+	GtkSnippetsPopupDialogPrivate *priv;
+} GtkSnippetsPopupDialog;
+</pre>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2555188"></a><h3>
+<a name="gtk-snippets-popup-dialog-new"></a>gtk_snippets_popup_dialog_new ()</h3>
+<a class="indexterm" name="id2555201"></a><pre class="programlisting"><a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a>* gtk_snippets_popup_dialog_new
+                                            (void);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2543509"></a><h3>
+<a name="gtk-snippets-popup-dialog-get-window"></a>gtk_snippets_popup_dialog_get_window ()</h3>
+<a class="indexterm" name="id2543520"></a><pre class="programlisting">GtkWidget*  gtk_snippets_popup_dialog_get_window
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2543578"></a><h3>
+<a name="gtk-snippets-popup-dialog-set-snippets"></a>gtk_snippets_popup_dialog_set_snippets ()</h3>
+<a class="indexterm" name="id2543591"></a><pre class="programlisting">void        gtk_snippets_popup_dialog_set_snippets
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             GHashTable *snippets);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>snippets</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2543660"></a><h3>
+<a name="gtk-snippets-popup-dialog-set-pos"></a>gtk_snippets_popup_dialog_set_pos ()</h3>
+<a class="indexterm" name="id2543674"></a><pre class="programlisting">void        gtk_snippets_popup_dialog_set_pos
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             gint x,
+                                             gint y);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>x</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>y</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2557009"></a><h3>
+<a name="gtk-snippets-popup-dialog-show"></a>gtk_snippets_popup_dialog_show ()</h3>
+<a class="indexterm" name="id2557023"></a><pre class="programlisting">void        gtk_snippets_popup_dialog_show  (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             const gchar *word);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>word</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2557089"></a><h3>
+<a name="gtk-snippets-popup-dialog-filter"></a>gtk_snippets_popup_dialog_filter ()</h3>
+<a class="indexterm" name="id2557102"></a><pre class="programlisting">void        gtk_snippets_popup_dialog_filter
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             const <a href="libgtksnippets-GtkSnippetsPopupDialog.html#FilterData">FilterData</a> *filter_data);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>filter_data</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2557170"></a><h3>
+<a name="gtk-snippets-popup-dialog-filter-by-language"></a>gtk_snippets_popup_dialog_filter_by_language ()</h3>
+<a class="indexterm" name="id2557184"></a><pre class="programlisting">void        gtk_snippets_popup_dialog_filter_by_language
+                                            (<a href="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog">GtkSnippetsPopupDialog</a> *popup_dialog,
+                                             gchar *language);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>popup_dialog</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>language</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

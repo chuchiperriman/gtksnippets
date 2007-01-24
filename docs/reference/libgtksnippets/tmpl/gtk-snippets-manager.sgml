@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+GtkSnippetsManager
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GtkSnippetsManagerPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT GtkSnippetsManager ##### -->
+<para>
+
+</para>
+
+@parent_instance: 
+@priv: 
+
+<!-- ##### FUNCTION gtk_snippets_manager_new ##### -->
+<para>
+
+</para>
+
+@loader: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippets_manager_add_support ##### -->
+<para>
+
+</para>
+
+@manager: 
+@editor: 
+@lenguaje: 
+
+

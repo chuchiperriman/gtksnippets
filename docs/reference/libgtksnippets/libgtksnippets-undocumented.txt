@@ -1,0 +1,48 @@
+2% symbol docs coverage.
+1 symbols documented.
+0 symbols incomplete.
+40 not documented.
+
+
+FilterData
+GtkSnippet
+GtkSnippetPrivate
+GtkSnippetsLoader
+GtkSnippetsLoaderPrivate
+GtkSnippetsManager
+GtkSnippetsManagerPrivate
+GtkSnippetsPopupDialog
+GtkSnippetsPopupDialogPrivate
+gtk_snippet_get_language
+gtk_snippet_get_name
+gtk_snippet_get_tag
+gtk_snippet_get_text
+gtk_snippet_new
+gtk_snippets_gsv_get_last_word
+gtk_snippets_gsv_get_screen_pos
+gtk_snippets_loader_get_snippets
+gtk_snippets_loader_get_snippets_by_mime_type
+gtk_snippets_loader_load_default
+gtk_snippets_loader_load_from_dir
+gtk_snippets_loader_load_from_file
+gtk_snippets_loader_new
+gtk_snippets_manager_add_support
+gtk_snippets_manager_new
+gtk_snippets_popup_dialog_filter
+gtk_snippets_popup_dialog_filter_by_language
+gtk_snippets_popup_dialog_get_window
+gtk_snippets_popup_dialog_new
+gtk_snippets_popup_dialog_set_pos
+gtk_snippets_popup_dialog_set_snippets
+gtk_snippets_popup_dialog_show
+
+
+gtk-snippet:Long_Description
+gtk-snippet:Short_Description
+gtk-snippets-gsv-utils:Short_Description
+gtk-snippets-loader:Long_Description
+gtk-snippets-loader:Short_Description
+gtk-snippets-manager:Long_Description
+gtk-snippets-manager:Short_Description
+gtk-snippets-popup-dialog:Long_Description
+gtk-snippets-popup-dialog:Short_Description

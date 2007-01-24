@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="[Insert name here] Reference Manual" link="index.html" author="" name="libgtksnippets">
+  <chapters>
+    <sub name="[Insert title here]" link="ch01.html">
+      <sub name="GtkSnippet" link="libgtksnippets-GtkSnippet.html"/>
+      <sub name="GtkSnippetsLoader" link="libgtksnippets-GtkSnippetsLoader.html"/>
+      <sub name="GtkSnippetsManager" link="libgtksnippets-GtkSnippetsManager.html"/>
+      <sub name="GtkSnippetsPopupDialog" link="libgtksnippets-GtkSnippetsPopupDialog.html"/>
+      <sub name="gtk-snippets-gsv-utils" link="libgtksnippets-gtk-snippets-gsv-utils.html"/>
+    </sub>
+  </chapters>
+  <functions>
+    <function name="GtkSnippetPrivate" link="libgtksnippets-GtkSnippet.html#GtkSnippetPrivate"/>
+    <function name="GtkSnippet" link="libgtksnippets-GtkSnippet.html#GtkSnippet"/>
+    <function name="gtk_snippet_new ()" link="libgtksnippets-GtkSnippet.html#gtk-snippet-new"/>
+    <function name="gtk_snippet_get_language ()" link="libgtksnippets-GtkSnippet.html#gtk-snippet-get-language"/>
+    <function name="gtk_snippet_get_name ()" link="libgtksnippets-GtkSnippet.html#gtk-snippet-get-name"/>
+    <function name="gtk_snippet_get_tag ()" link="libgtksnippets-GtkSnippet.html#gtk-snippet-get-tag"/>
+    <function name="gtk_snippet_get_text ()" link="libgtksnippets-GtkSnippet.html#gtk-snippet-get-text"/>
+    <function name="GtkSnippetsLoaderPrivate" link="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoaderPrivate"/>
+    <function name="GtkSnippetsLoader" link="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader"/>
+    <function name="gtk_snippets_loader_new ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-new"/>
+    <function name="gtk_snippets_loader_load_default ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-default"/>
+    <function name="gtk_snippets_loader_get_snippets ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-get-snippets"/>
+    <function name="gtk_snippets_loader_get_snippets_by_mime_type ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-get-snippets-by-mime-type"/>
+    <function name="gtk_snippets_loader_load_from_file ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-from-file"/>
+    <function name="gtk_snippets_loader_load_from_dir ()" link="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-from-dir"/>
+    <function name="GtkSnippetsManagerPrivate" link="libgtksnippets-GtkSnippetsManager.html#GtkSnippetsManagerPrivate"/>
+    <function name="GtkSnippetsManager" link="libgtksnippets-GtkSnippetsManager.html#GtkSnippetsManager"/>
+    <function name="gtk_snippets_manager_new ()" link="libgtksnippets-GtkSnippetsManager.html#gtk-snippets-manager-new"/>
+    <function name="gtk_snippets_manager_add_support ()" link="libgtksnippets-GtkSnippetsManager.html#gtk-snippets-manager-add-support"/>
+    <function name="GtkSnippetsPopupDialogPrivate" link="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialogPrivate"/>
+    <function name="FilterData" link="libgtksnippets-GtkSnippetsPopupDialog.html#FilterData"/>
+    <function name="GtkSnippetsPopupDialog" link="libgtksnippets-GtkSnippetsPopupDialog.html#GtkSnippetsPopupDialog"/>
+    <function name="gtk_snippets_popup_dialog_new ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-new"/>
+    <function name="gtk_snippets_popup_dialog_get_window ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-get-window"/>
+    <function name="gtk_snippets_popup_dialog_set_snippets ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-set-snippets"/>
+    <function name="gtk_snippets_popup_dialog_set_pos ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-set-pos"/>
+    <function name="gtk_snippets_popup_dialog_show ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-show"/>
+    <function name="gtk_snippets_popup_dialog_filter ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-filter"/>
+    <function name="gtk_snippets_popup_dialog_filter_by_language ()" link="libgtksnippets-GtkSnippetsPopupDialog.html#gtk-snippets-popup-dialog-filter-by-language"/>
+    <function name="gtk_snippets_gsv_get_last_word ()" link="libgtksnippets-gtk-snippets-gsv-utils.html#gtk-snippets-gsv-get-last-word"/>
+    <function name="gtk_snippets_gsv_get_screen_pos ()" link="libgtksnippets-gtk-snippets-gsv-utils.html#gtk-snippets-gsv-get-screen-pos"/>
+  </functions>
+</book>

@@ -1,0 +1,40 @@
+<!-- ##### SECTION Title ##### -->
+gtk-snippets-gsv-utils
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gtk_snippets_gsv_get_last_word ##### -->
+<para>
+
+</para>
+
+@text_view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippets_gsv_get_screen_pos ##### -->
+<para>
+
+</para>
+
+@text_view: 
+@x: 
+@y: 
+
+

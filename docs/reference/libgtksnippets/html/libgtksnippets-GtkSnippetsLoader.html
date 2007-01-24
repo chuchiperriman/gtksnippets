@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GtkSnippetsLoader</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="[Insert name here] Reference Manual">
+<link rel="up" href="ch01.html" title="[Insert title here]">
+<link rel="prev" href="libgtksnippets-GtkSnippet.html" title="GtkSnippet">
+<link rel="next" href="libgtksnippets-GtkSnippetsManager.html" title="GtkSnippetsManager">
+<meta name="generator" content="GTK-Doc V1.7 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="[Insert title here]">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="libgtksnippets-GtkSnippet.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">[Insert name here] Reference Manual</th>
+<td><a accesskey="n" href="libgtksnippets-GtkSnippetsManager.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2561920" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id2538700" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="libgtksnippets-GtkSnippetsLoader"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id2561920"></a><span class="refentrytitle">GtkSnippetsLoader</span>
+</h2>
+<p>GtkSnippetsLoader &#8212; </p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+
+
+            <a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoaderPrivate">GtkSnippetsLoaderPrivate</a>;
+            <a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a>;
+<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a>* <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-new">gtk_snippets_loader_new</a>  ();
+void        <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-default">gtk_snippets_loader_load_default</a>
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader);
+GHashTable* <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-get-snippets">gtk_snippets_loader_get_snippets</a>
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader);
+GList*      <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-get-snippets-by-mime-type">gtk_snippets_loader_get_snippets_by_mime_type</a>
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             gchar *mime_type);
+gboolean    <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-from-file">gtk_snippets_loader_load_from_file</a>
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             const gchar *file);
+gboolean    <a href="libgtksnippets-GtkSnippetsLoader.html#gtk-snippets-loader-load-from-dir">gtk_snippets_loader_load_from_dir</a>
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             const gchar *path);
+
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2538700"></a><h2>Description</h2>
+<p>
+
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2538715"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id2553327"></a><h3>
+<a name="GtkSnippetsLoaderPrivate"></a>GtkSnippetsLoaderPrivate</h3>
+<a class="indexterm" name="id2553338"></a><pre class="programlisting">typedef struct _GtkSnippetsLoaderPrivate GtkSnippetsLoaderPrivate;</pre>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2553355"></a><h3>
+<a name="GtkSnippetsLoader"></a>GtkSnippetsLoader</h3>
+<a class="indexterm" name="id2553367"></a><pre class="programlisting">typedef struct {
+	GObject parent;
+	GtkSnippetsLoaderPrivate *priv;
+} GtkSnippetsLoader;
+</pre>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2553384"></a><h3>
+<a name="gtk-snippets-loader-new"></a>gtk_snippets_loader_new ()</h3>
+<a class="indexterm" name="id2553395"></a><pre class="programlisting"><a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a>* gtk_snippets_loader_new  ();</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2553431"></a><h3>
+<a name="gtk-snippets-loader-load-default"></a>gtk_snippets_loader_load_default ()</h3>
+<a class="indexterm" name="id2553442"></a><pre class="programlisting">void        gtk_snippets_loader_load_default
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td>
+<span class="term"><em class="parameter"><code>loader</code></em>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2548198"></a><h3>
+<a name="gtk-snippets-loader-get-snippets"></a>gtk_snippets_loader_get_snippets ()</h3>
+<a class="indexterm" name="id2548210"></a><pre class="programlisting">GHashTable* gtk_snippets_loader_get_snippets
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>loader</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2548268"></a><h3>
+<a name="gtk-snippets-loader-get-snippets-by-mime-type"></a>gtk_snippets_loader_get_snippets_by_mime_type ()</h3>
+<a class="indexterm" name="id2548282"></a><pre class="programlisting">GList*      gtk_snippets_loader_get_snippets_by_mime_type
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             gchar *mime_type);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>loader</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>mime_type</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2537104"></a><h3>
+<a name="gtk-snippets-loader-load-from-file"></a>gtk_snippets_loader_load_from_file ()</h3>
+<a class="indexterm" name="id2537117"></a><pre class="programlisting">gboolean    gtk_snippets_loader_load_from_file
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             const gchar *file);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>loader</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>file</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2537195"></a><h3>
+<a name="gtk-snippets-loader-load-from-dir"></a>gtk_snippets_loader_load_from_dir ()</h3>
+<a class="indexterm" name="id2537208"></a><pre class="programlisting">gboolean    gtk_snippets_loader_load_from_dir
+                                            (<a href="libgtksnippets-GtkSnippetsLoader.html#GtkSnippetsLoader">GtkSnippetsLoader</a> *loader,
+                                             const gchar *path);</pre>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>loader</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>path</code></em>&#160;:</span></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>
+
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

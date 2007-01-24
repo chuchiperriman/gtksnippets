@@ -1,0 +1,84 @@
+<!-- ##### SECTION Title ##### -->
+GtkSnippet
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GtkSnippetPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT GtkSnippet ##### -->
+<para>
+
+</para>
+
+@parent: 
+@priv: 
+
+<!-- ##### FUNCTION gtk_snippet_new ##### -->
+<para>
+
+</para>
+
+@name: 
+@language: 
+@tag: 
+@description: 
+@text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippet_get_language ##### -->
+<para>
+
+</para>
+
+@snippet: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippet_get_name ##### -->
+<para>
+
+</para>
+
+@snippet: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippet_get_tag ##### -->
+<para>
+
+</para>
+
+@snippet: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_snippet_get_text ##### -->
+<para>
+
+</para>
+
+@snippet: 
+@Returns: 
+
+
