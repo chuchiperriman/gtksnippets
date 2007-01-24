@@ -39,6 +39,7 @@ struct _GtkSnippetsPopupDialogPrivate
 	GtkWidget* window;
 	GtkWidget* entry;
 	GtkWidget* tree_view;
+	GtkSnippet *selected_snippet;
 	gint x;
 	gint y;
 };
@@ -48,6 +49,7 @@ struct _GtkSnippetsPopupDialogPrivate
 enum _GtkSnippetsPopupDialogSignalType {
 	//Enumerado de las señales que hay
 	SIGNAL_TYPE_SNIPPET_SELECTED,
+	SIGNAL_TYPE_SNIPPET_IGNORED,
 	LAST_SIGNAL
 };
 
@@ -63,6 +65,7 @@ gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 	popup_dialog->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
 	popup_dialog->priv->x = 0;
 	popup_dialog->priv->y = 0;
+	popup_dialog->priv->selected_snippet = NULL;
 }
 
 static void
@@ -104,7 +107,19 @@ gtk_snippets_popup_dialog_class_init (GtkSnippetsPopupDialogClass *klass)
 					g_cclosure_marshal_VOID__POINTER,
 					G_TYPE_NONE,
 					1,
-					G_TYPE_POINTER);	
+					G_TYPE_POINTER);
+	
+	//Se lanza cuando se cierra el diálogo de snippets sin seleccionar nada				
+	gtk_snippets_popup_dialog_signals[SIGNAL_TYPE_SNIPPET_IGNORED] = 
+			g_signal_new("snippet-ignored",
+					G_TYPE_FROM_CLASS(klass),
+					G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+					0,
+					NULL,
+					NULL,
+					g_cclosure_marshal_VOID__VOID,
+					G_TYPE_NONE,
+					0);
 }
 
 GType
@@ -136,11 +151,23 @@ gtk_snippets_popup_dialog_get_type (void)
 }
 
 
-gboolean
-on_snippets_popup_dialog_focus_out_event(GtkWidget *widget,
+static gboolean
+snippets_popup_dialog_focus_out_event_cb(GtkWidget *widget,
 	GdkEventFocus *event,
 	gpointer user_data)
 {
+
+	g_debug("focus out");
+
+	GtkSnippetsPopupDialog *popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+	if (popup->priv->selected_snippet == NULL)
+	{
+		g_signal_emit(
+				popup,
+				gtk_snippets_popup_dialog_signals[SIGNAL_TYPE_SNIPPET_IGNORED],
+				0);
+	}
+	
 	gtk_widget_hide(widget);
 	return FALSE;
 }
@@ -167,6 +194,9 @@ snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
 	{
 		gtk_tree_model_get_value(tree_model, &iter, COL_SNIPPET, &value);
 		snippet = GTK_SNIPPET(g_value_get_pointer(&value));
+
+		popup->priv->selected_snippet = snippet;
+		
 		g_debug("Selected item: %s",gtk_snippet_get_tag(snippet));
 		g_debug("item text: %s",gtk_snippet_get_text(snippet));
 		
@@ -195,6 +225,9 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	
 	g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "row-activated",
 		G_CALLBACK(snippets_tree_view_row_activated_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->window), "focus-out-event",
+		G_CALLBACK(snippets_popup_dialog_focus_out_event_cb),(gpointer) obj);
 	
 	g_object_unref(gxml);
 }
@@ -230,6 +263,8 @@ gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog,
 								const gchar *word)
 {
 
+	popup_dialog->priv->selected_snippet = NULL;
+	
 	gtk_window_move (GTK_WINDOW (popup_dialog->priv->window),popup_dialog->priv->x,popup_dialog->priv->y);
 	gtk_entry_set_text (GTK_ENTRY(popup_dialog->priv->entry),word);
 	gtk_widget_show (popup_dialog->priv->window);

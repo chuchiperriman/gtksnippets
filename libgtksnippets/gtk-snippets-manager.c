@@ -40,6 +40,8 @@ typedef struct{
 	GtkSnippetsManager *manager;
 	GtkWidget *editor;
 	gchar* language;
+	gulong snippet_selected_handler_id;
+	gulong snippet_ignored_handler_id;
 } EditorData ;
 
 static void
@@ -132,14 +134,27 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 	return obj;	
 }
 
+static void
+gtk_snippet_manager_disconnect_popup_signals(
+		GtkSnippetsPopupDialog *popup, 
+		EditorData *data)
+{
+	g_debug("Disconnecting popup signals");
+	if (g_signal_handler_is_connected (popup, data->snippet_selected_handler_id))
+		g_signal_handler_disconnect (popup, data->snippet_selected_handler_id);
+		
+	if (g_signal_handler_is_connected (popup, data->snippet_ignored_handler_id))
+		g_signal_handler_disconnect (popup, data->snippet_ignored_handler_id);
+}
 
 static void
-prueba_snippet_selected (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpointer user_data)
+gtk_snippet_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpointer user_data)
 {
 	gchar *text;
-	GtkTextIter *iter;
 	GtkTextBuffer *buffer;
 	EditorData *data =(EditorData*)user_data;
+	
+	gtk_snippet_manager_disconnect_popup_signals(popup,data);
 	
 	text = gtk_snippet_get_text(snippet);
 	
@@ -149,6 +164,12 @@ prueba_snippet_selected (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpo
 	gtk_text_buffer_insert_at_cursor(buffer,text,-1);
 
 	g_debug("Snippet selected");
+}
+
+static void
+gtk_snippet_manager_snippet_ignored_cb (GtkSnippetsPopupDialog *popup, gpointer user_data)
+{
+	gtk_snippet_manager_disconnect_popup_signals(popup, (EditorData*)user_data);	
 }
 
 static gboolean
@@ -187,8 +208,13 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 		gtk_snippets_popup_dialog_show(data->manager->priv->popup,word);
 		
 		//TODO Conectamos pero hay que desconectar. Esto está para pruebas
-		g_signal_connect(data->manager->priv->popup, "snippet-selected",
-			G_CALLBACK(prueba_snippet_selected),(gpointer) data);
+		data->snippet_selected_handler_id = 
+			g_signal_connect(data->manager->priv->popup, "snippet-selected",
+				G_CALLBACK(gtk_snippet_manager_snippet_selected_cb),(gpointer) data);
+			
+		data->snippet_ignored_handler_id =
+			g_signal_connect(data->manager->priv->popup, "snippet-ignored",
+				G_CALLBACK(gtk_snippet_manager_snippet_ignored_cb),(gpointer) data);
 		
 	}
 	
@@ -219,7 +245,7 @@ gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, 
 	data->manager = manager;
 	
 	g_signal_connect(GTK_WIDGET(source_view), "key-press-event",
-		G_CALLBACK(gtk_snippet_manager_sw_key_press_event),(gpointer) data);
+			G_CALLBACK(gtk_snippet_manager_sw_key_press_event),(gpointer) data);
 	
 	g_signal_connect(GTK_WIDGET(source_view), "destroy",
 		G_CALLBACK(gtk_snippet_manager_sw_destroy_event),(gpointer) data);
