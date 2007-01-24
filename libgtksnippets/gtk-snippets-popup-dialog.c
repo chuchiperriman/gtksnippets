@@ -101,11 +101,10 @@ gtk_snippets_popup_dialog_class_init (GtkSnippetsPopupDialogClass *klass)
 					0,
 					NULL,
 					NULL,
-					g_cclosure_marshal_VOID__VOID,
+					g_cclosure_marshal_VOID__POINTER,
 					G_TYPE_NONE,
 					1,
-					G_TYPE_POINTER);
-	
+					G_TYPE_POINTER);	
 }
 
 GType

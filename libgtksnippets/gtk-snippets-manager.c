@@ -23,10 +23,10 @@
  */
 
 #include <gdk/gdkkeysyms.h>
+#include "gtk-snippet.h"
 #include "gtk-snippets-gsv-utils.h"
 #include "gtk-snippets-manager.h"
 #include "gtk-snippets-popup-dialog.h"
-
 
 static GObjectClass* parent_class = NULL;
 
@@ -132,6 +132,25 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 	return obj;	
 }
 
+
+static void
+prueba_snippet_selected (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpointer user_data)
+{
+	gchar *text;
+	GtkTextIter *iter;
+	GtkTextBuffer *buffer;
+	EditorData *data =(EditorData*)user_data;
+	
+	text = gtk_snippet_get_text(snippet);
+	
+	//Hay que borrar la palabra escrita para el snippet
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->editor));
+	
+	gtk_text_buffer_insert_at_cursor(buffer,text,-1);
+
+	g_debug("Snippet selected");
+}
+
 static gboolean
 gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 										GdkEventKey *event,
@@ -166,6 +185,10 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 		gtk_snippets_popup_dialog_set_pos(data->manager->priv->popup, x, y);
 		
 		gtk_snippets_popup_dialog_show(data->manager->priv->popup,word);
+		
+		//TODO Conectamos pero hay que desconectar. Esto está para pruebas
+		g_signal_connect(data->manager->priv->popup, "snippet-selected",
+			G_CALLBACK(prueba_snippet_selected),(gpointer) data);
 		
 	}
 	

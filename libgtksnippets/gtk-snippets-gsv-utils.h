@@ -1,5 +1,5 @@
 /***************************************************************************
- *            gtk-snippet.h
+ *            gtk-snippets-gsv-utils.h
  *
  *  mié ene 10 10:15:00 2007
  *  Copyright  2007  chuchiperriman
@@ -22,8 +22,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef GTK_SNIPPET_H
-#define GTK_SNIPPET_H
+#ifndef GTK_SNIPPETS_GSV_UTILS_H
+#define GTK_SNIPPETS_GSV_UTILS_H
 
 #include <gtk/gtk.h>
 
@@ -33,4 +33,4 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view);
 void
 gtk_snippets_gsv_get_screen_pos(GtkTextView *text_view, gint *x, gint *y);
 
-#endif /* GTK_SNIPPET_H */
+#endif /* GTK_SNIPPETS_GSV_UTILS_H */
