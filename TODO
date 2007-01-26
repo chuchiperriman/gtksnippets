@@ -6,8 +6,8 @@ GtkTextView:
 Popup List:
 
 	.- [OK] Study how response when select a snippet. How notify to add the snippet text to the editor
-		.- When select a snippet launch the "snippet-selected" signal
-		.- When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
+		.- [OK] When select a snippet launch the "snippet-selected" signal
+		.- [OK] When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
 		
 
 Loader:
@@ -18,9 +18,9 @@ Loader:
 
 Manager:
 
-	.- When insert the snippet text in the gtktextview, we may remove the previous word. Whe write "if"
+	.- When insert the snippet text in the gtktextview, we may remove the previous word. We write "if"
 		press control+space, we select the snippet then the "if" word that we wrote may be deleted.
-	.- Implement remove_support: When call remove support, we may disconnect any signal in this editor.
+	.- [OK] Implement remove_support: When call remove support, we may disconnect any signal in this editor.
 	
 Other:
 

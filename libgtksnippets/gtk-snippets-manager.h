@@ -57,7 +57,11 @@ GType gtk_snippets_manager_get_type (void) G_GNUC_CONST;
 
 GtkSnippetsManager* gtk_snippets_manager_new (GtkSnippetsLoader *loader);
 
-void gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje);
+void 
+gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje);
+
+void
+gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor);
 
 G_END_DECLS
 

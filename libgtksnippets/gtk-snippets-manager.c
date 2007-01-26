@@ -30,19 +30,69 @@
 
 static GObjectClass* parent_class = NULL;
 
+enum _EditorDataHandlers {
+	//Enumerado de las señales que hay
+	HANDLER_ID_EDITOR_KEY_PRESSED,
+	HANDLER_ID_EDITOR_DESTROY,
+	HANDLER_ID_SNIPPET_SELECTED,
+	HANDLER_ID_SNIPPET_IGNORED,
+	LAST_HANDLER
+};
+
 struct _GtkSnippetsManagerPrivate {
 	/* Place Private Members Here */
 	GtkSnippetsLoader *loader;
 	GtkSnippetsPopupDialog *popup;
+	GHashTable *editors_hash;
 };
 
 typedef struct{
 	GtkSnippetsManager *manager;
 	GtkWidget *editor;
 	gchar* language;
-	gulong snippet_selected_handler_id;
-	gulong snippet_ignored_handler_id;
+	gulong signal_handles[LAST_HANDLER];
 } EditorData ;
+
+static void
+gtk_snippet_manager_disconnect_editor_signals(
+		EditorData *data)
+{
+	g_debug("Disconnecting editor signals");
+	if (g_signal_handler_is_connected (data->editor, data->signal_handles[HANDLER_ID_EDITOR_KEY_PRESSED]))
+		g_signal_handler_disconnect (data->editor, data->signal_handles[HANDLER_ID_EDITOR_KEY_PRESSED]);
+		
+	if (g_signal_handler_is_connected (data->editor, data->signal_handles[HANDLER_ID_EDITOR_DESTROY]))
+		g_signal_handler_disconnect (data->editor, data->signal_handles[HANDLER_ID_EDITOR_DESTROY]);
+}
+
+
+static void
+gtk_snippet_manager_disconnect_popup_signals(
+		GtkSnippetsPopupDialog *popup, 
+		EditorData *data)
+{
+	g_debug("Disconnecting popup signals");
+	if (g_signal_handler_is_connected (popup, data->signal_handles[HANDLER_ID_SNIPPET_SELECTED]))
+		g_signal_handler_disconnect (popup, data->signal_handles[HANDLER_ID_SNIPPET_SELECTED]);
+		
+	if (g_signal_handler_is_connected (popup, data->signal_handles[HANDLER_ID_SNIPPET_IGNORED]))
+		g_signal_handler_disconnect (popup, data->signal_handles[HANDLER_ID_SNIPPET_IGNORED]);
+}
+
+static void
+gtk_snippets_manager_destroy_editor_data(gpointer data)
+{
+	if (data!=NULL)
+	{
+		EditorData *ed = (EditorData*)data;
+		
+		gtk_snippet_manager_disconnect_editor_signals(ed);
+		
+		g_free(ed->language);
+		g_free(ed);
+		g_debug("EditorData Destroyed");
+	}
+}
 
 static void
 gtk_snippets_manager_init (GtkSnippetsManager *object)
@@ -53,6 +103,12 @@ gtk_snippets_manager_init (GtkSnippetsManager *object)
 	object->priv->loader = NULL;
 	// TODO: Esto habrá que ponerlo la primera vez que lo usen
 	object->priv->popup = gtk_snippets_popup_dialog_new();
+	//Null para que coga como clave un puntero
+	object->priv->editors_hash = g_hash_table_new_full(
+		NULL,
+		NULL,
+		NULL,
+		gtk_snippets_manager_destroy_editor_data);
 }
 
 static void
@@ -65,6 +121,8 @@ gtk_snippets_manager_finalize (GObject *object)
 	g_object_unref(cobj->priv->loader);
 	
 	g_object_unref(cobj->priv->popup);
+	
+	g_hash_table_destroy(cobj->priv->editors_hash);
 	
 	g_free(cobj->priv);
 	
@@ -135,19 +193,6 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 }
 
 static void
-gtk_snippet_manager_disconnect_popup_signals(
-		GtkSnippetsPopupDialog *popup, 
-		EditorData *data)
-{
-	g_debug("Disconnecting popup signals");
-	if (g_signal_handler_is_connected (popup, data->snippet_selected_handler_id))
-		g_signal_handler_disconnect (popup, data->snippet_selected_handler_id);
-		
-	if (g_signal_handler_is_connected (popup, data->snippet_ignored_handler_id))
-		g_signal_handler_disconnect (popup, data->snippet_ignored_handler_id);
-}
-
-static void
 gtk_snippet_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpointer user_data)
 {
 	gchar *text;
@@ -208,11 +253,11 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 		gtk_snippets_popup_dialog_show(data->manager->priv->popup,word);
 		
 		//TODO Conectamos pero hay que desconectar. Esto está para pruebas
-		data->snippet_selected_handler_id = 
+		data->signal_handles[HANDLER_ID_SNIPPET_SELECTED] =
 			g_signal_connect(data->manager->priv->popup, "snippet-selected",
 				G_CALLBACK(gtk_snippet_manager_snippet_selected_cb),(gpointer) data);
 			
-		data->snippet_ignored_handler_id =
+		data->signal_handles[HANDLER_ID_SNIPPET_IGNORED] =
 			g_signal_connect(data->manager->priv->popup, "snippet-ignored",
 				G_CALLBACK(gtk_snippet_manager_snippet_ignored_cb),(gpointer) data);
 		
@@ -222,11 +267,14 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 }
 
 static void
-gtk_snippet_manager_sw_destroy_event (GtkObject *object, 
-										gpointer   user_data)
+gtk_snippet_manager_sw_destroy_event (GtkObject *editor, 
+										gpointer   data)
 {
-	g_free(user_data);
 	g_debug("Han destruido un editor");
+	GtkSnippetsManager *manager = GTK_SNIPPETS_MANAGER(data);
+	//Se encarga de llamar a la función que destruye los datos
+	g_hash_table_remove(manager->priv->editors_hash,editor);
+	
 }
 
 void
@@ -236,18 +284,30 @@ gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, 
 	EditorData *data;
 	
 	data = g_new0(EditorData,1);
+	g_debug("EditorData created");
 	
 	/* TODO: Poner esto genérico, no solo para el gtksourceview */
 	GtkSourceView *source_view = GTK_SOURCE_VIEW(editor);
 	
-	data->language = language;
+	data->language = g_strdup(language);
 	data->editor = editor;
 	data->manager = manager;
 	
-	g_signal_connect(GTK_WIDGET(source_view), "key-press-event",
+	g_hash_table_insert(manager->priv->editors_hash, editor, data);
+	
+	data->signal_handles[HANDLER_ID_EDITOR_KEY_PRESSED] =
+		g_signal_connect(GTK_WIDGET(source_view), "key-press-event",
 			G_CALLBACK(gtk_snippet_manager_sw_key_press_event),(gpointer) data);
 	
-	g_signal_connect(GTK_WIDGET(source_view), "destroy",
-		G_CALLBACK(gtk_snippet_manager_sw_destroy_event),(gpointer) data);
+	data->signal_handles[HANDLER_ID_EDITOR_DESTROY] =
+		g_signal_connect(GTK_WIDGET(source_view), "destroy",
+			G_CALLBACK(gtk_snippet_manager_sw_destroy_event),(gpointer) manager);
 	
+}
+
+void
+gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor)
+{
+	//Al quitar del hash llama a destruir el EditorData (y desconecta todo lo que tiene que desconectar)
+	g_hash_table_remove(manager->priv->editors_hash, editor);
 }
