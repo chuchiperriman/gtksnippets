@@ -59,7 +59,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager.lo gtk-snippets-popup-dialog.lo \
-	gtk-snippets-gsv-utils.lo
+	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -209,7 +209,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 gladedir = $(datadir)/libgtksnippets/glade
-glade_DATA = libgtksnippets.glade
+glade_DATA = *.glade
 snippetsdir = $(datadir)/libgtksnippets/snippets
 snippets_DATA = snippets/*.xml
 INCLUDES = \
@@ -239,7 +239,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-popup-dialog.h      \
 	gtk-snippets-popup-dialog.c	\
 	gtk-snippets-gsv-utils.h	\
-	gtk-snippets-gsv-utils.c
+	gtk-snippets-gsv-utils.c	\
+	gtk-snippets-management-ui.h	\
+	gtk-snippets-management-ui.c
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -321,6 +323,7 @@ distclean-compile:
 include ./$(DEPDIR)/gtk-snippet.Plo
 include ./$(DEPDIR)/gtk-snippets-gsv-utils.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
+include ./$(DEPDIR)/gtk-snippets-management-ui.Plo
 include ./$(DEPDIR)/gtk-snippets-manager.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
 

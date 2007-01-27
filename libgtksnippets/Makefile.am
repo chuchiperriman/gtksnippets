@@ -1,6 +1,6 @@
 
 gladedir = $(datadir)/libgtksnippets/glade
-glade_DATA = libgtksnippets.glade
+glade_DATA = *.glade
 
 snippetsdir = $(datadir)/libgtksnippets/snippets
 snippets_DATA = snippets/*.xml
@@ -32,7 +32,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-popup-dialog.h      \
 	gtk-snippets-popup-dialog.c	\
 	gtk-snippets-gsv-utils.h	\
-	gtk-snippets-gsv-utils.c
+	gtk-snippets-gsv-utils.c	\
+	gtk-snippets-management-ui.h	\
+	gtk-snippets-management-ui.c
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 

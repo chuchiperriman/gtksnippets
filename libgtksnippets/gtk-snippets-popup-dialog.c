@@ -28,7 +28,7 @@
 #include "gtk-snippet.h"
 #include "gtk-snippets-popup-dialog.h"
 
-#define GLADE_FILE GLADE_DIR"/libgtksnippets.glade"
+#define GLADE_FILE GLADE_DIR"/gtk-snippets-popup-dialog.glade"
 
 #define COL_LANGUAGE 0
 #define COL_NAME 1
