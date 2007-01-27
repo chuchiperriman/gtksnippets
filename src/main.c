@@ -120,7 +120,7 @@ main (int argc, char *argv[])
 	
 	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
 	
-	gtk_snippets_manager_remove_support (manager, (gpointer)source);
+	//gtk_snippets_manager_remove_support (manager, (gpointer)source);
 	
 	gtk_widget_show (window);
 	

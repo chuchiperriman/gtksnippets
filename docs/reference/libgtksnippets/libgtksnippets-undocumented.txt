@@ -1,7 +1,7 @@
-2% symbol docs coverage.
-1 symbols documented.
-0 symbols incomplete.
-40 not documented.
+7% symbol docs coverage.
+3 symbols documented.
+1 symbols incomplete.
+38 not documented.
 
 
 FilterData
@@ -26,8 +26,7 @@ gtk_snippets_loader_load_default
 gtk_snippets_loader_load_from_dir
 gtk_snippets_loader_load_from_file
 gtk_snippets_loader_new
-gtk_snippets_manager_add_support
-gtk_snippets_manager_new
+gtk_snippets_manager_add_support (lenguaje)
 gtk_snippets_popup_dialog_filter
 gtk_snippets_popup_dialog_filter_by_language
 gtk_snippets_popup_dialog_get_window

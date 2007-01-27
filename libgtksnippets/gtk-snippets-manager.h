@@ -57,8 +57,18 @@ GType gtk_snippets_manager_get_type (void) G_GNUC_CONST;
 
 GtkSnippetsManager* gtk_snippets_manager_new (GtkSnippetsLoader *loader);
 
+/**
+ * gtk_snippets_manager_add_support:
+ * @manager: #GtkSnippetsManager 
+ * @editor: An editor to add support
+ * @language: ----Editor language. We copy this data
+ *
+ * Add snippets support to an Editor. Only calling this function we have an
+ *	Editor ready to use with snippets (all signals, popup management are controlled here)
+ *
+ **/
 void 
-gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje);
+gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer editor, const gchar* language);
 
 void
 gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor);

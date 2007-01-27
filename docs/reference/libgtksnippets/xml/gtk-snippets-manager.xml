@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <refentry id="libgtksnippets-GtkSnippetsManager">
 <refmeta>
@@ -71,14 +71,14 @@
 <indexterm><primary>gtk_snippets_manager_new</primary></indexterm><programlisting><link linkend="GtkSnippetsManager">GtkSnippetsManager</link>* gtk_snippets_manager_new
                                             (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);</programlisting>
 <para>
+Creates a new <link linkend="GtkSnippetsManager"><type>GtkSnippetsManager</type></link> .</para>
+<para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>loader</parameter>&nbsp;:</term>
-<listitem><simpara>
+<listitem><simpara> A <link linkend="GtkSnippetsLoader"><type>GtkSnippetsLoader</type></link> initialized.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>
-
-
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> new allocated <link linkend="GtkSnippetsLoader"><type>GtkSnippetsLoader</type></link>.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
@@ -88,13 +88,16 @@
                                              <link linkend="gpointer">gpointer</link> editor,
                                              <link linkend="gchar">gchar</link> *lenguaje);</programlisting>
 <para>
+Add snippets support to an Editor. Only calling this function we have an
+Editor ready to use with snippets (all signals, popup management are controlled here)</para>
+<para>
 
 </para><variablelist role="params">
 <varlistentry><term><parameter>manager</parameter>&nbsp;:</term>
-<listitem><simpara>
+<listitem><simpara> <link linkend="GtkSnippetsManager"><type>GtkSnippetsManager</type></link> 
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>editor</parameter>&nbsp;:</term>
-<listitem><simpara>
+<listitem><simpara> An editor to add support
 </simpara></listitem></varlistentry>
 <varlistentry><term><parameter>lenguaje</parameter>&nbsp;:</term>
 <listitem><simpara>

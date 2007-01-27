@@ -46,6 +46,7 @@ GtkSnippetsManagerPrivate
 GtkSnippetsManager
 gtk_snippets_manager_new
 gtk_snippets_manager_add_support
+gtk_snippets_manager_remove_support
 <SUBSECTION Standard>
 GTK_SNIPPETS_MANAGER
 GTK_IS_SNIPPETS_MANAGER

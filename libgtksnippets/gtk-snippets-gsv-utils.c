@@ -29,23 +29,36 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
 {
 	GtkTextMark* insert_mark;
 	GtkTextBuffer* text_buffer;
-	GtkTextIter actual,ini_word;
+	GtkTextIter actual,temp;
 	gchar* text;
+	gunichar ch;
+	gboolean found;
 	
 	text_buffer = gtk_text_view_get_buffer(text_view);
 	insert_mark = gtk_text_buffer_get_insert(text_buffer);
 	gtk_text_buffer_get_iter_at_mark(text_buffer,&actual,insert_mark);
 	
-	ini_word = actual;
+	temp = actual;
 	
-	//TODO Habría que comprobar si el caracter anterior es un blanco o una línea,
-	//Entonces ponemos un blanco (la llamada a backward_word_start nos coge una palabra de la línea anterior)
-	if (!gtk_text_iter_backward_word_start (&ini_word))
-		text = "";
+	
+	while (gtk_text_iter_backward_char(&temp))
+	{
+		ch = gtk_text_iter_get_char(&temp);
+		if (ch == ' ' || ch == '\n' || ch == '\r')
+		{
+			found = TRUE;
+			break;
+		}
+	}
+	
+	if (found)
+	{
+		gtk_text_iter_forward_char(&temp);
+		text = gtk_text_iter_get_text (&temp, &actual);
+	}
 	else
 	{
-		text = gtk_text_iter_get_text (&ini_word, &actual);
-		g_strstrip (text);
+		text = "";
 	}
 	
 	return text;

@@ -169,6 +169,14 @@ gtk_snippets_manager_get_type (void)
 }
 
 
+/**
+ * gtk_snippets_manager_new:
+ * @loader: A #GtkSnippetsLoader initialized.
+ *
+ * Creates a new #GtkSnippetsManager .
+ *
+ * Returns: new allocated #GtkSnippetsLoader.
+ */
 GtkSnippetsManager* 
 gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 {
@@ -278,7 +286,7 @@ gtk_snippet_manager_sw_destroy_event (GtkObject *editor,
 }
 
 void
-gtk_snippets_manager_add_support (GtkSnippetsManager *manager, gpointer editor, gchar* language)
+gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer editor, const gchar* language)
 {
 
 	EditorData *data;

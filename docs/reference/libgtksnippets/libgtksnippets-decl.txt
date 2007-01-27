@@ -217,8 +217,13 @@ GtkSnippetsLoader *loader
 </FUNCTION>
 <FUNCTION>
 <NAME>gtk_snippets_manager_add_support</NAME>
-<RETURNS>void </RETURNS>
+<RETURNS>void</RETURNS>
 GtkSnippetsManager *manager, gpointer editor, gchar* lenguaje
+</FUNCTION>
+<FUNCTION>
+<NAME>gtk_snippets_manager_remove_support</NAME>
+<RETURNS>void</RETURNS>
+GtkSnippetsManager *manager, gpointer editor
 </FUNCTION>
 <MACRO>
 <NAME>GTK_TYPE_SNIPPETS_POPUP_DIALOG</NAME>

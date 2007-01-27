@@ -2,3 +2,4 @@ GtkSnippetClass
 GtkSnippetsLoaderClass
 GtkSnippetsManagerClass
 GtkSnippetsPopupDialogClass
+gtk_snippets_manager_remove_support
