@@ -28,6 +28,9 @@
 #include <gtk/gtk.h>
 
 gchar*
+gtk_snippets_gsv_get_last_word_and_iter(GtkTextView *text_view, GtkTextIter *start_word, GtkTextIter *end_word);
+
+gchar*
 gtk_snippets_gsv_get_last_word(GtkTextView *text_view);
 
 void

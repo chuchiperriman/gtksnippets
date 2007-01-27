@@ -50,6 +50,8 @@ typedef struct{
 	GtkSnippetsManager *manager;
 	GtkWidget *editor;
 	gchar* language;
+	GtkTextIter word_start;
+	GtkTextIter word_end;
 	gulong signal_handles[LAST_HANDLER];
 } EditorData ;
 
@@ -214,7 +216,8 @@ gtk_snippet_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnipp
 	//Hay que borrar la palabra escrita para el snippet
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(data->editor));
 	
-	gtk_text_buffer_insert_at_cursor(buffer,text,-1);
+	gtk_text_buffer_delete(buffer,&data->word_start,&data->word_end);
+	gtk_text_buffer_insert(buffer, &data->word_start, text,-1);
 
 	g_debug("Snippet selected");
 }
@@ -222,7 +225,8 @@ gtk_snippet_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnipp
 static void
 gtk_snippet_manager_snippet_ignored_cb (GtkSnippetsPopupDialog *popup, gpointer user_data)
 {
-	gtk_snippet_manager_disconnect_popup_signals(popup, (EditorData*)user_data);	
+	EditorData *data =(EditorData*)user_data;
+	gtk_snippet_manager_disconnect_popup_signals(popup, data);	
 }
 
 static gboolean
@@ -239,8 +243,10 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 	
 	if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_space)
 	{
-		
-		word = gtk_snippets_gsv_get_last_word(GTK_TEXT_VIEW(data->editor));
+		word = gtk_snippets_gsv_get_last_word_and_iter(
+					GTK_TEXT_VIEW(data->editor),
+					&data->word_start,
+					&data->word_end);
 		
 		filter_data.tag = word;
 		if (es_c)

@@ -1,13 +1,14 @@
 GtkTextView:
 
-	.- When we get the last word, if is blank or \n then return the previous word in the line or the previous word in the previous line
-	.- If the word has a number, return only the number (chuchi6 return 6 an may return chuchi6)
+	.- [OK] When we get the last word, if is blank or \n then return the previous word in the line or the previous word in the previous line
+	.- [OK] If the word has a number, return only the number (chuchi6 return 6 an may return chuchi6)
 
 Popup List:
 
 	.- [OK] Study how response when select a snippet. How notify to add the snippet text to the editor
 		.- [OK] When select a snippet launch the "snippet-selected" signal
 		.- [OK] When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
+	.- Add a text view at the right of the snippets tree list with the content of the selected snippet
 		
 
 Loader:
@@ -18,7 +19,7 @@ Loader:
 
 Manager:
 
-	.- When insert the snippet text in the gtktextview, we may remove the previous word. We write "if"
+	.- [OK] When insert the snippet text in the gtktextview, we may remove the previous word. We write "if"
 		press control+space, we select the snippet then the "if" word that we wrote may be deleted.
 	.- [OK] Implement remove_support: When call remove support, we may disconnect any signal in this editor.
 	

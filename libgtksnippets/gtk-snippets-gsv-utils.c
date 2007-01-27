@@ -23,28 +23,49 @@
  */
 
 #include "gtk-snippets-gsv-utils.h"
- 
+
+/**
+* gtk_snippets_gsv_get_last_word_and_iter:
+* @text_view: editor
+* @start_iter: if != NULL then assign it the start position of the word
+* Returns: the last word founded or ""
+*
+**/
 gchar*
-gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
+gtk_snippets_gsv_get_last_word_and_iter(GtkTextView *text_view, GtkTextIter *start_word, GtkTextIter *end_word)
 {
 	GtkTextMark* insert_mark;
 	GtkTextBuffer* text_buffer;
 	GtkTextIter actual,temp;
+	GtkTextIter *start_iter;
 	gchar* text;
 	gunichar ch;
 	gboolean found, no_doc_start;
+	
+	if (start_word != NULL)
+	{
+		start_iter = start_word;
+	}
+	else
+	{
+		start_iter = &temp;
+	}
 	
 	text_buffer = gtk_text_view_get_buffer(text_view);
 	insert_mark = gtk_text_buffer_get_insert(text_buffer);
 	gtk_text_buffer_get_iter_at_mark(text_buffer,&actual,insert_mark);
 	
-	temp = actual;
+	*start_iter = actual;
+	if (end_word!=NULL)
+	{
+		*end_word = actual;
+	}
 	
 	found = FALSE;
-	while ((no_doc_start = gtk_text_iter_backward_char(&temp)) == TRUE)
+	while ((no_doc_start = gtk_text_iter_backward_char(start_iter)) == TRUE)
 	{
-		ch = gtk_text_iter_get_char(&temp);
-		if (ch == ' ' || ch == '\n' || ch == '\r')
+		ch = gtk_text_iter_get_char(start_iter);
+		if (ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t')
 		{
 			found = TRUE;
 			break;
@@ -54,24 +75,31 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
 	//Si es el principio del doc, cogemos la palabra hasta el principio
 	if (!no_doc_start)
 	{
-		gtk_text_buffer_get_start_iter(text_buffer,&temp);
-		text = gtk_text_iter_get_text (&temp, &actual);
+		gtk_text_buffer_get_start_iter(text_buffer,start_iter);
+		text = gtk_text_iter_get_text (start_iter, &actual);
 	}
 	else
 	{
 	
 		if (found)
 		{
-			gtk_text_iter_forward_char(&temp);
-			text = gtk_text_iter_get_text (&temp, &actual);
+			gtk_text_iter_forward_char(start_iter);
+			text = gtk_text_iter_get_text (start_iter, &actual);
 		}
 		else
 		{
+			*start_iter = actual;
 			text = "";
 		}
 	}
 	
 	return text;
+}
+ 
+gchar*
+gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
+{
+	return gtk_snippets_gsv_get_last_word_and_iter(text_view, NULL, NULL);
 }
 
 
