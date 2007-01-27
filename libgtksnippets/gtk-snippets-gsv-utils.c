@@ -32,7 +32,7 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
 	GtkTextIter actual,temp;
 	gchar* text;
 	gunichar ch;
-	gboolean found;
+	gboolean found, no_doc_start;
 	
 	text_buffer = gtk_text_view_get_buffer(text_view);
 	insert_mark = gtk_text_buffer_get_insert(text_buffer);
@@ -40,8 +40,8 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
 	
 	temp = actual;
 	
-	
-	while (gtk_text_iter_backward_char(&temp))
+	found = FALSE;
+	while ((no_doc_start = gtk_text_iter_backward_char(&temp)) == TRUE)
 	{
 		ch = gtk_text_iter_get_char(&temp);
 		if (ch == ' ' || ch == '\n' || ch == '\r')
@@ -51,14 +51,24 @@ gtk_snippets_gsv_get_last_word(GtkTextView *text_view)
 		}
 	}
 	
-	if (found)
+	//Si es el principio del doc, cogemos la palabra hasta el principio
+	if (!no_doc_start)
 	{
-		gtk_text_iter_forward_char(&temp);
+		gtk_text_buffer_get_start_iter(text_buffer,&temp);
 		text = gtk_text_iter_get_text (&temp, &actual);
 	}
 	else
 	{
-		text = "";
+	
+		if (found)
+		{
+			gtk_text_iter_forward_char(&temp);
+			text = gtk_text_iter_get_text (&temp, &actual);
+		}
+		else
+		{
+			text = "";
+		}
 	}
 	
 	return text;
