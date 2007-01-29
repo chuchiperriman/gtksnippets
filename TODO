@@ -17,14 +17,14 @@ Loader:
 	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the
 		key but the id can be equal for various snippets
 	.- When load the snippet name, it deletes some characters. Example "bool-1", loader put bool1 or bool
-	.- When load the XML, get all languages from GtkSourceLanguagesManager and search on disks for files with 
+	.- [OK] When load the XML, get all languages from GtkSourceLanguagesManager and search on disks for files with 
 		the name of each language name (example: language name C++, file name with the snippets C++.xml ). 
-			.- Get language from GtkSourceLanguage, not from language tag in the xml.
+			.- [OK] Get language from GtkSourceLanguage, not from language tag in the xml.
 	.- Organize snippets in separated lists gruped by language because is more easy to load, to save and 
 		to build the TreeModels.
 		
-	.- function like gtk-snippets-loader-get-snippets-by-language(gchar* language) than only return a list of snippet
-		for this language
+	.- function like gtk-snippets-loader-get-snippets-by-language(gchar* language)
+		than only return a list of snippet for this language
 	.- Function add-snippet for add new snippet
 	.- Signal snippet-added when someone add a snippet
 	.- Function remove-snippet for delete a snippet

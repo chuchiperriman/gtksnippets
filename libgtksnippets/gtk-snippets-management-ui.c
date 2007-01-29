@@ -32,9 +32,8 @@
 
 #define GLADE_FILE GLADE_DIR"/gtk-snippets-management-ui.glade"
 
-#define COL_LANGUAGE 0
-#define COL_NAME 1
-#define COL_SNIPPET 2
+#define COL_NAME 0
+#define COL_SNIPPET 1
 
 struct _GtkSnippetsManagementUIPrivate
 {
@@ -163,12 +162,12 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 
 	GtkSourceLanguagesManager* lang_manager;
 	GtkSourceLanguage *lang;
+	gchar* lang_name;
 	const GSList *lang_list;
+	GList* snippets;
 	GtkTreeIter actual, parent;
-	gint num =  0;
 
-	GtkTreeStore *store = gtk_tree_store_new(3,
-									 G_TYPE_STRING,
+	GtkTreeStore *store = gtk_tree_store_new(2,
 									 G_TYPE_STRING,
 									 G_TYPE_OBJECT);
 	
@@ -179,26 +178,30 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 	while ((lang_list = g_slist_next(lang_list)) != NULL)
 	{
 		lang = GTK_SOURCE_LANGUAGE(lang_list->data);
+		lang_name = gtk_source_language_get_name(lang);
 		//Insertamos el lenguaje
 		gtk_tree_store_append(store,&actual, NULL);
 		gtk_tree_store_set(store,
 				&actual,
-				COL_LANGUAGE, gtk_source_language_get_name(lang),
-				COL_NAME, NULL,
+				COL_NAME, lang_name,
 				COL_SNIPPET, NULL,
 				-1);
 				
 		parent = actual;
 		
-		for (num = 0; num<5; num++)
+		//Preguntamos al loader por los snippets para este lenguage
+		snippets = gtk_snippets_loader_get_snippets_by_language(mngui->priv->loader, lang_name);
+		if (snippets!=NULL)
 		{
-			gtk_tree_store_append(store,&actual, &parent);
-			gtk_tree_store_set(store,
-				&actual,
-				COL_LANGUAGE, "C",
-				COL_NAME, "aaaa",
-				COL_SNIPPET, NULL,
-				-1);	
+			do
+			{
+				gtk_tree_store_append(store,&actual, &parent);
+				gtk_tree_store_set(store,
+					&actual,
+					COL_NAME, gtk_snippet_get_tag(GTK_SNIPPET(snippets->data)) ,
+					COL_SNIPPET, NULL,
+					-1);	
+			}while((snippets = g_list_next(snippets)) != NULL);
 		}
 	}	
 	

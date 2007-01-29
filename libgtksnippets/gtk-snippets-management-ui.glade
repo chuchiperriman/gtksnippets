@@ -53,7 +53,7 @@
                         <property name="headers_visible">False</property>
                         <signal name="row_collapsed" handler="on_tree_view_snippets_row_collapsed"/>
                         <signal name="row_expanded" handler="on_tree_view_snippets_row_expanded"/>
-                        <signal name="key_press_event" handler="on_tree_view_snippets_key_press"/>
+                        <signal name="key_press_event" handler="smngui_snippets_tree_key_press_event_cb"/>
                       </widget>
                     </child>
                   </widget>
@@ -185,32 +185,17 @@
                             <property name="column_spacing">6</property>
                             <property name="row_spacing">6</property>
                             <child>
-                              <widget class="GtkEntry" id="entry_accelerator">
+                              <widget class="GtkEntry" id="entry_tab_trigger">
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
-                                <property name="editable">False</property>
                                 <property name="invisible_char">*</property>
+                                <signal name="changed" handler="on_entry_tab_trigger_changed"/>
+                                <signal name="focus_out_event" handler="on_entry_tab_trigger_focus_out"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label_tab_trigger">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0</property>
-                                <property name="label" translatable="yes">_Tab trigger:</property>
-                                <property name="use_underline">True</property>
-                                <property name="mnemonic_widget">entry_tab_trigger</property>
-                              </widget>
-                              <packing>
-                                <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
@@ -231,17 +216,32 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkEntry" id="entry_tab_trigger">
+                              <widget class="GtkLabel" id="label_tab_trigger">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0</property>
+                                <property name="label" translatable="yes">_Tab trigger:</property>
+                                <property name="use_underline">True</property>
+                                <property name="mnemonic_widget">entry_tab_trigger</property>
+                              </widget>
+                              <packing>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkEntry" id="entry_accelerator">
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
+                                <property name="editable">False</property>
                                 <property name="invisible_char">*</property>
-                                <signal name="changed" handler="on_entry_tab_trigger_changed"/>
-                                <signal name="focus_out_event" handler="on_entry_tab_trigger_focus_out"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>

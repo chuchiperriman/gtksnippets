@@ -421,3 +421,9 @@ gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader)
 {
 	return loader->priv->language_hash;
 }
+
+GList*
+gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gchar* language)
+{
+	return (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
+}
