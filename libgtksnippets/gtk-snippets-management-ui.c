@@ -129,6 +129,14 @@ smngui_dialog_response_cb(GtkDialog *dialog,
 	}
 }
 
+void
+smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
+{
+	g_debug("cursor change");
+}
+
+
+
 static void
 gmngui_load_glade(GtkSnippetsManagementUI *obj)
 {
