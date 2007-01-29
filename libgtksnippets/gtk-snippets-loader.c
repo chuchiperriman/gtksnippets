@@ -24,6 +24,7 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <libxml/xmlreader.h>
+#include <gtksourceview/gtksourcelanguagesmanager.h>
 #include "gtk-snippets-loader.h"
 
 #define DEFAULT_SNIPPETS_DIR SNIPPETS_DIR
@@ -42,7 +43,8 @@ static void gtk_snippets_loader_finalize(GObject *object);
 
 struct _GtkSnippetsLoaderPrivate {
 	/* Place Private Members Here */
-	GHashTable *snippets_hash;
+	//Hash <language,snippets_List>
+	GHashTable *language_hash;
 	gint snippets_count;
 };
 
@@ -88,11 +90,22 @@ gtk_snippets_loader_get_type()
 }
 
 static void
-gtk_snippets_loader_destroy_snippet(gpointer data)
+gtk_snippets_loader_destroy_snippets_list(gpointer data)
 {
+	GtkSnippet *snippet;
+	GList *next;
+	GList *actual;
 	if (data!=NULL)
 	{
-		g_object_unref(data);
+		actual = data;
+		do
+		{
+			snippet = GTK_SNIPPET(actual->data);
+			g_object_unref(snippet);
+			next = g_list_next(actual);
+		}while((actual = next) != NULL);
+		
+		g_list_free(data);
 	}
 }
 
@@ -114,7 +127,7 @@ gtk_snippets_loader_init(GtkSnippetsLoader *obj)
 {
 	obj->priv = g_new0(GtkSnippetsLoaderPrivate, 1);
 	/* Initialize private members, etc. */
-	obj->priv->snippets_hash = g_hash_table_new_full(g_int_hash,g_int_equal, g_free, gtk_snippets_loader_destroy_snippet);
+	obj->priv->language_hash = g_hash_table_new_full(g_str_hash, g_str_equal , NULL, gtk_snippets_loader_destroy_snippets_list);
 	obj->priv->snippets_count = 0;
 	g_debug("Construido snippets loader");
 }
@@ -126,7 +139,7 @@ gtk_snippets_loader_finalize(GObject *object)
 	cobj = GTK_SNIPPETSLOADER(object);
 	
 	/* Free private members, etc. */
-	g_hash_table_destroy(cobj->priv->snippets_hash);
+	g_hash_table_destroy(cobj->priv->language_hash);
 	g_free(cobj->priv);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 	g_debug("Destruido snippets loader");
@@ -151,8 +164,9 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 	xmlChar *text = NULL;
 	xmlNode *cur_node = NULL;
 	gboolean res = TRUE;
-	gint* key;
 	GtkSnippet *snippet;
+	GList *snippets_list;
+	GList *snippet_added;
 	
 	name = xmlGetProp(a_node, ATT_ID);
 	
@@ -193,14 +207,13 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 			(gchar*)text);
 			
 	//TODO liberar esto
-	key = g_malloc0(sizeof(gint*));
-	*key = loader->priv->snippets_count++;
-	
-	g_hash_table_insert(
-			loader->priv->snippets_hash,
-			key,
-			(gpointer)snippet);
-	
+	//Cogemos la lista para este lenguage
+	snippets_list = (GList*) g_hash_table_lookup(loader->priv->language_hash,language);
+	snippet_added = g_list_append(snippets_list, snippet);
+	//Si no tenía lista, la añadimos al hash
+	if (snippets_list == NULL)
+		g_hash_table_insert(loader->priv->language_hash, language, snippet_added);
+		
 	xmlFree(name);
 	xmlFree(tag);
 	xmlFree(description);
@@ -211,25 +224,38 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 	return res;
 }
 
+/**
+*
+* @language: snippets language. If NULL then get the language xml attribute
+**/
 static gboolean
-gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node)
+gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node, gchar *language)
 {
-	xmlChar *value;
 	xmlNode *cur_node = NULL;
+	xmlChar *value=NULL;
+	gchar *lang_fin;
 	gboolean res = TRUE;
 	
-	value = xmlGetProp(a_node, ATT_LANGUAGE);
-	
-	if (value != NULL)
+	if (language == NULL)
 	{
-		g_debug("attribute language: %s",value);
+		value = xmlGetProp(a_node, ATT_LANGUAGE);
+		lang_fin = (gchar*)value;
+	}
+	else
+	{
+		lang_fin = language;
+	}
+	
+	if (language != NULL)
+	{
+		g_debug("attribute language: %s",language);
 		for (cur_node = a_node->children; cur_node; cur_node = cur_node->next)
 		{
 			if (cur_node->type == XML_ELEMENT_NODE)
 			{
 				if (xmlStrcmp(cur_node->name, TAG_SNIPPET)==0)
 				{
-					if (!gsl_parse_snippet(loader,cur_node, (gchar*)value))
+					if (!gsl_parse_snippet(loader,cur_node, lang_fin))
 					{
 						res = FALSE;
 						break;
@@ -254,7 +280,7 @@ gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node)
 * TODO: Ver cómo tratar mejor los errores
 */
 gboolean
-gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file)
+gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file, gchar* language)
 {
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
@@ -273,7 +299,7 @@ gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file)
 		{
 			root_element = xmlDocGetRootElement(doc);
 			
-			res = gsl_parse_root(loader,root_element);
+			res = gsl_parse_root(loader, root_element, language);
 			
 			xmlFreeDoc(doc);
 			xmlCleanupParser();
@@ -300,9 +326,15 @@ gboolean
 gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 {
 	GDir *dir;
-	const gchar* file;
+	gchar* language;
 	const gchar* path_file;
 	gboolean res;
+	GtkSourceLanguagesManager* lang_manager;
+	GtkSourceLanguage *lang;
+	const GSList *lang_list;
+	
+	lang_manager = gtk_source_languages_manager_new();
+	lang_list = gtk_source_languages_manager_get_available_languages(lang_manager);
 	
 	res = TRUE;
 	
@@ -313,18 +345,21 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 		res = FALSE;
 	}
 	
+	
 	if (res)
 	{
-		while ((file = g_dir_read_name(dir)) != NULL)
+		while ((lang_list = g_slist_next(lang_list)) != NULL)
 		{
-			//TODO Ver cómo obtener el separador de directorio
-			path_file = g_strconcat(path, "/", file, NULL);
-			res = gtk_snippets_loader_load_from_file(loader, path_file); 
+			lang = GTK_SOURCE_LANGUAGE(lang_list->data);
+			language = gtk_source_language_get_name(lang);
+			path_file = g_strconcat(path, "/", language, ".xml", NULL);
+			res = gtk_snippets_loader_load_from_file(loader, path_file, language); 
 			if (!res)
 			{
-				g_warning("Error loading file %s",file); 
+				g_warning("Error loading file %s",path_file); 
 			}
 		}
+		
 		g_dir_close(dir);
 	}
 	
@@ -384,5 +419,5 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader)
 {
-	return loader->priv->snippets_hash;
+	return loader->priv->language_hash;
 }

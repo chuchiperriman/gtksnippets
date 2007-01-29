@@ -26,6 +26,7 @@
 #define _GTK_SNIPPETS_MANAGEMENT_UI_H_
 
 #include <glib-object.h>
+#include "gtk-snippets-loader.h"
 
 G_BEGIN_DECLS
 
@@ -53,7 +54,14 @@ struct _GtkSnippetsManagementUI
 
 GType gtk_snippets_management_ui_get_type (void) G_GNUC_CONST;
 
-GtkSnippetsManagementUI* gtk_snippets_management_ui_new (void);
+GtkWidget*
+gtk_smngui_create_source_view();
+
+GtkSnippetsManagementUI* 
+gtk_snippets_management_ui_new (GtkSnippetsLoader *loader);
+
+void
+gtk_snippets_management_ui_show(GtkSnippetsManagementUI* mng_ui);
 
 G_END_DECLS
 

@@ -72,7 +72,8 @@ gtk_snippets_loader_load_default(GtkSnippetsLoader* loader);
 
 /**
 * Devuelve todos los snippets. NULL si no hay o no se han cargado.
-* El hash es <nombre,snippet>
+* El hash es <language,snippets GList >
+* Returns: An internal GHashTable<language,snippets GList>. Not free it!!!
 */
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader);
@@ -90,7 +91,7 @@ gtk_snippets_loader_get_snippets_by_mime_type(GtkSnippetsLoader* loader, gchar *
 * TODO: Ver cómo tratar mejor los errores
 */
 gboolean
-gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file);
+gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file, gchar* language);
 
 
 /**

@@ -35,7 +35,7 @@
 
 #include "libgtksnippets/gtk-snippets-loader.h"
 #include "libgtksnippets/gtk-snippets-manager.h"
-
+#include "libgtksnippets/gtk-snippets-management-ui.h"
 
 
 /*
@@ -121,6 +121,10 @@ main (int argc, char *argv[])
 	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
 	
 	//gtk_snippets_manager_remove_support (manager, (gpointer)source);
+	
+	GtkSnippetsManagementUI *snippets_ui;
+	snippets_ui = gtk_snippets_management_ui_new(loader);
+	gtk_snippets_management_ui_show(snippets_ui);
 	
 	gtk_widget_show (window);
 	

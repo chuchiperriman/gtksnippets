@@ -1,6 +1,7 @@
 GtkTextView:
 
-	.- [OK] When we get the last word, if is blank or \n then return the previous word in the line or the previous word in the previous line
+	.- [OK] When we get the last word, if is blank or \n then return the previous word in the line or the
+		previous word in the previous line
 	.- [OK] If the word has a number, return only the number (chuchi6 return 6 an may return chuchi6)
 
 Popup List:
@@ -8,14 +9,32 @@ Popup List:
 	.- [OK] Study how response when select a snippet. How notify to add the snippet text to the editor
 		.- [OK] When select a snippet launch the "snippet-selected" signal
 		.- [OK] When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
-	.- Add a text view at the right of the snippets tree list with the content of the selected snippet
-		
+	.- Add a text view at the right of the snippets tree list with the content of the selected snippet	
 
 Loader:
 
 	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
-	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the key but the id can be equal for various snippets
+	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the
+		key but the id can be equal for various snippets
 	.- When load the snippet name, it deletes some characters. Example "bool-1", loader put bool1 or bool
+	.- When load the XML, get all languages from GtkSourceLanguagesManager and search on disks for files with 
+		the name of each language name (example: language name C++, file name with the snippets C++.xml ). 
+			.- Get language from GtkSourceLanguage, not from language tag in the xml.
+	.- Organize snippets in separated lists gruped by language because is more easy to load, to save and 
+		to build the TreeModels.
+		
+	.- function like gtk-snippets-loader-get-snippets-by-language(gchar* language) than only return a list of snippet
+		for this language
+	.- Function add-snippet for add new snippet
+	.- Signal snippet-added when someone add a snippet
+	.- Function remove-snippet for delete a snippet
+	.- Signal snippet-removes when someone remove a snippet
+	.- Function save for save the actual snippets on disk.
+		
+Snippets Management UI:
+
+	.- Insert, remove and edit snippets in the dialog.
+	.- 
 
 Manager:
 

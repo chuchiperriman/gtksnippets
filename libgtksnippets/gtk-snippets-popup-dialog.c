@@ -280,22 +280,30 @@ gspd_hash_for_each_add_snippet (gpointer key,
 
 	GtkTreeIter iter;
 	GtkSnippet *snippet;
+	GList *lista;
 	
 	g_assert(user_data!=NULL);
-	g_assert(value!=NULL);
 	g_assert(key!=NULL);
 	
-	snippet = GTK_SNIPPET(value);
-	
-	//Insertamos los datos
-	gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
-	
-	gtk_list_store_set (GTK_LIST_STORE(user_data), 
-						&iter,
-						COL_LANGUAGE, gtk_snippet_get_language(snippet),
-						COL_NAME, gtk_snippet_get_name(snippet),
-						COL_SNIPPET, value,
-						-1);
+	if (value != NULL)
+	{
+		lista = (GList*)value;
+		do
+		{
+			g_assert(lista->data != NULL);
+			
+			snippet = GTK_SNIPPET(lista->data);
+			//Insertamos los datos
+			gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
+			
+			gtk_list_store_set (GTK_LIST_STORE(user_data), 
+								&iter,
+								COL_LANGUAGE, gtk_snippet_get_language(snippet),
+								COL_NAME, gtk_snippet_get_name(snippet),
+								COL_SNIPPET, snippet,
+								-1);
+		}while((lista = g_list_next(lista))!=NULL);
+	}
 
 }
 
@@ -345,6 +353,7 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 static gboolean
 gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
+	g_debug("Filter function");
 	GValue value = {0,};
 	gchar *snippet_language;
 	gchar *snippet_tag;
@@ -355,7 +364,9 @@ gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 	filter_data = (FilterData*)data;
 	
 	gtk_tree_model_get_value(model,iter,COL_SNIPPET,&value);
+	g_debug("antes value");
 	snippet = GTK_SNIPPET(g_value_get_pointer(&value));
+	g_debug("des value");
 	
 	//Language filter
 	if (filter_data->language != NULL)
