@@ -33,6 +33,8 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
+#include <regex.h>
+
 #include "libgtksnippets/gtk-snippets-loader.h"
 #include "libgtksnippets/gtk-snippets-manager.h"
 #include "libgtksnippets/gtk-snippets-management-ui.h"
@@ -92,12 +94,41 @@ create_window (void)
 }
 
 
+static void 
+prueba_regexp()
+{
+	regex_t compiled;
+	size_t maxmatch = 5;
+	gint i=0;
+	regmatch_t submatch[maxmatch];
+	gchar* chuchi = "123 chuchi 123 chuchi 123ch";
+	if (regcomp(&compiled,"chuchi",0)!=0)
+	{
+		g_debug("No se compiló el regex");
+		return;
+	}
+	
+	while (regexec(&compiled,chuchi,maxmatch, submatch,0)==0)
+	{
+		g_debug("Encontrado");
+		/*if (submatch[i].rm_so == -1)
+			break;*/
+		g_debug("Encontrado en %i-%i",submatch[i].rm_so ,submatch[i].rm_eo);
+		chuchi += submatch[0].rm_eo;
+	}
+	
+	
+	regfree(&compiled);
+}
+
 int
 main (int argc, char *argv[])
 {
  	GtkWidget *window;
 
+	prueba_regexp();
 
+	return;
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
