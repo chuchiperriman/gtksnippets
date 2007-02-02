@@ -38,8 +38,11 @@
 struct _GtkSnippetsManagementUIPrivate
 {
 	GtkWidget* window;
+	GtkWidget* snippet_content;
+	GtkWidget* snippet_tag;
 	GtkSnippetsLoader *loader;
 	GtkTreeView *snippets_tree;
+	
 };
 
 #define GTK_SNIPPETS_MANAGEMENT_UI_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_MANAGEMENT_UI, GtkSnippetsManagementUIPrivate))
@@ -132,7 +135,45 @@ smngui_dialog_response_cb(GtkDialog *dialog,
 void
 smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
 {
-	g_debug("cursor change");
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	GValue value = {0,};
+	GtkSnippet *snippet;
+	GtkSnippetsManagementUI *mng;
+	GtkTextBuffer *buffer;
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+
+
+	gtk_tree_view_get_cursor(tree_view,&path,&column);
+	if(path && column) 
+	{
+		model = gtk_tree_view_get_model(tree_view);
+		if(gtk_tree_model_get_iter(model,&iter,path))
+		{
+			//gtk_tree_model_get_value(model, &iter, COL_NAME, &value);
+			//g_debug("%s Selected.",g_value_get_string(&value));
+		
+			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
+			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
+			buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
+			if (snippet != NULL)
+			{
+				gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
+				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
+			}
+			else
+			{
+				gtk_text_buffer_set_text(buffer, "", -1);
+				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
+			}
+		}
+	}
+
+	if(path) gtk_tree_path_free(path);
+	
 }
 
 
@@ -145,6 +186,12 @@ gmngui_load_glade(GtkSnippetsManagementUI *obj)
 	glade_xml_signal_autoconnect (gxml);
 	obj->priv->window = glade_xml_get_widget (gxml, "smngui_dialog");
 	obj->priv->snippets_tree = GTK_TREE_VIEW(glade_xml_get_widget (gxml, "smngui_snippets_tree"));
+	obj->priv->snippet_content = glade_xml_get_widget (gxml, "smngui_source");
+	obj->priv->snippet_tag = glade_xml_get_widget (gxml, "smngui_tag");
+
+	//Connecting some signals
+	g_signal_connect(GTK_WIDGET(obj->priv->snippets_tree), "cursor-changed",
+		G_CALLBACK(smngui_snippets_tree_cursor_changed_cb),(gpointer) obj);
 	
 	g_object_unref(gxml);
 }
@@ -177,7 +224,7 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 
 	GtkTreeStore *store = gtk_tree_store_new(2,
 									 G_TYPE_STRING,
-									 G_TYPE_OBJECT);
+									 G_TYPE_POINTER);
 	
 	lang_manager = gtk_source_languages_manager_new();
 	
@@ -207,39 +254,14 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 				gtk_tree_store_set(store,
 					&actual,
 					COL_NAME, gtk_snippet_get_tag(GTK_SNIPPET(snippets->data)) ,
-					COL_SNIPPET, NULL,
+					COL_SNIPPET, (gpointer)snippets->data,
 					-1);	
 			}while((snippets = g_list_next(snippets)) != NULL);
 		}
 	}	
 	
 	return GTK_TREE_MODEL(store);
-	
-/*
-self.model = gtk.TreeStore(str, str, object)
-			self.model.set_sort_column_id(self.SORT_COLUMN, gtk.SORT_ASCENDING)
-			manager = gtksourceview.SourceLanguagesManager()
-			langs = manager.get_available_languages()
-			
-			piter = self.model.append(None, (_('Global'), '', None))
-			# Add dummy node
-			self.model.append(piter, ('', '', None))
-			
-			nm = None
-			
-			if current_lang:
-				nm = current_lang.get_name()
-		
-			for lang in langs:
-				name = lang.get_name()
-				parent = self.model.append(None, (name, name, lang))
 
-				# Add dummy node
-				self.model.append(parent, ('', '', None))
-
-				if (nm == name):
-					expand = parent
-*/
 }
 
 GtkSnippetsManagementUI*
@@ -252,6 +274,7 @@ gtk_snippets_management_ui_new (GtkSnippetsLoader *loader)
 	/* TODO: Add initialization code here */
 
 	obj->priv->loader = loader;
+	
 	gmngui_load_glade(obj);
 	
 	gmngui_build_snippets_tree(obj);
