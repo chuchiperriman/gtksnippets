@@ -37,6 +37,14 @@ G_BEGIN_DECLS
 #define GTK_IS_SNIPPET_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), GTK_TYPE_SNIPPET))
 #define GTK_SNIPPET_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GTK_TYPE_SNIPPET, GtkSnippetClass))
 
+/**
+ * GtkSnippet:
+ *	@parent: GObject Parent
+ * @priv: Private data
+ *
+ * Basic Snippet Structure. Not use the properties directly,
+ * instead use getter and setter.
+ */
 typedef struct _GtkSnippet GtkSnippet;
 typedef struct _GtkSnippetPrivate GtkSnippetPrivate;
 typedef struct _GtkSnippetClass GtkSnippetClass;
@@ -53,23 +61,49 @@ struct _GtkSnippetClass {
 
 GType gtk_snippet_get_type();
 
+/**
+* gtk_snippet_new:
+*
+* Create new GtkSnippet with all the data. When call this 
+* function, all arguments are duplicated in the snippet memory
+**/
 GtkSnippet*
-gtk_snippet_new(gchar *name,
-				gchar *language,
-				gchar *tag,
-				gchar *description,
-				gchar *text);
-				
-gchar*
+gtk_snippet_new(const gchar *name,
+				const gchar *language,
+				const gchar *tag,
+				const gchar *description,
+				const gchar *text);
+		
+/**
+* gtk_snippet_get_language:
+* @snippet: 
+* @Returns: Snippet language internal variable. Not free!!
+**/
+const gchar*
 gtk_snippet_get_language(GtkSnippet *snippet);
 
-gchar*
+/**
+* gtk_snippet_get_name:
+* @snippet: 
+* @Returns: Snippet name internal variable. Not free!!
+**/
+const gchar*
 gtk_snippet_get_name(GtkSnippet *snippet);
 
-gchar*
+/**
+* gtk_snippet_get_tag:
+* @snippet: 
+* @Returns: Snippet tag internal variable. Not free!!
+**/
+const gchar*
 gtk_snippet_get_tag(GtkSnippet *snippet);
 
-gchar*
+/**
+* gtk_snippet_get_text:
+* @snippet: 
+* @Returns: Snippet text internal variable. Not free!!
+**/
+const gchar*
 gtk_snippet_get_text(GtkSnippet *snippet);
 
 G_END_DECLS

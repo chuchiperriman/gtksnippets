@@ -27,8 +27,8 @@
                                             (<link linkend="GtkSnippetsLoader">GtkSnippetsLoader</link> *loader);
 <link linkend="void">void</link>        <link linkend="gtk-snippets-manager-add-support">gtk_snippets_manager_add_support</link>
                                             (<link linkend="GtkSnippetsManager">GtkSnippetsManager</link> *manager,
-                                             <link linkend="gpointer">gpointer</link> editor,
-                                             <link linkend="gchar">gchar</link> *lenguaje);
+                                             const <link linkend="gpointer">gpointer</link> editor,
+                                             const <link linkend="gchar">gchar</link> *language);
 
 </synopsis>
 </refsynopsisdiv>
@@ -85,8 +85,8 @@ Creates a new <link linkend="GtkSnippetsManager"><type>GtkSnippetsManager</type>
 <title><anchor id="gtk-snippets-manager-add-support" role="function"/>gtk_snippets_manager_add_support ()</title>
 <indexterm><primary>gtk_snippets_manager_add_support</primary></indexterm><programlisting><link linkend="void">void</link>        gtk_snippets_manager_add_support
                                             (<link linkend="GtkSnippetsManager">GtkSnippetsManager</link> *manager,
-                                             <link linkend="gpointer">gpointer</link> editor,
-                                             <link linkend="gchar">gchar</link> *lenguaje);</programlisting>
+                                             const <link linkend="gpointer">gpointer</link> editor,
+                                             const <link linkend="gchar">gchar</link> *language);</programlisting>
 <para>
 Add snippets support to an Editor. Only calling this function we have an
 Editor ready to use with snippets (all signals, popup management are controlled here)</para>
@@ -99,10 +99,8 @@ Editor ready to use with snippets (all signals, popup management are controlled 
 <varlistentry><term><parameter>editor</parameter>&nbsp;:</term>
 <listitem><simpara> An editor to add support
 </simpara></listitem></varlistentry>
-<varlistentry><term><parameter>lenguaje</parameter>&nbsp;:</term>
-<listitem><simpara>
-
-
+<varlistentry><term><parameter>language</parameter>&nbsp;:</term>
+<listitem><simpara> ----Editor language. We copy this data
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 

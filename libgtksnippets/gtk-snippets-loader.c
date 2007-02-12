@@ -225,9 +225,15 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 }
 
 /**
-*
-* @language: snippets language. If NULL then get the language xml attribute
-**/
+ * gsl_parse_root:
+ * @loader: The loader
+ * @a_node: The root node
+ * @language: snippets language. If NULL then get the language xml attribute
+ * @Returns: TRUE if all works fine or FALSE if not.
+ *
+ * This function parse the root element, gets the language and call
+ * to #gsl_parse_snippet to parse every snippet.
+ */
 static gboolean
 gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node, gchar *language)
 {
@@ -275,10 +281,6 @@ gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node, gchar *language)
 	return res;
 }
 
-/**
-* Devuelve FALSE si no puede cargarlos
-* TODO: Ver cómo tratar mejor los errores
-*/
 gboolean
 gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file, gchar* language)
 {
@@ -317,11 +319,6 @@ gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file,
 	
 }
 
-/**
-* Lee todos los ficheros .xml del directorio
-* Devuelve FALSE si no puede cargarlos
-* TODO: Ver cómo tratar mejor los errores
-*/
 gboolean
 gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 {

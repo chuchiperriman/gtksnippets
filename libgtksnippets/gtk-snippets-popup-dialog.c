@@ -355,8 +355,8 @@ gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	g_debug("Filter function");
 	GValue value = {0,};
-	gchar *snippet_language;
-	gchar *snippet_tag;
+	const gchar *snippet_language;
+	const gchar *snippet_tag;
 	FilterData *filter_data;
 	gboolean show = TRUE;
 	GtkSnippet *snippet;

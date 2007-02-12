@@ -161,13 +161,19 @@ smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_dat
 			buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
 			if (snippet != NULL)
 			{
+				//Es un snippet
 				gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
 				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
+				
+				//TODO Activar el botón de borrar
 			}
 			else
 			{
+				//Es un lenguaje padre
 				gtk_text_buffer_set_text(buffer, "", -1);
 				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
+				
+				//TODO desactivar el botón de borrar
 			}
 		}
 	}

@@ -1,13 +1,11 @@
-7% symbol docs coverage.
-3 symbols documented.
-1 symbols incomplete.
-38 not documented.
+25% symbol docs coverage.
+10 symbols documented.
+2 symbols incomplete.
+30 not documented.
 
 
 FilterData
-GtkSnippet
 GtkSnippetPrivate
-GtkSnippetsLoader
 GtkSnippetsLoaderPrivate
 GtkSnippetsManager
 GtkSnippetsManagerPrivate
@@ -17,16 +15,11 @@ gtk_snippet_get_language
 gtk_snippet_get_name
 gtk_snippet_get_tag
 gtk_snippet_get_text
-gtk_snippet_new
+gtk_snippet_new (name, language, tag, description, text, Returns)
 gtk_snippets_gsv_get_last_word
 gtk_snippets_gsv_get_screen_pos
 gtk_snippets_loader_get_snippets
-gtk_snippets_loader_get_snippets_by_mime_type
-gtk_snippets_loader_load_default
-gtk_snippets_loader_load_from_dir
-gtk_snippets_loader_load_from_file
-gtk_snippets_loader_new
-gtk_snippets_manager_add_support (lenguaje)
+gtk_snippets_loader_new (Returns)
 gtk_snippets_popup_dialog_filter
 gtk_snippets_popup_dialog_filter_by_language
 gtk_snippets_popup_dialog_get_window

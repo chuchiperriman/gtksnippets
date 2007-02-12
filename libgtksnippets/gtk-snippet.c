@@ -110,11 +110,11 @@ gtk_snippet_finalize(GObject *object)
 }
 
 GtkSnippet*
-gtk_snippet_new(gchar *name,
-				gchar *language,
-				gchar *tag,
-				gchar *description,
-				gchar *text)
+gtk_snippet_new(const gchar *name,
+				const gchar *language,
+				const gchar *tag,
+				const gchar *description,
+				const gchar *text)
 {
 	g_return_val_if_fail(name!=NULL,NULL);
 	g_return_val_if_fail(text!=NULL,NULL);
@@ -132,25 +132,25 @@ gtk_snippet_new(gchar *name,
 	return obj;
 }
 
-gchar*
+const gchar*
 gtk_snippet_get_language(GtkSnippet *snippet)
 {
 	return snippet->priv->language;
 }
 
-gchar*
+const gchar*
 gtk_snippet_get_name(GtkSnippet *snippet)
 {
 	return snippet->priv->name;
 }
 
-gchar*
+const gchar*
 gtk_snippet_get_tag(GtkSnippet *snippet)
 {
 	return snippet->priv->tag;
 }
 
-gchar*
+const gchar*
 gtk_snippet_get_text(GtkSnippet *snippet)
 {
 	return snippet->priv->text;

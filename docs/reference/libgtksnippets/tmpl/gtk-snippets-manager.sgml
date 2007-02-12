@@ -47,6 +47,6 @@ GtkSnippetsManager
 
 @manager: 
 @editor: 
-@lenguaje: 
+@language: 
 
 

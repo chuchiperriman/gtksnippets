@@ -56,16 +56,6 @@ GtkSnippetsLoader
 @Returns: 
 
 
-<!-- ##### FUNCTION gtk_snippets_loader_get_snippets_by_mime_type ##### -->
-<para>
-
-</para>
-
-@loader: 
-@mime_type: 
-@Returns: 
-
-
 <!-- ##### FUNCTION gtk_snippets_loader_load_from_file ##### -->
 <para>
 
@@ -73,6 +63,7 @@ GtkSnippetsLoader
 
 @loader: 
 @file: 
+@language: 
 @Returns: 
 
 
