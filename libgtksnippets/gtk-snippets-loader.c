@@ -427,3 +427,38 @@ gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gc
 {
 	return (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
 }
+
+void
+gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippet)
+{
+	gchar* language;
+	GList* snippets_list;
+	GList* new_start;
+	
+	g_debug("Liberamos el snippet: %s", gtk_snippet_get_tag(snippet));
+	
+	language = g_strdup(gtk_snippet_get_language(snippet));
+	snippets_list = (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
+	
+	g_assert(snippets_list != NULL);
+	
+	new_start = g_list_remove(snippets_list,snippet);
+	
+	g_assert(new_start!=NULL);
+	
+	if (new_start != snippets_list)
+	{
+		g_hash_table_steal(loader->priv->language_hash,language);
+		g_debug("ositas: %s",language);
+		g_hash_table_insert(loader->priv->language_hash,language,new_start);
+	}
+	
+	g_object_unref(snippet);
+	
+	//No lo liberamos porque se queda en el hash_table
+	//g_free(language);
+	
+	//TODO raise signal
+	
+}
+

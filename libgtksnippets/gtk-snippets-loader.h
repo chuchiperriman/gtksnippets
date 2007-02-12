@@ -95,8 +95,17 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader, const gchar *path);
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader);
 
+/**
+* Devuelve todos los snippets de un determinado lenguaje
+**/
 GList*
 gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gchar* language);
+
+/**
+* The snippet is unref
+**/
+void
+gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippet);
 
 G_END_DECLS
 

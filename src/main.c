@@ -126,9 +126,9 @@ main (int argc, char *argv[])
 {
  	GtkWidget *window;
 
-	prueba_regexp();
+	//prueba_regexp();
 
-	return;
+//	return;
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -144,6 +144,16 @@ main (int argc, char *argv[])
 	GtkSnippetsLoader *loader = gtk_snippets_loader_new();
 	
 	gtk_snippets_loader_load_default(loader);
+
+	GList* temp = gtk_snippets_loader_get_snippets_by_language(loader, "C");
+	gtk_snippets_loader_remove_snippet(loader,GTK_SNIPPET(temp->data));
+	g_debug("1");
+	temp = gtk_snippets_loader_get_snippets_by_language(loader, "C");
+	g_assert(temp!=NULL);
+	g_assert(g_list_next(temp)!=NULL);
+	g_debug("2");
+	gtk_snippets_loader_remove_snippet(loader,GTK_SNIPPET(g_list_next(temp)->data));
+	g_debug("3");
 	
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
