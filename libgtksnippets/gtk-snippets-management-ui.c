@@ -40,8 +40,12 @@ struct _GtkSnippetsManagementUIPrivate
 	GtkWidget* window;
 	GtkWidget* snippet_content;
 	GtkWidget* snippet_tag;
+	GtkWidget* remove_button;
+	GtkWidget* new_button;
 	GtkSnippetsLoader *loader;
 	GtkTreeView *snippets_tree;
+	GtkWidget* new_dialog;
+	GtkWidget* new_dialog_entry;
 	
 };
 
@@ -124,65 +128,190 @@ smngui_dialog_response_cb(GtkDialog *dialog,
 		gint response_id,
 		gpointer user_data)
 {
+	GtkSnippetsManagementUI *mng;
+	gboolean result;
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
 	g_debug("Dialog response: %i",response_id);
+	
 	switch(response_id)
 	{
 		case GTK_RESPONSE_CLOSE:
+		{
 			gtk_widget_hide(GTK_WIDGET(dialog));
+			//TODO Grabar los snippets con el loader
+			//TODO ver qué hacemos con la respuesta de grabar
+			result = gtk_snippets_loader_save(mng->priv->loader);
+			break;
+		}
 	}
 }
 
-void
-smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
+static GtkSnippet*
+smngui_get_active_snippet(GtkSnippetsManagementUI *mng)
 {
 	GtkTreePath *path;
 	GtkTreeViewColumn *column;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GValue value = {0,};
-	GtkSnippet *snippet;
-	GtkSnippetsManagementUI *mng;
-	GtkTextBuffer *buffer;
+	GtkSnippet *snippet = NULL;
 	
-	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
-
-
-	gtk_tree_view_get_cursor(tree_view,&path,&column);
+	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
 	if(path && column) 
 	{
-		model = gtk_tree_view_get_model(tree_view);
+		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
 		if(gtk_tree_model_get_iter(model,&iter,path))
 		{
-			//gtk_tree_model_get_value(model, &iter, COL_NAME, &value);
-			//g_debug("%s Selected.",g_value_get_string(&value));
-		
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
 			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
-			buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
-			if (snippet != NULL)
-			{
-				//Es un snippet
-				gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
-				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
-				
-				//TODO Activar el botón de borrar
-			}
-			else
-			{
-				//Es un lenguaje padre
-				gtk_text_buffer_set_text(buffer, "", -1);
-				gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
-				
-				//TODO desactivar el botón de borrar
-			}
 		}
 	}
 
 	if(path) gtk_tree_path_free(path);
 	
+	return snippet;
+}
+
+static const gchar*
+smngui_get_all_content(GtkSnippetsManagementUI *mng)
+{
+	GtkTextBuffer* buffer;
+	GtkTextIter ini,fin;
+	const gchar* content;
+	
+	g_debug("Content key release");
+	
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
+	gtk_text_buffer_get_start_iter(buffer,&ini);
+	gtk_text_buffer_get_end_iter(buffer,&fin);
+	content = gtk_text_buffer_get_text(buffer,&ini,&fin,FALSE);
+	
+	return content;
+}
+
+static void
+smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
+{
+	GtkSnippet *snippet;
+	GtkSnippetsManagementUI *mng;
+	GtkTextBuffer *buffer;
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	snippet = smngui_get_active_snippet(mng);
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
+	if (snippet != NULL)
+	{
+		gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
+		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
+		//Enable remove button
+		gtk_widget_set_sensitive(mng->priv->remove_button,TRUE);
+	}
+	else
+	{
+		gtk_text_buffer_set_text(buffer, "", -1);
+		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
+		//Disable remove button
+		gtk_widget_set_sensitive(mng->priv->remove_button,FALSE);
+	}
+}
+
+static void
+smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
+{
+	/*
+	* Remove snippet from loader
+	* Remove snippet from tree_model 
+	*/
+	GtkSnippetsManagementUI *mng;
+	
+	g_debug("remove the snippet");
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
+}
+
+static void
+smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
+{
+	GtkSnippetsManagementUI *mng;
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
+	g_debug("New button activate");
+	gtk_entry_set_text(GTK_ENTRY(mng->priv->new_dialog_entry),"");
+	//Controlamos la respuesta en la señal response	
+	gtk_dialog_run (GTK_DIALOG (mng->priv->new_dialog));
+
 }
 
 
+static void
+smngui_new_dialog_response_cb(GtkDialog *dialog,
+		gint response_id,
+		gpointer user_data)
+{
+	GtkSnippetsManagementUI *mng;
+	const gchar* temp;
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
+	g_debug("New Dialog response: %i",response_id);
+	
+	switch(response_id)
+	{
+		case GTK_RESPONSE_ACCEPT:
+			gtk_widget_hide(GTK_WIDGET(dialog));
+			temp = gtk_entry_get_text(GTK_ENTRY(mng->priv->new_dialog_entry));
+			if (strcmp(temp,"")!=0)
+			{
+				//TODO Añadir el snippet
+				g_debug("Tiene datos");
+			}
+			break;
+		default:
+			gtk_widget_hide(GTK_WIDGET(dialog));
+			//Nada
+			break;
+	}
+}
+
+static gboolean
+smngui_tag_key_release_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	GtkSnippetsManagementUI *mng;
+	GtkSnippet* snippet;
+	const gchar* tag;
+	
+	g_debug("tag key release");
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
+	tag = gtk_entry_get_text(GTK_ENTRY(widget));
+	
+	snippet = smngui_get_active_snippet(mng);
+	gtk_snippet_set_tag(snippet,tag);
+	
+	return FALSE;
+}
+
+static gboolean
+smngui_content_key_release_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	GtkSnippetsManagementUI *mng;
+	GtkSnippet* snippet;
+	const gchar* content;
+	
+	g_debug("Content key release");
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	
+	content = smngui_get_all_content(mng);
+	snippet = smngui_get_active_snippet(mng);
+	
+	gtk_snippet_set_text(snippet, content);
+	
+	return FALSE;
+}
 
 static void
 gmngui_load_glade(GtkSnippetsManagementUI *obj)
@@ -192,12 +321,36 @@ gmngui_load_glade(GtkSnippetsManagementUI *obj)
 	glade_xml_signal_autoconnect (gxml);
 	obj->priv->window = glade_xml_get_widget (gxml, "smngui_dialog");
 	obj->priv->snippets_tree = GTK_TREE_VIEW(glade_xml_get_widget (gxml, "smngui_snippets_tree"));
+	g_assert(obj->priv->snippets_tree != NULL);
 	obj->priv->snippet_content = glade_xml_get_widget (gxml, "smngui_source");
 	obj->priv->snippet_tag = glade_xml_get_widget (gxml, "smngui_tag");
+	obj->priv->remove_button = glade_xml_get_widget (gxml, "smngui_remove");
+	obj->priv->new_button = glade_xml_get_widget (gxml, "smngui_new");
+	obj->priv->new_dialog_entry = glade_xml_get_widget (gxml, "smngui_new_entry");
 
 	//Connecting some signals
+	g_signal_connect(GTK_WIDGET(obj->priv->window), "response",
+		G_CALLBACK(smngui_dialog_response_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->snippet_tag), "key-release-event",
+		G_CALLBACK(smngui_tag_key_release_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->snippet_content), "key-release-event",
+		G_CALLBACK(smngui_content_key_release_cb),(gpointer) obj);
+		
 	g_signal_connect(GTK_WIDGET(obj->priv->snippets_tree), "cursor-changed",
 		G_CALLBACK(smngui_snippets_tree_cursor_changed_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->remove_button), "clicked",
+		G_CALLBACK(smngui_remove_button_activate_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->new_button), "clicked",
+		G_CALLBACK(smngui_new_button_activate_cb),(gpointer) obj);
+		
+	//New Snippet dialog
+	obj->priv->new_dialog = glade_xml_get_widget (gxml, "smngui_new_dialog");
+	g_signal_connect(GTK_WIDGET(obj->priv->new_dialog), "response",
+		G_CALLBACK(smngui_new_dialog_response_cb),(gpointer) obj);
 	
 	g_object_unref(gxml);
 }

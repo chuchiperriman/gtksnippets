@@ -51,17 +51,14 @@ struct _GtkSnippetsLoaderPrivate {
 typedef struct _GtkSnippetsLoaderSignal GtkSnippetsLoaderSignal;
 typedef enum _GtkSnippetsLoaderSignalType GtkSnippetsLoaderSignalType;
 
-/*enum _GtkSnippetsLoaderSignalType {
+enum _GtkSnippetsLoaderSignalType {
 	// Place Signal Types Here 
-	SIGNAL_TYPE_EXAMPLE,
+	SIGNAL_TYPE_SNIPPETS_CHANGED,
 	LAST_SIGNAL
 };
 
-struct _GtkSnippetsLoaderSignal {
-	GtkSnippetsLoader *object;
-};
+static guint gtk_snippets_loader_signals[LAST_SIGNAL] = { 0 };
 
-static guint gtk_snippets_loader_signals[LAST_SIGNAL] = { 0 };*/
 static GObjectClass *parent_class = NULL;
 
 GType
@@ -117,9 +114,17 @@ gtk_snippets_loader_class_init(GtkSnippetsLoaderClass *klass)
 	parent_class = g_type_class_peek_parent(klass);
 	object_class->finalize = gtk_snippets_loader_finalize;
 	
-	/* Create signals here:
-	   gtk_snippets_loader_signals[SIGNAL_TYPE_EXAMPLE] = g_signal_new(...)
- 	*/
+ 	//Señales
+	gtk_snippets_loader_signals[SIGNAL_TYPE_SNIPPETS_CHANGED] = 
+			g_signal_new("snippets-changed",
+					G_TYPE_FROM_CLASS(klass),
+					G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+					0,
+					NULL,
+					NULL,
+					g_cclosure_marshal_VOID__VOID,
+					G_TYPE_NONE,
+					0);
 }
 
 static void
@@ -423,6 +428,21 @@ GList*
 gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gchar* language)
 {
 	return (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
+}
+
+gboolean
+gtk_snippets_loader_save(GtkSnippetsLoader* loader)
+{
+	/*
+	* 1.- Graba los snippets en disco
+	* 2.- Señal indicando que los snippets han cambiado
+	*/
+	g_signal_emit(
+				loader,
+				gtk_snippets_loader_signals[SIGNAL_TYPE_SNIPPETS_CHANGED],
+				0);
+	
+	return TRUE;
 }
 
 void

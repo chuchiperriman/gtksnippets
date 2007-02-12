@@ -128,7 +128,7 @@ main (int argc, char *argv[])
 
 	//prueba_regexp();
 
-//	return;
+	//return;
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");

@@ -98,6 +98,9 @@ gtk_snippet_get_name(GtkSnippet *snippet);
 const gchar*
 gtk_snippet_get_tag(GtkSnippet *snippet);
 
+void
+gtk_snippet_set_tag(GtkSnippet *snippet, const gchar* tag);
+
 /**
 * gtk_snippet_get_text:
 * @snippet: 
@@ -105,6 +108,9 @@ gtk_snippet_get_tag(GtkSnippet *snippet);
 **/
 const gchar*
 gtk_snippet_get_text(GtkSnippet *snippet);
+
+void
+gtk_snippet_set_text(GtkSnippet *snippet, const gchar* text);
 
 G_END_DECLS
 

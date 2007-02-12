@@ -132,6 +132,15 @@ GList*
 gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gchar* language);
 
 /**
+* 1.- Graba los snippets en disco
+* 2.- Señal indicando que los snippets han cambiado
+* Returns: TRUE if ok, FALSE if not
+**/
+gboolean
+gtk_snippets_loader_save(GtkSnippetsLoader* loader);
+
+
+/**
  * gtk_snippets_loader_remove_snippet:
  * @loader: The loader
  * @snippet: The snippet to remove 

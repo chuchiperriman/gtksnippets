@@ -9,7 +9,7 @@ Popup List:
 	.- [OK] Study how response when select a snippet. How notify to add the snippet text to the editor
 		.- [OK] When select a snippet launch the "snippet-selected" signal
 		.- [OK] When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
-	.- Add a text view at the right of the snippets tree list with the content of the selected snippet	
+	.- Add a text view at right of the snippets tree list with the content of the selected snippet	
 
 Loader:
 
@@ -20,10 +20,10 @@ Loader:
 	.- [OK] When load the XML, get all languages from GtkSourceLanguagesManager and search on disks for files with 
 		the name of each language name (example: language name C++, file name with the snippets C++.xml ). 
 			.- [OK] Get language from GtkSourceLanguage, not from language tag in the xml.
-	.- Organize snippets in separated lists gruped by language because is more easy to load, to save and 
+	.- [OK] Organize snippets in separated lists gruped by language because is more easy to load, to save and 
 		to build the TreeModels.
 		
-	.- function like gtk-snippets-loader-get-snippets-by-language(gchar* language)
+	.- [OK] function like gtk-snippets-loader-get-snippets-by-language(gchar* language)
 		than only return a list of snippet for this language
 	.- Function add-snippet for add new snippet
 	.- Signal snippet-added when someone add a snippet

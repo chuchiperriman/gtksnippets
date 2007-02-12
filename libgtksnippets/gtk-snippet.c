@@ -138,6 +138,13 @@ gtk_snippet_get_language(GtkSnippet *snippet)
 	return snippet->priv->language;
 }
 
+void
+gtk_snippet_set_tag(GtkSnippet *snippet, const gchar* tag)
+{
+	g_free(snippet->priv->tag);
+	snippet->priv->tag = g_strdup(tag);
+}
+
 const gchar*
 gtk_snippet_get_name(GtkSnippet *snippet)
 {
@@ -155,3 +162,11 @@ gtk_snippet_get_text(GtkSnippet *snippet)
 {
 	return snippet->priv->text;
 }
+
+void
+gtk_snippet_set_text(GtkSnippet *snippet, const gchar* text)
+{
+	g_free(snippet->priv->text);
+	snippet->priv->text = g_strdup(text);
+}
+

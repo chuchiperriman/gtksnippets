@@ -170,6 +170,21 @@ gtk_snippets_manager_get_type (void)
 	return our_type;
 }
 
+static void
+gsm_set_snippets_to_popup(GtkSnippetsManager *manager)
+{
+	gtk_snippets_popup_dialog_set_snippets(
+		manager->priv->popup,
+		gtk_snippets_loader_get_snippets(manager->priv->loader));
+}
+
+static void
+gsm_snippets_changed_cb(GtkSnippetsLoader *loader,gpointer user_data)
+{
+	g_debug("Cambian los snippets");
+	gsm_set_snippets_to_popup(GTK_SNIPPETS_MANAGER(user_data));
+	
+}
 
 /**
  * gtk_snippets_manager_new:
@@ -193,9 +208,10 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 	
 	g_debug("Antes de poner los snippets");
 	
-	gtk_snippets_popup_dialog_set_snippets(
-		obj->priv->popup,
-		gtk_snippets_loader_get_snippets(obj->priv->loader));
+	gsm_set_snippets_to_popup(obj);
+		
+	g_signal_connect(loader, "snippets-changed",
+		G_CALLBACK(gsm_snippets_changed_cb),(gpointer) obj);
 		
 	g_debug("Puestos snippets en el dialog");
 	

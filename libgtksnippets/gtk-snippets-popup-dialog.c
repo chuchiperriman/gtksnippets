@@ -232,6 +232,29 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	g_object_unref(gxml);
 }
 
+/**
+* Crea el arbol pero no hace nada con el modelo
+*/
+static void
+gspd_load_tree(GtkSnippetsPopupDialog *popup_dialog)
+{
+	g_assert(popup_dialog!=NULL);
+	
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	/* crea una columna */
+	column = gtk_tree_view_column_new();
+	/* coloca el nombre a la columna */
+	//gtk_tree_view_column_set_title(column, "Snippet");
+	/* crea un render tipo texto */
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, FALSE);
+	gtk_tree_view_column_set_attributes (column,renderer,"text",1,NULL);
+
+	/* agrega la columna al arbol */
+	gtk_tree_view_append_column (GTK_TREE_VIEW(popup_dialog->priv->tree_view), column);
+}
+
 GtkSnippetsPopupDialog*
 gtk_snippets_popup_dialog_new (void)
 {
@@ -241,6 +264,8 @@ gtk_snippets_popup_dialog_new (void)
 	
 	/* TODO: Add initialization code here */
 	gspd_load_glade(obj);
+	
+	gspd_load_tree(obj);
 	
 	return obj;	
 }
@@ -317,27 +342,11 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 	{
 		g_debug("Asignan nuevos snippets");
 
-		GtkCellRenderer *renderer;
-		GtkTreeViewColumn *column;
 		GtkListStore *list_store;
 		
 		
 		//lenguaje,nombreSnippet,GtkSnippet
 		list_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-		
-		/* crea una columna */
-		column = gtk_tree_view_column_new();
-		
-		/* coloca el nombre a la columna */
-		//gtk_tree_view_column_set_title(column, "Snippet");
-
-		/* crea un render tipo texto */
-		renderer = gtk_cell_renderer_text_new ();
-		gtk_tree_view_column_pack_start (column, renderer, FALSE);
-		gtk_tree_view_column_set_attributes (column,renderer,"text",1,NULL);
-
-		/* agrega la columna al arbol */
-		gtk_tree_view_append_column (GTK_TREE_VIEW(popup_dialog->priv->tree_view), column);
 		
 		g_hash_table_foreach (snippets,gspd_hash_for_each_add_snippet,list_store);
 		
