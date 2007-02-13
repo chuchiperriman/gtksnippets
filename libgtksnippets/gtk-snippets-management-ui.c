@@ -433,7 +433,7 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 				gtk_tree_store_append(store,&actual, &parent);
 				gtk_tree_store_set(store,
 					&actual,
-					COL_NAME, gtk_snippet_get_tag(GTK_SNIPPET(snippets->data)) ,
+					COL_NAME, gtk_snippet_get_name(GTK_SNIPPET(snippets->data)) ,
 					COL_SNIPPET, (gpointer)snippets->data,
 					-1);	
 			}while((snippets = g_list_next(snippets)) != NULL);
