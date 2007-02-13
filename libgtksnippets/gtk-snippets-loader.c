@@ -24,6 +24,7 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <libxml/xmlreader.h>
+#include <string.h>
 #include <gtksourceview/gtksourcelanguagesmanager.h>
 #include "gtk-snippets-loader.h"
 
@@ -380,19 +381,111 @@ gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gc
 	return (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
 }
 
-gboolean
-gtk_snippets_loader_save(GtkSnippetsLoader* loader)
+//Se llama por cada snippet que hay en la lista cuando grabamos
+static void
+gsl_hash_for_each_generate_snippet_xml (gpointer key,
+		gpointer value,
+		gpointer user_data)
 {
+	GList* lista;
+	xmlNodePtr root_node = NULL, snippet_node = NULL, text_node = NULL, cdata_node = NULL;
+	xmlDocPtr doc = NULL;
+	GtkSnippet* snippet;
+	const gchar* content;
+	gchar fich[255];
+	gchar* language;
+	
+	if (value != NULL)
+	{
+		lista = (GList*)value;
+		
+		language = (gchar*)key;
+		
+		doc = xmlNewDoc(BAD_CAST "1.0");
+		root_node = xmlNewNode(NULL, BAD_CAST "snippets");
+		xmlNewProp(root_node, BAD_CAST "language", BAD_CAST language);
+		xmlDocSetRootElement(doc, root_node);
+		
+		do
+		{
+			g_assert(lista->data != NULL);
+			
+			
+    
+			snippet = GTK_SNIPPET(lista->data);
+			
+			snippet_node = xmlNewChild(root_node, NULL, BAD_CAST "snippet",NULL);
+			xmlNewProp(snippet_node, BAD_CAST "id", BAD_CAST gtk_snippet_get_name(snippet) );
+		
+			xmlNewChild(snippet_node, NULL, BAD_CAST "tag", BAD_CAST gtk_snippet_get_tag(snippet));
+			//TODO falta la descripcion
+			xmlNewChild(snippet_node, NULL, BAD_CAST "description", BAD_CAST "Snippet description" );
+			
+			text_node = xmlNewChild(snippet_node, NULL, BAD_CAST "text", NULL);
+			
+			content = gtk_snippet_get_text(snippet);
+			cdata_node = xmlNewCDataBlock(doc, BAD_CAST content, strlen(content));
+			xmlAddChild(text_node,cdata_node);
+			
+		}while((lista = g_list_next(lista))!=NULL);
+
+		sprintf(fich,SNIPPETS_DIR"/%s.xml",language );
+		xmlSaveFormatFileEnc(fich, doc, "UTF-8", 1);
+
+		/*free the document */
+		xmlFreeDoc(doc);
+		
+	}
+	
+	
+	/*
+     *Free the global variables that may
+     *have been allocated by the parser.
+     */
+    xmlCleanupParser();
+
+    /*
+     * this is to debug memory for regression tests
+     */
+    xmlMemoryDump();
+
+}
+
+
+gboolean
+gtk_snippets_loader_save_default(GtkSnippetsLoader* loader)
+{
+
+	//TODO Ñapa de función
+
 	/*
 	* 1.- Graba los snippets en disco
 	* 2.- Señal indicando que los snippets han cambiado
 	*/
-	g_signal_emit(
+	
+	
+	GHashTable *snippets = gtk_snippets_loader_get_snippets(loader);
+	
+	if (snippets != NULL)
+	{
+		//TODO Now we save all the documents and all the snippets!!!!!!!
+		//We must detect what snippets have been changed and only write these on disk
+		g_hash_table_foreach (snippets, gsl_hash_for_each_generate_snippet_xml, NULL);
+		
+		g_signal_emit(
 				loader,
 				gtk_snippets_loader_signals[SIGNAL_TYPE_SNIPPETS_CHANGED],
 				0);
+				
+	}
+	else
+	{
+		g_debug("No hay snippets para grabar???");
+	}
+	
 	
 	return TRUE;
+    
 }
 
 void

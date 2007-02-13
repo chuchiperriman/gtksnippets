@@ -35,6 +35,7 @@ struct _GtkSnippetPrivate {
 	gchar *tag;
 	gchar *description;
 	gchar *text;
+	gboolean modified;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -87,6 +88,7 @@ gtk_snippet_init(GtkSnippet *obj)
 	obj->priv->tag = NULL;
 	obj->priv->description = NULL;
 	obj->priv->text = NULL;
+	obj->priv->modified = FALSE;
 	g_debug("Construido snippet");
 }
 

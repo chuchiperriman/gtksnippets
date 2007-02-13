@@ -85,6 +85,15 @@ GtkSnippetsLoader *gtk_snippets_loader_new();
 void
 gtk_snippets_loader_load_default(GtkSnippetsLoader* loader);
 
+/**
+ * gtk_snippets_loader_save_default:
+ * @loader: The loader
+ * @Returns: TRUE if all works fine. FALSE if not
+ *
+ * Save all the snippets in the defaut place (library path)
+ */
+gboolean
+gtk_snippets_loader_save_default(GtkSnippetsLoader* loader);
 
 /**
  * gtk_snippets_loader_load_from_file:
@@ -130,15 +139,6 @@ gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader);
  */
 GList*
 gtk_snippets_loader_get_snippets_by_language(GtkSnippetsLoader* loader, const gchar* language);
-
-/**
-* 1.- Graba los snippets en disco
-* 2.- Señal indicando que los snippets han cambiado
-* Returns: TRUE if ok, FALSE if not
-**/
-gboolean
-gtk_snippets_loader_save(GtkSnippetsLoader* loader);
-
 
 /**
  * gtk_snippets_loader_remove_snippet:

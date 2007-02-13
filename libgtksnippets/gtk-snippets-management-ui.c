@@ -142,7 +142,7 @@ smngui_dialog_response_cb(GtkDialog *dialog,
 			gtk_widget_hide(GTK_WIDGET(dialog));
 			//TODO Grabar los snippets con el loader
 			//TODO ver qué hacemos con la respuesta de grabar
-			result = gtk_snippets_loader_save(mng->priv->loader);
+			result = gtk_snippets_loader_save_default(mng->priv->loader);
 			break;
 		}
 	}

@@ -10,6 +10,7 @@ Popup List:
 		.- [OK] When select a snippet launch the "snippet-selected" signal
 		.- [OK] When exit the snippet dialog without select any snippet, we launch "snippet-ignored" signal
 	.- Add a text view at right of the snippets tree list with the content of the selected snippet	
+	.- Hide the popup when press ESC
 
 Loader:
 
@@ -38,6 +39,7 @@ Snippets Management UI:
 			.- [OK] Add into the Tree View,
 			.- [OK] Add the snippet into the loader
 	.- [OK] Edit: Edit de snippet tag and content
+	.- HighLight The snippets content 
 
 Manager:
 
