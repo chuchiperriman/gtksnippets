@@ -146,10 +146,20 @@ gtk_snippets_loader_save(GtkSnippetsLoader* loader);
  * @snippet: The snippet to remove 
  *
  * We remove the snippet from the list of snippets an unref it.
- * TODO Falta por mirar mejor en casa!!!
  */
 void
 gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippet);
+
+/**
+ * gtk_snippets_loader_add_snippet:
+ * @loader: The loader
+ * @snippet: The snippet to add. We get the reference, not free it.
+ *
+ * Adds a snippet into the loader. The snippet language must be setted to add it
+ * in the loader because it is mandatory.
+ */
+void
+gtk_snippets_loader_add_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippet);
 
 G_END_DECLS
 

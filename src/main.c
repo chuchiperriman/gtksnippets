@@ -155,6 +155,16 @@ main (int argc, char *argv[])
 	gtk_snippets_loader_remove_snippet(loader,GTK_SNIPPET(g_list_next(temp)->data));
 	g_debug("3");
 	
+	//Add snippet
+	GtkSnippet*	snippet = gtk_snippet_new(
+			"Chuchi",
+			"C",
+			"chtag",
+			"El snippet de chuchi",
+			"Chuchi{asdfasdfasdf}chuchi");
+			
+	gtk_snippets_loader_add_snippet(loader, snippet);
+	
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
 	g_object_unref(loader);

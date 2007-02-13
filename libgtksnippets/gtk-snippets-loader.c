@@ -170,8 +170,6 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 	xmlNode *cur_node = NULL;
 	gboolean res = TRUE;
 	GtkSnippet *snippet;
-	GList *snippets_list;
-	GList *snippet_added;
 	
 	name = xmlGetProp(a_node, ATT_ID);
 	
@@ -211,13 +209,7 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 			(gchar*)description,
 			(gchar*)text);
 			
-	//TODO liberar esto
-	//Cogemos la lista para este lenguage
-	snippets_list = (GList*) g_hash_table_lookup(loader->priv->language_hash,language);
-	snippet_added = g_list_append(snippets_list, snippet);
-	//Si no tenía lista, la añadimos al hash
-	if (snippets_list == NULL)
-		g_hash_table_insert(loader->priv->language_hash, language, snippet_added);
+	gtk_snippets_loader_add_snippet(loader, snippet);
 		
 	xmlFree(name);
 	xmlFree(tag);
@@ -372,48 +364,6 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 void
 gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 {
-	//Leer ficheros .xml
-	//Parsear cada uno
-	//Generar las listas de snippets
-	
-	
-	//TODO AHORA ESTAN PUESTAS COCHINADAS PARA DEPURAR
-	/*gint num_snippets = 50;
-	gchar temp[255];
-	gchar temp2[255];
-	gchar temp3[255];
-	int i;
-	for (i=0;i<num_snippets;i++){
-		g_sprintf(temp,"nombre%d",i);
-		g_sprintf(temp2,"descripcion%d",i);
-		g_sprintf(temp3,"sentencia%d",i);
-		g_hash_table_insert(
-			loader->priv->snippets_hash,
-			g_strdup(temp),
-			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
-	}
-	
-	for (i=0;i<num_snippets;i++){
-		g_sprintf(temp,"aaanombre%d",i);
-		g_sprintf(temp2,"aaadescripcion%d",i);
-		g_sprintf(temp3,"aaasentencia%d",i);
-		g_hash_table_insert(
-			loader->priv->snippets_hash,
-			g_strdup(temp),
-			(gpointer)gtk_snippet_new(g_strdup(temp),"C",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
-	}
-	
-	for (i=0;i<num_snippets;i++){
-		g_sprintf(temp,"PYTHONnombre%d",i);
-		g_sprintf(temp2,"PYTHONdescripcion%d",i);
-		g_sprintf(temp3,"PYTHONsentencia%d",i);
-		g_hash_table_insert(
-			loader->priv->snippets_hash,
-			g_strdup(temp),
-			(gpointer)gtk_snippet_new(g_strdup(temp),"PYTHON",g_strdup(temp),g_strdup(temp2),g_strdup(temp3)));
-	}
-	
-	*/
 	gtk_snippets_loader_load_from_dir(loader,SNIPPETS_DIR);
 	
 }
@@ -474,6 +424,28 @@ gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippe
 	//g_free(language);
 	
 	//TODO raise signal
+	
+}
+
+void
+gtk_snippets_loader_add_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippet)
+{
+	const gchar* language;
+	GList* snippets_list;
+	GList* snippet_added;
+	
+	g_assert(snippet!=NULL);
+
+	language = gtk_snippet_get_language(snippet);
+
+	g_return_if_fail(language != NULL);	
+	
+	snippets_list = (GList*) g_hash_table_lookup(loader->priv->language_hash,language);
+	snippet_added = g_list_append(snippets_list, snippet);
+	//Si no tenía lista, la añadimos al hash
+	if (snippets_list == NULL)
+		g_hash_table_insert(loader->priv->language_hash, (gchar*)language, snippet_added);	
+	
 	
 }
 

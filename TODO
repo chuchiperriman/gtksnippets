@@ -16,7 +16,6 @@ Loader:
 	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
 	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the
 		key but the id can be equal for various snippets
-	.- When load the snippet name, it deletes some characters. Example "bool-1", loader put bool1 or bool
 	.- [OK] When load the XML, get all languages from GtkSourceLanguagesManager and search on disks for files with 
 		the name of each language name (example: language name C++, file name with the snippets C++.xml ). 
 			.- [OK] Get language from GtkSourceLanguage, not from language tag in the xml.
@@ -24,17 +23,21 @@ Loader:
 		to build the TreeModels.
 		
 	.- [OK] function like gtk-snippets-loader-get-snippets-by-language(gchar* language)
-		than only return a list of snippet for this language
-	.- Function add-snippet for add new snippet
+			than only return a list of snippet for this language
+	.- [OK] Function add-snippet for add new snippet
 	.- Signal snippet-added when someone add a snippet
-	.- Function remove-snippet for delete a snippet
+	.- [OK] Function remove-snippet for delete a snippet. It Remove a snippet from the list and unref it.
 	.- Signal snippet-removes when someone remove a snippet
 	.- Function save for save the actual snippets on disk.
 		
 Snippets Management UI:
 
 	.- Insert, remove and edit snippets in the dialog.
-	.- 
+	.- [OK]Remove: Remove from loader and remove from tree view
+	.- [OK] Add Snippet:
+			.- [OK] Add into the Tree View,
+			.- [OK] Add the snippet into the loader
+	.- [OK] Edit: Edit de snippet tag and content
 
 Manager:
 

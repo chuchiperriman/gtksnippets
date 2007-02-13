@@ -294,6 +294,100 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
 }
 
 
+/**
+ * smngui_get_active_language:
+ * @mng: The manager
+ * @iter: An Iter to set the position of the language item. If NULL then 
+ * ignore this parameter. If a snippet is selected then we return the parent, if 
+ * a language is selected, we return it.
+ * @Returns: language or NULL if not found
+ *
+ */
+static const gchar*
+smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter)
+{
+	GtkTreeModel* model;
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	GtkTreeIter iter;
+	GValue value = {0,};
+	GValue value_language = {0,};
+	GtkSnippet* snippet;
+	const gchar* language = NULL;
+	
+	model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+	
+	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
+	if(path && column)
+	{
+		if(gtk_tree_model_get_iter(model,&iter,path))
+		{
+			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
+			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
+			if (snippet != NULL)
+			{
+				language = gtk_snippet_get_language(snippet);
+				gtk_tree_model_iter_parent(model,parent_iter,&iter);
+			}
+			else
+			{
+				gtk_tree_model_get_value(model, &iter, COL_NAME ,&value_language);
+				language = g_value_get_string (&value_language);
+				*parent_iter = iter;
+			}
+		}
+	}
+
+	if(path) gtk_tree_path_free(path);
+	
+	return language;
+}
+
+
+static void
+smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar* snippet_name)
+{
+	const gchar* language;
+	GtkTreeIter parent, actual;
+	GtkTreeStore *store;
+	GtkTreePath *path;
+	GtkSnippet*	snippet; 
+	
+	store = GTK_TREE_STORE(gtk_tree_view_get_model(mng->priv->snippets_tree));
+	language = smngui_get_active_language(mng, &parent);
+	
+	
+	
+	g_assert(language != NULL);
+	
+	snippet = gtk_snippet_new(
+					snippet_name,
+					language,
+					"",
+					"New Snippet created. We need view where we can add this text",
+					"");
+	
+	gtk_tree_store_append(store,&actual, &parent);
+	
+	gtk_tree_store_set(store,
+		&actual,
+		COL_NAME, gtk_snippet_get_name(snippet) ,
+		COL_SNIPPET,snippet,
+		-1);
+		
+	//Focus on new snippet
+	path = gtk_tree_model_get_path(GTK_TREE_MODEL(store),&actual);
+	if (path)
+	{
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path, NULL, FALSE);
+		gtk_tree_path_free(path);
+	}
+	
+	gtk_snippets_loader_add_snippet(mng->priv->loader, snippet);
+	
+}
+
+
 static void
 smngui_new_dialog_response_cb(GtkDialog *dialog,
 		gint response_id,
@@ -301,6 +395,7 @@ smngui_new_dialog_response_cb(GtkDialog *dialog,
 {
 	GtkSnippetsManagementUI *mng;
 	const gchar* temp;
+	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	
 	g_debug("New Dialog response: %i",response_id);
@@ -310,10 +405,10 @@ smngui_new_dialog_response_cb(GtkDialog *dialog,
 		case GTK_RESPONSE_ACCEPT:
 			gtk_widget_hide(GTK_WIDGET(dialog));
 			temp = gtk_entry_get_text(GTK_ENTRY(mng->priv->new_dialog_entry));
+			//temp = g_strstrip(temp);
 			if (strcmp(temp,"")!=0)
 			{
-				//TODO Añadir el snippet
-				g_debug("Tiene datos");
+				smngui_add_snippet_to_tree_and_loader(mng,temp);
 			}
 			break;
 		default:
