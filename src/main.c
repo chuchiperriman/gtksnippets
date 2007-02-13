@@ -145,7 +145,7 @@ main (int argc, char *argv[])
 	
 	gtk_snippets_loader_load_default(loader);
 
-	GList* temp = gtk_snippets_loader_get_snippets_by_language(loader, "C");
+	/*GList* temp = gtk_snippets_loader_get_snippets_by_language(loader, "C");
 	gtk_snippets_loader_remove_snippet(loader,GTK_SNIPPET(temp->data));
 	g_debug("1");
 	temp = gtk_snippets_loader_get_snippets_by_language(loader, "C");
@@ -164,6 +164,7 @@ main (int argc, char *argv[])
 			"Chuchi{asdfasdfasdf}chuchi");
 			
 	gtk_snippets_loader_add_snippet(loader, snippet);
+	*/
 	
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	

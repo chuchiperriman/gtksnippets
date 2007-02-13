@@ -28,7 +28,7 @@
 #include <gtksourceview/gtksourcelanguagesmanager.h>
 #include "gtk-snippets-loader.h"
 
-#define DEFAULT_SNIPPETS_DIR SNIPPETS_DIR
+//#define DEFAULT_SNIPPETS_DIR SNIPPETS_DIR
 
 #define TAG_SNIPPETS (const xmlChar *)"snippets"
 #define ATT_LANGUAGE (const xmlChar *)"language"
@@ -47,6 +47,8 @@ struct _GtkSnippetsLoaderPrivate {
 	//Hash <language,snippets_List>
 	GHashTable *language_hash;
 	gint snippets_count;
+	gchar* default_path;
+	
 };
 
 typedef struct _GtkSnippetsLoaderSignal GtkSnippetsLoaderSignal;
@@ -107,6 +109,25 @@ gtk_snippets_loader_destroy_snippets_list(gpointer data)
 	}
 }
 
+static gchar*
+gsl_get_default_path()
+{
+	gchar path[255];
+	
+	//TODO not portable
+	sprintf(path,"%s/.gnome2/libgtksnippets/snippets",g_get_home_dir());
+	
+	if (!g_file_test(path , G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+	{
+		if (g_mkdir_with_parents(path,0755)==0)
+			g_debug("Folder created: %s",path);
+		else
+			g_debug("Cannot create the home folder: %s",path);
+	}
+	
+	return g_strdup(path);
+}
+
 static void
 gtk_snippets_loader_class_init(GtkSnippetsLoaderClass *klass)
 {
@@ -135,6 +156,7 @@ gtk_snippets_loader_init(GtkSnippetsLoader *obj)
 	/* Initialize private members, etc. */
 	obj->priv->language_hash = g_hash_table_new_full(g_str_hash, g_str_equal , NULL, gtk_snippets_loader_destroy_snippets_list);
 	obj->priv->snippets_count = 0;
+	obj->priv->default_path = gsl_get_default_path();
 	g_debug("Construido snippets loader");
 }
 
@@ -146,10 +168,16 @@ gtk_snippets_loader_finalize(GObject *object)
 	
 	/* Free private members, etc. */
 	g_hash_table_destroy(cobj->priv->language_hash);
+	g_free(cobj->priv->default_path);
+	
 	g_free(cobj->priv);
+	
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 	g_debug("Destruido snippets loader");
 }
+
+
+
 
 GtkSnippetsLoader *
 gtk_snippets_loader_new()
@@ -365,8 +393,8 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 void
 gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 {
-	gtk_snippets_loader_load_from_dir(loader,SNIPPETS_DIR);
-	
+	gtk_snippets_loader_load_from_dir(loader,loader->priv->default_path);
+	g_debug("Load default end");
 }
 
 GHashTable*
@@ -394,6 +422,9 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 	const gchar* content;
 	gchar fich[255];
 	gchar* language;
+	GtkSnippetsLoader* loader;
+	
+	loader = GTK_SNIPPETSLOADER(user_data);
 	
 	if (value != NULL)
 	{
@@ -429,7 +460,8 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 			
 		}while((lista = g_list_next(lista))!=NULL);
 
-		sprintf(fich,SNIPPETS_DIR"/%s.xml",language );
+		sprintf(fich,"%s/%s.xml", loader->priv->default_path, language );
+		
 		xmlSaveFormatFileEnc(fich, doc, "UTF-8", 1);
 
 		/*free the document */
@@ -470,7 +502,7 @@ gtk_snippets_loader_save_default(GtkSnippetsLoader* loader)
 	{
 		//TODO Now we save all the documents and all the snippets!!!!!!!
 		//We must detect what snippets have been changed and only write these on disk
-		g_hash_table_foreach (snippets, gsl_hash_for_each_generate_snippet_xml, NULL);
+		g_hash_table_foreach (snippets, gsl_hash_for_each_generate_snippet_xml, loader);
 		
 		g_signal_emit(
 				loader,

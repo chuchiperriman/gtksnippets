@@ -30,6 +30,7 @@ Loader:
 	.- [OK] Function remove-snippet for delete a snippet. It Remove a snippet from the list and unref it.
 	.- Signal snippet-removes when someone remove a snippet
 	.- Function save for save the actual snippets on disk.
+	.- [OK] Change the default load. Loads snippets from user home (/home/chuchi/.gnome2/libgtksnippets).
 		
 Snippets Management UI:
 
@@ -51,3 +52,6 @@ Other:
 
 	.- Generate gtk-doc
 	.- Put all asserts in the functions
+	.- Support Global snippets. Snippets that are showed with every languages.
+	
+	
