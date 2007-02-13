@@ -221,7 +221,7 @@ gtk_snippets_manager_new (GtkSnippetsLoader *loader)
 static void
 gtk_snippet_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnippet *snippet, gpointer user_data)
 {
-	gchar *text;
+	const gchar *text;
 	GtkTextBuffer *buffer;
 	EditorData *data =(EditorData*)user_data;
 	

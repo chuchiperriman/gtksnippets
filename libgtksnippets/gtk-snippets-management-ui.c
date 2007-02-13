@@ -225,10 +225,31 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	* Remove snippet from tree_model 
 	*/
 	GtkSnippetsManagementUI *mng;
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	GtkTreeModel *model;
+	GtkSnippet *snippet;
+	GtkTreeIter iter;
 	
 	g_debug("remove the snippet");
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	snippet = smngui_get_active_snippet(mng);
+	
+	gtk_snippets_loader_remove_snippet(mng->priv->loader, snippet);
+	
+	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
+	if(path && column) 
+	{
+		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+		if(gtk_tree_model_get_iter(model,&iter,path))
+		{
+			//Quitamos el actual
+			gtk_tree_store_remove(GTK_TREE_STORE(model),&iter);
+		}
+	}
+
+	if(path) gtk_tree_path_free(path);
 	
 }
 
