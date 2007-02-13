@@ -226,30 +226,57 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	*/
 	GtkSnippetsManagementUI *mng;
 	GtkTreePath *path;
+	GtkTreePath *path_new;
 	GtkTreeViewColumn *column;
 	GtkTreeModel *model;
 	GtkSnippet *snippet;
-	GtkTreeIter iter;
+	GtkTreeIter iter,parent_iter;
 	
 	g_debug("remove the snippet");
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	snippet = smngui_get_active_snippet(mng);
 	
-	gtk_snippets_loader_remove_snippet(mng->priv->loader, snippet);
-	
-	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
-	if(path && column) 
+	if (snippet != NULL)
 	{
-		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
-		if(gtk_tree_model_get_iter(model,&iter,path))
+		gtk_snippets_loader_remove_snippet(mng->priv->loader, snippet);
+	
+		gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
+		if(path && column) 
 		{
-			//Quitamos el actual
-			gtk_tree_store_remove(GTK_TREE_STORE(model),&iter);
+			model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+			if(gtk_tree_model_get_iter(model,&iter,path))
+			{
+				gtk_tree_model_iter_parent(model, &parent_iter, &iter);
+				
+				//Quitamos el snippet actual del árbol
+				if (gtk_tree_store_remove(GTK_TREE_STORE(model),&iter))
+				{
+					path_new = gtk_tree_model_get_path(model,&iter);
+					if (path_new)
+					{
+						gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path_new, NULL, FALSE);
+						gtk_tree_path_free(path_new);
+					}
+				}
+				else
+				{
+					path_new = gtk_tree_model_get_path(model,&parent_iter);
+					if (path_new)
+					{
+						gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path_new, NULL, FALSE);
+						gtk_tree_path_free(path_new);
+					}
+					else
+					{
+						gtk_widget_grab_focus(GTK_WIDGET(mng->priv->snippets_tree));
+					}
+				}
+			}
 		}
-	}
 
-	if(path) gtk_tree_path_free(path);
+		if(path) gtk_tree_path_free(path);
+	}
 	
 }
 

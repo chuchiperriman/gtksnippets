@@ -461,8 +461,6 @@ gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippe
 	
 	new_start = g_list_remove(snippets_list,snippet);
 	
-	g_assert(new_start!=NULL);
-	
 	if (new_start != snippets_list)
 	{
 		g_hash_table_steal(loader->priv->language_hash,language);
