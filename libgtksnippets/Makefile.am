@@ -43,6 +43,19 @@ libgtksnippets_la_LDFLAGS = \
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs gtksourceview-1.0`
 
+INST_H_FILES = \
+	gtk-snippet.h \
+	gtk-snippets-gsv-utils.h  \
+	gtk-snippets-loader.h  \
+	gtk-snippets-management-ui.h  \
+	gtk-snippets-manager.h  \
+	gtk-snippets-popup-dialog.h
+
+headerdir = $(prefix)/include/libgtksnippets-1
+
+header_DATA =                           \
+        $(INST_H_FILES) 
+
 EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
 	
 ## File created by the gnome-build tools

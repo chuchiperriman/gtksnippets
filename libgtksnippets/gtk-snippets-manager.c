@@ -250,8 +250,6 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 										GdkEventKey *event,
 										gpointer user_data)
 {
-
-	static gboolean es_c = TRUE;
 	gchar* word;
 	gint x, y;
 	FilterData filter_data;
@@ -265,12 +263,7 @@ gtk_snippet_manager_sw_key_press_event(GtkWidget *widget,
 					&data->word_end);
 		
 		filter_data.tag = word;
-		if (es_c)
-			filter_data.language = "C";
-		else
-			filter_data.language = NULL;
-		
-		es_c = !es_c;
+		filter_data.language = data->language;
 			
 		gtk_snippets_popup_dialog_filter(
 				data->manager->priv->popup,
