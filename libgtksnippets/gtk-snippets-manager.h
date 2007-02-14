@@ -73,6 +73,10 @@ gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer ed
 void
 gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor);
 
+GtkSnippetsLoader*
+gtk_snippets_manager_get_loader (GtkSnippetsManager *manager);
+
+
 G_END_DECLS
 
 #endif /* _GTK_SNIPPETS_MANAGER_H_ */

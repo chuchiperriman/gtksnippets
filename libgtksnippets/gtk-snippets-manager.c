@@ -334,3 +334,10 @@ gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer edito
 	//Al quitar del hash llama a destruir el EditorData (y desconecta todo lo que tiene que desconectar)
 	g_hash_table_remove(manager->priv->editors_hash, editor);
 }
+
+GtkSnippetsLoader*
+gtk_snippets_manager_get_loader (GtkSnippetsManager *manager)
+{
+	return manager->priv->loader;
+}
+
