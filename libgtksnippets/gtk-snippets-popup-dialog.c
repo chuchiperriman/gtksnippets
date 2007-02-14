@@ -25,6 +25,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include <gdk/gdkkeysyms.h>
 #include "gtk-snippet.h"
 #include "gtk-snippets-popup-dialog.h"
 
@@ -206,11 +207,24 @@ snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
 				gtk_snippets_popup_dialog_signals[SIGNAL_TYPE_SNIPPET_SELECTED],
 				0,
 				snippet);
-		
+	}
+	g_debug("Row selected");
+}
+
+static gboolean
+gspd_key_release_esc_hide_cb(GtkWidget *widget,
+										GdkEventKey *event,
+										gpointer user_data)
+{
+	GtkSnippetsPopupDialog *popup;
+	
+	if (event->keyval == GDK_Escape)
+	{
+		popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+		gtk_widget_hide(popup->priv->window);
 	}
 	
-	g_debug("Row selected");
-
+	return FALSE;
 }
 
 static void
@@ -228,6 +242,9 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 		
 	g_signal_connect(GTK_WIDGET(obj->priv->window), "focus-out-event",
 		G_CALLBACK(snippets_popup_dialog_focus_out_event_cb),(gpointer) obj);
+		
+	g_signal_connect(GTK_WIDGET(obj->priv->window), "key-release-event",
+		G_CALLBACK(gspd_key_release_esc_hide_cb),(gpointer) obj);
 	
 	g_object_unref(gxml);
 }
