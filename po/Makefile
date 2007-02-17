@@ -52,15 +52,16 @@ INCLUDES = -I.. -I$(top_srcdir)/intl
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
 SOURCES = 
-POFILES = 
-GMOFILES = 
+POFILES =  es.po
+GMOFILES =  es.gmo
 DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(GETTEXT_PACKAGE).pot \
 $(POFILES) $(GMOFILES) $(SOURCES)
 
 POTFILES = \
-	../src/main.c
+	../src/main.c \
+	../libgtksnippets/gtk-snippets-management-ui.glade 
 
-CATALOGS = 
+CATALOGS =  es.gmo
 CATOBJEXT = .gmo
 INSTOBJEXT = .mo
 

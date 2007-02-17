@@ -24,7 +24,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [GETTEXT package name])
 
 dnl Add the languages which your application supports here.
-ALL_LINGUAS=""
+ALL_LINGUAS="es"
 AM_GLIB_GNU_GETTEXT
 
 GTK_DOC_CHECK(1.4)

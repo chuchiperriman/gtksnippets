@@ -139,6 +139,7 @@ main (int argc, char *argv[])
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
 
+	g_debug( _("Test") );
 	window = create_window ();
 	
 	GtkSnippetsLoader *loader = gtk_snippets_loader_new();

@@ -54,16 +54,16 @@ CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
 AWK = mawk
-CATALOGS = 
+CATALOGS =  es.gmo
 CATOBJEXT = .gmo
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -83,13 +83,13 @@ ECHO_C =
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
-ENABLE_GTK_DOC_FALSE = #
-ENABLE_GTK_DOC_TRUE = 
+ENABLE_GTK_DOC_FALSE = 
+ENABLE_GTK_DOC_TRUE = #
 EXEEXT = 
 F77 = 
 FFLAGS = 
 GETTEXT_PACKAGE = gtksnippets
-GMOFILES = 
+GMOFILES =  es.gmo
 GMSGFMT = /usr/bin/msgfmt
 GREP = /bin/grep
 GTKSNIPPETS_CFLAGS = -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/libglade-2.0 -I/usr/include/libxml2  
@@ -112,7 +112,7 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
@@ -124,7 +124,7 @@ PACKAGE_TARNAME = gtksnippets
 PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
-POFILES = 
+POFILES =  es.po
 POSUB = po
 PO_IN_DATADIR_FALSE = 
 PO_IN_DATADIR_TRUE = 
@@ -166,7 +166,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/chuchi/Projects/gtksnippets/install-sh
+install_sh = /home/perriman/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -451,8 +451,8 @@ uninstall-am: uninstall-info-am uninstall-local
 	uninstall-info-am uninstall-local
 
 
-all-local: html-build.stamp
-#all-local:
+#all-local: html-build.stamp
+all-local:
 
 docs: html-build.stamp
 
@@ -541,10 +541,10 @@ uninstall-local:
 #
 # Require gtk-doc when making dist
 #
-dist-check-gtkdoc:
 #dist-check-gtkdoc:
-#	@echo "*** gtk-doc must be installed and enabled in order to make dist"
-#	@false
+dist-check-gtkdoc:
+	@echo "*** gtk-doc must be installed and enabled in order to make dist"
+	@false
 
 dist-hook: dist-check-gtkdoc dist-hook-local
 	mkdir $(distdir)/tmpl
