@@ -54,5 +54,10 @@ Other:
 	.- Generate gtk-doc
 	.- Put all asserts in the functions
 	.- Support Global snippets. Snippets that are showed with every languages.
+	.- Upload all the API to the web
+	.- Update the web site in english
+	.- Write examples in the web
+	.- Make a release in sourceforge
+	.- Announce the project in gnome-devtools list
 	
 	
