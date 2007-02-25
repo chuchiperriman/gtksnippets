@@ -300,16 +300,18 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
  * @iter: An Iter to set the position of the language item. If NULL then 
  * ignore this parameter. If a snippet is selected then we return the parent, if 
  * a language is selected, we return it.
+ * @path: You must pass the pointer reference.if not NULL then we set the path
+ * of the actual language. You must free it if return the path
  * @Returns: language or NULL if not found
  *
  */
 static const gchar*
-smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter)
+smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter, GtkTreePath** path)
 {
 	GtkTreeModel* model;
-	GtkTreePath *path;
+	GtkTreePath *internal_path;
 	GtkTreeViewColumn *column;
-	GtkTreeIter iter;
+	GtkTreeIter iter,internal_parent_iter;
 	GValue value = {0,};
 	GValue value_language = {0,};
 	GtkSnippet* snippet;
@@ -317,29 +319,37 @@ smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter
 	
 	model = gtk_tree_view_get_model(mng->priv->snippets_tree);
 	
-	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
-	if(path && column)
+	gtk_tree_view_get_cursor(mng->priv->snippets_tree,&internal_path,&column);
+	if(internal_path && column)
 	{
-		if(gtk_tree_model_get_iter(model,&iter,path))
+		if(gtk_tree_model_get_iter(model,&iter,internal_path))
 		{
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
 			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
 			if (snippet != NULL)
 			{
 				language = gtk_snippet_get_language(snippet);
-				gtk_tree_model_iter_parent(model,parent_iter,&iter);
+				gtk_tree_model_iter_parent(model,&internal_parent_iter,&iter);
 			}
 			else
 			{
 				gtk_tree_model_get_value(model, &iter, COL_NAME ,&value_language);
 				language = g_value_get_string (&value_language);
-				*parent_iter = iter;
+				internal_parent_iter = iter;
 			}
+			if (parent_iter != NULL)
+				*parent_iter = internal_parent_iter;
 		}
 	}
-
-	if(path) gtk_tree_path_free(path);
-	
+		
+	if(internal_path)
+	{
+		if (path != NULL)
+			*path = internal_path;
+		else
+			gtk_tree_path_free(internal_path);
+	}
+		
 	return language;
 }
 
@@ -351,10 +361,11 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 	GtkTreeIter parent, actual;
 	GtkTreeStore *store;
 	GtkTreePath *path;
+	GtkTreePath *parent_path = NULL;
 	GtkSnippet*	snippet; 
 	
 	store = GTK_TREE_STORE(gtk_tree_view_get_model(mng->priv->snippets_tree));
-	language = smngui_get_active_language(mng, &parent);
+	language = smngui_get_active_language(mng, &parent,&parent_path);
 	
 	
 	
@@ -379,11 +390,20 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(store),&actual);
 	if (path)
 	{
+		//Desplegamos el padre 
+		if (!gtk_tree_view_row_expanded(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path))
+			gtk_tree_view_expand_row(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path,FALSE);
+			
 		gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path, NULL, FALSE);
 		gtk_tree_path_free(path);
 	}
 	
 	gtk_snippets_loader_add_snippet(mng->priv->loader, snippet);
+	
+	if (parent_path)
+		gtk_tree_path_free(parent_path);
+	if (path)
+		gtk_tree_path_free(path);
 	
 }
 

@@ -63,6 +63,11 @@ GType gtk_snippet_get_type();
 
 /**
 * gtk_snippet_new:
+* @name: Snippet name
+* @language: Snippet language name. From gtk_source_language_get_name()
+* @tag: Snippet tag when the popup is showed
+* @description: Snippet description
+* @text: Snippet content then we insert in the editor
 *
 * Create new GtkSnippet with all the data. When call this 
 * function, all arguments are duplicated in the snippet memory
@@ -76,7 +81,7 @@ gtk_snippet_new(const gchar *name,
 		
 /**
 * gtk_snippet_get_language:
-* @snippet: 
+* @snippet: The Snippet
 * @Returns: Snippet language internal variable. Not free!!
 **/
 const gchar*
@@ -84,7 +89,7 @@ gtk_snippet_get_language(GtkSnippet *snippet);
 
 /**
 * gtk_snippet_get_name:
-* @snippet: 
+* @snippet: The Snippet
 * @Returns: Snippet name internal variable. Not free!!
 **/
 const gchar*
@@ -92,12 +97,17 @@ gtk_snippet_get_name(GtkSnippet *snippet);
 
 /**
 * gtk_snippet_get_tag:
-* @snippet: 
+* @snippet: The Snippet
 * @Returns: Snippet tag internal variable. Not free!!
 **/
 const gchar*
 gtk_snippet_get_tag(GtkSnippet *snippet);
 
+/**
+* gtk_snippet_set_tag:
+* @snippet: The Snippet
+* @tag: The tag to set.
+**/
 void
 gtk_snippet_set_tag(GtkSnippet *snippet, const gchar* tag);
 
@@ -109,6 +119,11 @@ gtk_snippet_set_tag(GtkSnippet *snippet, const gchar* tag);
 const gchar*
 gtk_snippet_get_text(GtkSnippet *snippet);
 
+/**
+* gtk_snippet_set_text:
+* @snippet: The snippet
+* @text: the text to set
+**/
 void
 gtk_snippet_set_text(GtkSnippet *snippet, const gchar* text);
 

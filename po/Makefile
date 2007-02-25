@@ -59,7 +59,7 @@ $(POFILES) $(GMOFILES) $(SOURCES)
 
 POTFILES = \
 	../src/main.c \
-	../libgtksnippets/gtk-snippets-management-ui.glade 
+	../libgtksnippets/gtk-snippets-management-ui.glade
 
 CATALOGS =  es.gmo
 CATOBJEXT = .gmo

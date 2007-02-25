@@ -48,6 +48,10 @@ Manager:
 	.- [OK] When insert the snippet text in the gtktextview, we may remove the previous word. We write "if"
 		press control+space, we select the snippet then the "if" word that we wrote may be deleted.
 	.- [OK] Implement remove_support: When call remove support, we may disconnect any signal in this editor.
+	.- [OK] focus fails when we add a snippet in an empty language.
+	.- If we add a new snippet and remove it without close the management dialog,
+	fails (because we have not saved the snippet on the loader and when we remove the
+	snippet from the loader, then crash).
 	
 Other:
 
@@ -57,7 +61,7 @@ Other:
 	.- Upload all the API to the web
 	.- Update the web site in english
 	.- Write examples in the web
-	.- Make a release in sourceforge
+	.- [OK] Make a release in sourceforge
 	.- Announce the project in gnome-devtools list
-	
+	.- Change language assignment with mime-type in all classes	
 	

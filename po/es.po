@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-17 10:00+0100\n"
+"POT-Creation-Date: 2007-02-24 11:36+0100\n"
 "PO-Revision-Date: 2007-02-17 10:00+0100\n"
 "Last-Translator: Chuchi <chuchiperriman@gmail.com>\n"
 "Language-Team: <en@li.org>\n"
@@ -15,46 +15,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/main.c:142
+#: src/main.c:142
 msgid "Test"
 msgstr "Prueba lalalaaaaa"
 
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:1
-msgid "    "
-msgstr "    "
-
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:2
-msgid "<b>Activation</b>"
-msgstr "<b>Activación</b>"
-
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:3
-msgid "Snippet name:"
-msgstr "Nombre del Snippet"
-
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:4
+#: libgtksnippets/gtk-snippets-management-ui.glade:6
 msgid "Snippets Manager"
 msgstr "Gestor de Snippets"
 
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:5
-msgid "_Accelerator:"
-msgstr "_Acelerador:"
-
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:6
-msgid "_Edit snippet:"
-msgstr "_Editar snippet:"
-
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:7
+#: libgtksnippets/gtk-snippets-management-ui.glade:32
 msgid "_Snippets:"
 msgstr "_Snippets:"
 
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:8
+#: libgtksnippets/gtk-snippets-management-ui.glade:114
+msgid "_Edit snippet:"
+msgstr "_Editar snippet:"
+
+#: libgtksnippets/gtk-snippets-management-ui.glade:152
+msgid "<b>Activation</b>"
+msgstr "<b>Activación</b>"
+
+#: libgtksnippets/gtk-snippets-management-ui.glade:168
+msgid "    "
+msgstr "    "
+
+#: libgtksnippets/gtk-snippets-management-ui.glade:201
+msgid "_Accelerator:"
+msgstr "_Acelerador:"
+
+#: libgtksnippets/gtk-snippets-management-ui.glade:217
 msgid "_Tab trigger:"
 msgstr "_Tab trigget:"
 
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:9
+#: libgtksnippets/gtk-snippets-management-ui.glade:317
+msgid "Snippet name:"
+msgstr "Nombre del Snippet"
+
+#: libgtksnippets/gtk-snippets-management-ui.glade:343
 msgid "gtk-add"
 msgstr "gtk-add"
 
-#: ../libgtksnippets/gtk-snippets-management-ui.glade.h:10
+#: libgtksnippets/gtk-snippets-management-ui.glade:353
 msgid "gtk-cancel"
 msgstr "gtk-cancel"

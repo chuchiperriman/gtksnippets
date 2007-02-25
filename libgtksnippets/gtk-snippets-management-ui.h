@@ -37,8 +37,15 @@ G_BEGIN_DECLS
 #define GTK_IS_SNIPPETS_MANAGEMENT_UI_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SNIPPETS_MANAGEMENT_UI))
 #define GTK_SNIPPETS_MANAGEMENT_UI_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SNIPPETS_MANAGEMENT_UI, GtkSnippetsManagementUIClass))
 
-typedef struct _GtkSnippetsManagementUIClass GtkSnippetsManagementUIClass;
+/**
+ * GtkSnippetsManagementUI:
+ *	@parent: GObject Parent
+ * @priv: Private data
+ *
+ * This object create a dialog to manage the snippets.
+**/
 typedef struct _GtkSnippetsManagementUI GtkSnippetsManagementUI;
+typedef struct _GtkSnippetsManagementUIClass GtkSnippetsManagementUIClass;
 typedef struct _GtkSnippetsManagementUIPrivate GtkSnippetsManagementUIPrivate;
 
 struct _GtkSnippetsManagementUIClass
@@ -54,12 +61,28 @@ struct _GtkSnippetsManagementUI
 
 GType gtk_snippets_management_ui_get_type (void) G_GNUC_CONST;
 
+/**
+* gtk_smngui_create_source_view:
+* @Returns: Creates the new sourceview to use in the management ui
+*
+* It is internal, do not use
+**/
 GtkWidget*
 gtk_smngui_create_source_view();
 
+/**
+* gtk_snippets_management_ui_new:
+* @Returns: The new snippets management ui
+**/
 GtkSnippetsManagementUI* 
 gtk_snippets_management_ui_new (GtkSnippetsLoader *loader);
 
+/**
+* gtk_snippets_management_ui_show:
+* @mng_ui: The ui.
+*
+* Show the management window
+**/
 void
 gtk_snippets_management_ui_show(GtkSnippetsManagementUI* mng_ui);
 

@@ -70,9 +70,22 @@ GtkSnippetsManager* gtk_snippets_manager_new (GtkSnippetsLoader *loader);
 void 
 gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer editor, const gchar* language);
 
+/**
+* gtk_snippets_manager_remove_support:
+* @manager: The manager
+* @editor: The editor to remove snippets support
+*
+* Removes the snippets support to this editor. We disconect all signals and 
+* free all internal data
+**/
 void
 gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor);
 
+/**
+* gtk_snippets_manager_get_loader:
+* @manager: The manager
+* @Returns: The loader assined to this manager when we create it.
+**/
 GtkSnippetsLoader*
 gtk_snippets_manager_get_loader (GtkSnippetsManager *manager);
 

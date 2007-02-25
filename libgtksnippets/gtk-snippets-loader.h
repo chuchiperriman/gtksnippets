@@ -69,7 +69,7 @@ struct _GtkSnippetsLoaderClass {
 GType gtk_snippets_loader_get_type();
 /**
  * gtk_snippets_loader_new:
- * 
+ * @Returns: The new GtkSnippetsLoader
  * Create a new loader but not load anything
  */
 GtkSnippetsLoader *gtk_snippets_loader_new();
