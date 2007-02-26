@@ -7,7 +7,9 @@ gtk_snippet_new
 gtk_snippet_get_language
 gtk_snippet_get_name
 gtk_snippet_get_tag
+gtk_snippet_set_tag
 gtk_snippet_get_text
+gtk_snippet_set_text
 <SUBSECTION Standard>
 GTK_SNIPPET
 GTK_IS_SNIPPET
@@ -25,10 +27,13 @@ GtkSnippetsLoaderPrivate
 GtkSnippetsLoader
 gtk_snippets_loader_new
 gtk_snippets_loader_load_default
-gtk_snippets_loader_get_snippets
-gtk_snippets_loader_get_snippets_by_mime_type
+gtk_snippets_loader_save_default
 gtk_snippets_loader_load_from_file
 gtk_snippets_loader_load_from_dir
+gtk_snippets_loader_get_snippets
+gtk_snippets_loader_get_snippets_by_language
+gtk_snippets_loader_remove_snippet
+gtk_snippets_loader_add_snippet
 <SUBSECTION Standard>
 GTK_SNIPPETSLOADER
 GTK_IS_SNIPPETSLOADER
@@ -46,6 +51,8 @@ GtkSnippetsManagerPrivate
 GtkSnippetsManager
 gtk_snippets_manager_new
 gtk_snippets_manager_add_support
+gtk_snippets_manager_remove_support
+gtk_snippets_manager_get_loader
 <SUBSECTION Standard>
 GTK_SNIPPETS_MANAGER
 GTK_IS_SNIPPETS_MANAGER
@@ -80,7 +87,26 @@ GTK_SNIPPETS_POPUP_DIALOG_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>gtk-snippets-management-ui</FILE>
+GtkSnippetsManagementUIPrivate
+<TITLE>GtkSnippetsManagementUI</TITLE>
+GtkSnippetsManagementUI
+gtk_smngui_create_source_view
+gtk_snippets_management_ui_new
+gtk_snippets_management_ui_show
+<SUBSECTION Standard>
+GTK_SNIPPETS_MANAGEMENT_UI
+GTK_IS_SNIPPETS_MANAGEMENT_UI
+GTK_TYPE_SNIPPETS_MANAGEMENT_UI
+gtk_snippets_management_ui_get_type
+GTK_SNIPPETS_MANAGEMENT_UI_CLASS
+GTK_IS_SNIPPETS_MANAGEMENT_UI_CLASS
+GTK_SNIPPETS_MANAGEMENT_UI_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>gtk-snippets-gsv-utils</FILE>
+gtk_snippets_gsv_get_last_word_and_iter
 gtk_snippets_gsv_get_last_word
 gtk_snippets_gsv_get_screen_pos
 </SECTION>

@@ -41,7 +41,7 @@ Snippets Management UI:
 			.- [OK] Add the snippet into the loader
 	.- [OK] Edit: Edit de snippet tag and content
 	.- HighLight The snippets content 
-	.- Now we save all the documents when close the dialog. Save only the changed snippets
+	.- Now we save all the documents when close the dialog. Save only the changed snippets. We must save all user actions like: removed snippet1, added snippet2, edited snippet3 etc and then we can save only the languages changed.
 
 Manager:
 
@@ -49,19 +49,19 @@ Manager:
 		press control+space, we select the snippet then the "if" word that we wrote may be deleted.
 	.- [OK] Implement remove_support: When call remove support, we may disconnect any signal in this editor.
 	.- [OK] focus fails when we add a snippet in an empty language.
-	.- If we add a new snippet and remove it without close the management dialog,
+	.- [OK] If we add a new snippet and remove it without close the management dialog,
 	fails (because we have not saved the snippet on the loader and when we remove the
 	snippet from the loader, then crash).
 	
 Other:
 
-	.- Generate gtk-doc
+	.- [OK] Generate gtk-doc
 	.- Put all asserts in the functions
 	.- Support Global snippets. Snippets that are showed with every languages.
-	.- Upload all the API to the web
-	.- Update the web site in english
-	.- Write examples in the web
+	.- [OK] Upload all the API to the web
+	.- [OK] Update the web site in english
+	.- [OK] Write examples in the web
 	.- [OK] Make a release in sourceforge
-	.- Announce the project in gnome-devtools list
+	.- [OK] Announce the project in gnome-devtools list
 	.- Change language assignment with mime-type in all classes	
 	
