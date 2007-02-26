@@ -180,16 +180,32 @@
                             <property name="column_spacing">6</property>
                             <property name="row_spacing">6</property>
                             <child>
-                              <widget class="GtkEntry" id="smngui_tag">
+                              <widget class="GtkEntry" id="entry_accelerator">
                                 <property name="visible">True</property>
+                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
+                                <property name="editable">False</property>
                                 <property name="invisible_char">*</property>
-                                <signal name="changed" handler="on_entry_tab_trigger_changed"/>
-                                <signal name="focus_out_event" handler="on_entry_tab_trigger_focus_out"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label_tab_trigger">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0</property>
+                                <property name="label" translatable="yes">_Tab trigger:</property>
+                                <property name="use_underline">True</property>
+                                <property name="mnemonic_widget">smngui_tag</property>
+                              </widget>
+                              <packing>
+                                <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
@@ -210,32 +226,16 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label_tab_trigger">
+                              <widget class="GtkEntry" id="smngui_tag">
                                 <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0</property>
-                                <property name="label" translatable="yes">_Tab trigger:</property>
-                                <property name="use_underline">True</property>
-                                <property name="mnemonic_widget">smngui_tag</property>
-                              </widget>
-                              <packing>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkEntry" id="entry_accelerator">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
-                                <property name="editable">False</property>
                                 <property name="invisible_char">*</property>
+                                <signal name="changed" handler="on_entry_tab_trigger_changed"/>
+                                <signal name="focus_out_event" handler="on_entry_tab_trigger_focus_out"/>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
@@ -320,6 +320,8 @@
             <child>
               <widget class="GtkEntry" id="smngui_new_entry">
                 <property name="visible">True</property>
+                <property name="has_focus">True</property>
+                <property name="is_focus">True</property>
               </widget>
               <packing>
                 <property name="position">1</property>
@@ -340,6 +342,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="has_default">True</property>
+                <property name="receives_default">True</property>
                 <property name="label" translatable="yes">gtk-add</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">-3</property>

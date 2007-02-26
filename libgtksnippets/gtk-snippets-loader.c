@@ -427,26 +427,25 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 	GtkSnippetsLoader* loader;
 	
 	loader = GTK_SNIPPETSLOADER(user_data);
+
+	//lista can be null if the language have not snippets
+	lista = (GList*)value;
+		
+	language = (gchar*)key;
+		
+	doc = xmlNewDoc(BAD_CAST "1.0");
+	root_node = xmlNewNode(NULL, BAD_CAST "snippets");
+	xmlNewProp(root_node, BAD_CAST "language", BAD_CAST language);
+	xmlDocSetRootElement(doc, root_node);
 	
-	if (value != NULL)
+	if (g_list_length(lista)>0)
 	{
-		lista = (GList*)value;
-		
-		language = (gchar*)key;
-		
-		doc = xmlNewDoc(BAD_CAST "1.0");
-		root_node = xmlNewNode(NULL, BAD_CAST "snippets");
-		xmlNewProp(root_node, BAD_CAST "language", BAD_CAST language);
-		xmlDocSetRootElement(doc, root_node);
-		
+		g_debug("language %s have %i elements",language,g_list_length(lista));
 		do
 		{
 			g_assert(lista->data != NULL);
-			
-			
-    
+   
 			snippet = GTK_SNIPPET(lista->data);
-			
 			snippet_node = xmlNewChild(root_node, NULL, BAD_CAST "snippet",NULL);
 			xmlNewProp(snippet_node, BAD_CAST "id", BAD_CAST gtk_snippet_get_name(snippet) );
 		
@@ -461,16 +460,14 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 			xmlAddChild(text_node,cdata_node);
 			
 		}while((lista = g_list_next(lista))!=NULL);
-
-		sprintf(fich,"%s/%s.xml", loader->priv->default_path, language );
-		
-		xmlSaveFormatFileEnc(fich, doc, "UTF-8", 1);
-
-		/*free the document */
-		xmlFreeDoc(doc);
-		
 	}
-	
+
+	sprintf(fich,"%s/%s.xml", loader->priv->default_path, language );
+	g_debug("Saving %s",fich);
+	xmlSaveFormatFileEnc(fich, doc, "UTF-8", 1);
+
+	/*free the document */
+	xmlFreeDoc(doc);
 	
 	/*
      *Free the global variables that may
@@ -536,7 +533,10 @@ gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippe
 	
 	g_assert(snippets_list != NULL);
 	
+	g_debug("snippets antes: %i",g_list_length(snippets_list));
+	
 	new_start = g_list_remove(snippets_list,snippet);
+	g_debug("snippets después: %i",g_list_length(new_start));
 	g_debug("Se quitó de la lista");
 	if (new_start != snippets_list)
 	{
