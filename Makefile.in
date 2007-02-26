@@ -211,7 +211,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
-SUBDIRS = libgtksnippets src po 
+SUBDIRS = libgtksnippets src po  
 gtksnippetsdocdir = ${prefix}/doc/gtksnippets
 gtksnippetsdoc_DATA = \
 	README\
@@ -221,7 +221,7 @@ gtksnippetsdoc_DATA = \
 	INSTALL\
 	NEWS
 
-EXTRA_DIST = $(gtksnippetsdoc_DATA)
+EXTRA_DIST = $(gtksnippetsdoc_DATA) docs/reference/libgtksnippets
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -439,7 +439,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/po
+	$(mkdir_p) $(distdir)/docs/reference $(distdir)/po
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

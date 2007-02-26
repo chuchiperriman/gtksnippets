@@ -239,8 +239,6 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	
 	if (snippet != NULL)
 	{
-		gtk_snippets_loader_remove_snippet(mng->priv->loader, snippet);
-	
 		gtk_tree_view_get_cursor(mng->priv->snippets_tree,&path,&column);
 		if(path && column) 
 		{
@@ -248,7 +246,8 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 			if(gtk_tree_model_get_iter(model,&iter,path))
 			{
 				gtk_tree_model_iter_parent(model, &parent_iter, &iter);
-				
+				//Quitamos el snippets del loader
+				gtk_snippets_loader_remove_snippet(mng->priv->loader, snippet);
 				//Quitamos el snippet actual del árbol
 				if (gtk_tree_store_remove(GTK_TREE_STORE(model),&iter))
 				{
@@ -274,7 +273,6 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 				}
 			}
 		}
-
 		if(path) gtk_tree_path_free(path);
 	}
 	
@@ -363,9 +361,12 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 	GtkTreePath *path;
 	GtkTreePath *parent_path = NULL;
 	GtkSnippet*	snippet; 
-	
+
+	g_debug("1");
 	store = GTK_TREE_STORE(gtk_tree_view_get_model(mng->priv->snippets_tree));
+	g_debug("2");
 	language = smngui_get_active_language(mng, &parent,&parent_path);
+	g_debug("3");
 	
 	
 	
@@ -377,8 +378,11 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 					"",
 					"New Snippet created. We need view where we can add this text",
 					"");
+					
+	g_debug("4");	
 	
 	gtk_tree_store_append(store,&actual, &parent);
+	g_debug("5");
 	
 	gtk_tree_store_set(store,
 		&actual,
@@ -386,24 +390,31 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 		COL_SNIPPET,snippet,
 		-1);
 		
+	g_debug("6");
+		
 	//Focus on new snippet
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(store),&actual);
+	g_debug("7");
 	if (path)
 	{
+		g_debug("8");
 		//Desplegamos el padre 
 		if (!gtk_tree_view_row_expanded(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path))
 			gtk_tree_view_expand_row(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path,FALSE);
 			
+		if (parent_path)
+			gtk_tree_path_free(parent_path);
+			
+		g_debug("9");
 		gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path, NULL, FALSE);
 		gtk_tree_path_free(path);
+		g_debug("10");
 	}
 	
 	gtk_snippets_loader_add_snippet(mng->priv->loader, snippet);
 	
-	if (parent_path)
-		gtk_tree_path_free(parent_path);
-	if (path)
-		gtk_tree_path_free(path);
+	g_debug("11");
+	
 	
 }
 
@@ -428,7 +439,9 @@ smngui_new_dialog_response_cb(GtkDialog *dialog,
 			//temp = g_strstrip(temp);
 			if (strcmp(temp,"")!=0)
 			{
+				g_debug("antes addtreeloader");
 				smngui_add_snippet_to_tree_and_loader(mng,temp);
+				g_debug("addtreeloader");
 			}
 			break;
 		default:

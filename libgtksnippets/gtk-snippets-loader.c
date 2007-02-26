@@ -101,7 +101,9 @@ gtk_snippets_loader_destroy_snippets_list(gpointer data)
 		do
 		{
 			snippet = GTK_SNIPPET(actual->data);
+			g_debug("Destroy en list destroy");
 			g_object_unref(snippet);
+			g_debug("fin Destroy en list destroy");
 			next = g_list_next(actual);
 		}while((actual = next) != NULL);
 		
@@ -535,15 +537,17 @@ gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippe
 	g_assert(snippets_list != NULL);
 	
 	new_start = g_list_remove(snippets_list,snippet);
-	
+	g_debug("Se quitó de la lista");
 	if (new_start != snippets_list)
 	{
 		g_hash_table_steal(loader->priv->language_hash,language);
 		g_debug("ositas: %s",language);
 		g_hash_table_insert(loader->priv->language_hash,language,new_start);
 	}
+	g_debug("Destroy en remove loader");
 	
 	g_object_unref(snippet);
+	g_debug("fin Destroy en remove loader");
 	
 	//No lo liberamos porque se queda en el hash_table
 	//g_free(language);

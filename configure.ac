@@ -27,6 +27,7 @@ dnl Add the languages which your application supports here.
 ALL_LINGUAS="es"
 AM_GLIB_GNU_GETTEXT
 
+
 GTK_DOC_CHECK(1.4)
 
 AM_PROG_LIBTOOL

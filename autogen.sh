@@ -134,6 +134,8 @@ do
 	  libtoolize --force --copy
 	fi
       fi
+      echo "Lanzando gtk-doc"
+      gtkdocize || exit 1
       echo "Running aclocal $aclocalinclude ..."
       aclocal $aclocalinclude
       if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then

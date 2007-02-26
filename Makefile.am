@@ -3,7 +3,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
-SUBDIRS = libgtksnippets src po 
+SUBDIRS = libgtksnippets src po  
 
 gtksnippetsdocdir = ${prefix}/doc/gtksnippets
 gtksnippetsdoc_DATA = \
@@ -14,7 +14,7 @@ gtksnippetsdoc_DATA = \
 	INSTALL\
 	NEWS
 
-EXTRA_DIST = $(gtksnippetsdoc_DATA)
+EXTRA_DIST = $(gtksnippetsdoc_DATA) docs/reference/libgtksnippets
 
 # Copy all the spec files. Of cource, only one is actually used.
 dist-hook:

@@ -82,14 +82,14 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
 AWK = mawk
 CATALOGS =  es.gmo
 CATOBJEXT = .gmo
@@ -140,7 +140,7 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
@@ -194,7 +194,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/perriman/Projects/gtksnippets/install-sh
+install_sh = /home/chuchi/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -211,7 +211,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
-SUBDIRS = libgtksnippets src po 
+SUBDIRS = libgtksnippets src po  
 gtksnippetsdocdir = ${prefix}/doc/gtksnippets
 gtksnippetsdoc_DATA = \
 	README\
@@ -221,7 +221,7 @@ gtksnippetsdoc_DATA = \
 	INSTALL\
 	NEWS
 
-EXTRA_DIST = $(gtksnippetsdoc_DATA)
+EXTRA_DIST = $(gtksnippetsdoc_DATA) docs/reference/libgtksnippets
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -439,7 +439,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/po
+	$(mkdir_p) $(distdir)/docs/reference $(distdir)/po
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

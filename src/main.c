@@ -138,6 +138,8 @@ main (int argc, char *argv[])
 	
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
+	
+	g_debug( _("Test i18n") );
 
 	g_debug( _("Test") );
 	window = create_window ();
@@ -161,7 +163,7 @@ main (int argc, char *argv[])
 			"Chuchi",
 			"C",
 			"chtag",
-			"El snippet de chuchi",
+			_("El snippet de chuchi"),
 			"Chuchi{asdfasdfasdf}chuchi");
 			
 	gtk_snippets_loader_add_snippet(loader, snippet);
