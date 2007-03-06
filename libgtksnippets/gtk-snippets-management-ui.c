@@ -119,6 +119,9 @@ GtkWidget*
 gtk_smngui_create_source_view()
 {
 	GtkWidget *source = gtk_source_view_new();
+	gtk_source_buffer_set_highlight(
+		GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source))),
+		TRUE);
 	gtk_widget_show(source);
 	return source;
 }
@@ -165,7 +168,8 @@ smngui_get_active_snippet(GtkSnippetsManagementUI *mng)
 		if(gtk_tree_model_get_iter(model,&iter,path))
 		{
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
-			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
+			if (GTK_IS_SNIPPET(g_value_get_pointer (&value)))
+				snippet = GTK_SNIPPET(g_value_get_pointer (&value));
 		}
 	}
 
@@ -189,32 +193,6 @@ smngui_get_all_content(GtkSnippetsManagementUI *mng)
 	content = gtk_text_buffer_get_text(buffer,&ini,&fin,FALSE);
 	
 	return content;
-}
-
-static void
-smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
-{
-	GtkSnippet *snippet;
-	GtkSnippetsManagementUI *mng;
-	GtkTextBuffer *buffer;
-	
-	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
-	snippet = smngui_get_active_snippet(mng);
-	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
-	if (snippet != NULL)
-	{
-		gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
-		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
-		//Enable remove button
-		gtk_widget_set_sensitive(mng->priv->remove_button,TRUE);
-	}
-	else
-	{
-		gtk_text_buffer_set_text(buffer, "", -1);
-		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
-		//Disable remove button
-		gtk_widget_set_sensitive(mng->priv->remove_button,FALSE);
-	}
 }
 
 static void
@@ -301,6 +279,9 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
  * @path: You must pass the pointer reference.if not NULL then we set the path
  * of the actual language. You must free it if return the path
  * @Returns: language or NULL if not found
+ * 
+ * Returns the actual selected language or the language of the 
+ * selected snippet. 
  *
  */
 static const gchar*
@@ -323,9 +304,10 @@ smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter
 		if(gtk_tree_model_get_iter(model,&iter,internal_path))
 		{
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
-			snippet = GTK_SNIPPET(g_value_get_pointer (&value));
-			if (snippet != NULL)
+			
+			if (GTK_IS_SNIPPET(g_value_get_pointer (&value)))
 			{
+				snippet = GTK_SNIPPET(g_value_get_pointer (&value));
 				language = gtk_snippet_get_language(snippet);
 				gtk_tree_model_iter_parent(model,&internal_parent_iter,&iter);
 			}
@@ -351,24 +333,62 @@ smngui_get_active_language(GtkSnippetsManagementUI *mng,GtkTreeIter* parent_iter
 	return language;
 }
 
+static void
+smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
+{
+	GtkSnippet *snippet;
+	GtkSnippetsManagementUI *mng;
+	GtkTextBuffer *buffer;
+	GtkTreeIter parent_iter;
+	GtkTreeModel *model;
+	GtkSourceLanguage *source_lang;
+	GValue value = {0,};
+	
+	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
+	snippet = smngui_get_active_snippet(mng);
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
+	if (snippet != NULL)
+	{
+		gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
+		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
+		//Enable remove button
+		gtk_widget_set_sensitive(mng->priv->remove_button,TRUE);
+	}
+	else
+	{
+		gtk_text_buffer_set_text(buffer, "", -1);
+		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
+		//Disable remove button
+		gtk_widget_set_sensitive(mng->priv->remove_button,FALSE);
+	}
+	
+	//Highlighting the source view
+	smngui_get_active_language(mng, &parent_iter,NULL);
+	model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+	gtk_tree_model_get_value(model, &parent_iter, COL_SNIPPET, &value);
+		
+	source_lang = GTK_SOURCE_LANGUAGE(g_value_get_pointer (&value));
+	gtk_source_buffer_set_language(
+		GTK_SOURCE_BUFFER(buffer),
+		source_lang);
+		
+}
 
 static void
 smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar* snippet_name)
 {
 	const gchar* language;
-	GtkTreeIter parent, actual;
+	GtkTreeIter parent_iter, actual;
 	GtkTreeStore *store;
 	GtkTreePath *path;
 	GtkTreePath *parent_path = NULL;
+	GtkTreeModel *model;
+	GtkSourceLanguage *source_lang;
+	GValue value = {0,};
 	GtkSnippet*	snippet; 
 
-	g_debug("1");
 	store = GTK_TREE_STORE(gtk_tree_view_get_model(mng->priv->snippets_tree));
-	g_debug("2");
-	language = smngui_get_active_language(mng, &parent,&parent_path);
-	g_debug("3");
-	
-	
+	language = smngui_get_active_language(mng, &parent_iter,&parent_path);
 	
 	g_assert(language != NULL);
 	
@@ -379,10 +399,7 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 					"New Snippet created. We need view where we can add this text",
 					"");
 					
-	g_debug("4");	
-	
-	gtk_tree_store_append(store,&actual, &parent);
-	g_debug("5");
+	gtk_tree_store_append(store,&actual, &parent_iter);
 	
 	gtk_tree_store_set(store,
 		&actual,
@@ -390,31 +407,31 @@ smngui_add_snippet_to_tree_and_loader(GtkSnippetsManagementUI *mng, const gchar*
 		COL_SNIPPET,snippet,
 		-1);
 		
-	g_debug("6");
-		
 	//Focus on new snippet
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(store),&actual);
-	g_debug("7");
 	if (path)
 	{
-		g_debug("8");
 		//Desplegamos el padre 
 		if (!gtk_tree_view_row_expanded(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path))
 			gtk_tree_view_expand_row(GTK_TREE_VIEW(mng->priv->snippets_tree),parent_path,FALSE);
 			
-		if (parent_path)
-			gtk_tree_path_free(parent_path);
-			
-		g_debug("9");
 		gtk_tree_view_set_cursor(GTK_TREE_VIEW(mng->priv->snippets_tree), path, NULL, FALSE);
 		gtk_tree_path_free(path);
-		g_debug("10");
+		
+		//Highlighting the source view
+		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+		gtk_tree_model_get_value(model, &parent_iter, COL_SNIPPET, &value);
+		
+		source_lang = GTK_SOURCE_LANGUAGE(g_value_get_pointer (&value));
+		gtk_source_buffer_set_language(
+			GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content))),
+			source_lang);
 	}
 	
 	gtk_snippets_loader_add_snippet(mng->priv->loader, snippet);
 	
-	g_debug("11");
-	
+	if (parent_path)
+		gtk_tree_path_free(parent_path);
 	
 }
 
@@ -574,7 +591,7 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 		gtk_tree_store_set(store,
 				&actual,
 				COL_NAME, lang_name,
-				COL_SNIPPET, NULL,
+				COL_SNIPPET, (gpointer)lang,
 				-1);
 				
 		parent = actual;

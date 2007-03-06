@@ -11,21 +11,13 @@
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <widget class="GtkHBox" id="hbox1">
         <property name="visible">True</property>
-        <property name="border_width">2</property>
-        <child>
-          <widget class="GtkEntry" id="snippets_text_entry">
-            <property name="visible">True</property>
-            <property name="has_focus">True</property>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-          </packing>
-        </child>
         <child>
           <widget class="GtkScrolledWindow" id="scrolledwindow1">
+            <property name="width_request">100</property>
             <property name="visible">True</property>
+            <property name="border_width">1</property>
             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <child>
@@ -33,6 +25,17 @@
                 <property name="visible">True</property>
                 <property name="headers_visible">False</property>
               </widget>
+            </child>
+          </widget>
+        </child>
+        <child>
+          <widget class="GtkScrolledWindow" id="snippets_content_scroll">
+            <property name="width_request">250</property>
+            <property name="border_width">1</property>
+            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <child>
+              <placeholder/>
             </child>
           </widget>
           <packing>

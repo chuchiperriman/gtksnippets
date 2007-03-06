@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <gdk/gdkkeysyms.h>
+#include <gtksourceview/gtksourceview.h>
 #include "gtk-snippet.h"
 #include "gtk-snippets-popup-dialog.h"
 
@@ -38,8 +39,10 @@
 struct _GtkSnippetsPopupDialogPrivate
 {
 	GtkWidget* window;
-	GtkWidget* entry;
 	GtkWidget* tree_view;
+	GtkWidget* source;
+	GtkWidget* source_scroll;
+	gboolean source_visible;
 	GtkSnippet *selected_snippet;
 	gint x;
 	gint y;
@@ -67,6 +70,7 @@ gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 	popup_dialog->priv->x = 0;
 	popup_dialog->priv->y = 0;
 	popup_dialog->priv->selected_snippet = NULL;
+	popup_dialog->priv->source_visible = FALSE;
 }
 
 static void
@@ -227,6 +231,76 @@ gspd_key_release_esc_hide_cb(GtkWidget *widget,
 	return FALSE;
 }
 
+static GtkSnippet*
+gspd_get_active_snippet(GtkTreeView *tree_view)
+{
+	GtkTreePath *path;
+	GtkTreeIter iter;
+	GValue value = {0,};
+	GtkTreeModel *tree_model;
+	GtkSnippet *snippet = NULL;
+	
+	tree_model = gtk_tree_view_get_model(tree_view);
+	
+	gtk_tree_view_get_cursor(tree_view,&path,NULL);
+	if (path)
+	{
+		if (gtk_tree_model_get_iter(tree_model, &iter, path))
+		{
+			gtk_tree_model_get_value(tree_model, &iter, COL_SNIPPET, &value);
+			snippet = GTK_SNIPPET(g_value_get_pointer(&value));
+		}
+		gtk_tree_path_free(path);
+	}
+	
+	return snippet;
+}
+static void
+gspd_cursor_changed_tree_cb(GtkTreeView *tree_view, gpointer user_data)
+{
+	GtkSnippetsPopupDialog *popup;
+	GtkSnippet *snippet;
+	GtkTextBuffer *text_buffer;
+	
+	popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+	text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(popup->priv->source));
+	
+	if (popup->priv->source_visible)
+	{
+		snippet = gspd_get_active_snippet(tree_view);
+		if (snippet != NULL)
+			gtk_text_buffer_set_text(text_buffer,gtk_snippet_get_text(snippet),-1);
+		else
+			gtk_text_buffer_set_text(text_buffer,"",-1);
+	}
+}
+
+static gboolean
+gspd_key_release_tree_cb(GtkWidget *widget,
+								GdkEventKey *event,
+								gpointer user_data)
+{
+	GtkSnippetsPopupDialog *popup;
+	
+	if (event->keyval == GDK_Right)
+	{
+		popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+		gtk_widget_show(popup->priv->source_scroll);
+		gtk_widget_show(popup->priv->source);
+		popup->priv->source_visible = TRUE;
+		//To load the snippet content on the source
+		gspd_cursor_changed_tree_cb(GTK_TREE_VIEW(widget),user_data);
+	}
+	else if (event->keyval == GDK_Left)
+	{
+		popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
+		gtk_widget_hide(popup->priv->source_scroll);
+		gtk_widget_hide(popup->priv->source);
+		popup->priv->source_visible = FALSE;
+	}
+	return FALSE;
+}
+
 static void
 gspd_load_glade(GtkSnippetsPopupDialog *obj)
 {
@@ -234,17 +308,31 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	
 	glade_xml_signal_autoconnect (gxml);
 	obj->priv->window = glade_xml_get_widget (gxml, "snippets_popup_dialog");
-	obj->priv->entry = glade_xml_get_widget(gxml,"snippets_text_entry");
 	obj->priv->tree_view = glade_xml_get_widget(gxml,"snippets_tree_view");
 	
 	g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "row-activated",
 		G_CALLBACK(snippets_tree_view_row_activated_cb),(gpointer) obj);
+	
+	g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "key-release-event",
+		G_CALLBACK(gspd_key_release_tree_cb),(gpointer) obj);
+	
+	g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "cursor-changed",
+		G_CALLBACK(gspd_cursor_changed_tree_cb),(gpointer) obj);
 		
 	g_signal_connect(GTK_WIDGET(obj->priv->window), "focus-out-event",
 		G_CALLBACK(snippets_popup_dialog_focus_out_event_cb),(gpointer) obj);
 		
 	g_signal_connect(GTK_WIDGET(obj->priv->window), "key-release-event",
 		G_CALLBACK(gspd_key_release_esc_hide_cb),(gpointer) obj);
+		
+	//Load the GtkSourceView
+	obj->priv->source_scroll = glade_xml_get_widget(gxml,"snippets_content_scroll");
+	obj->priv->source = gtk_source_view_new();
+	gtk_source_buffer_set_highlight(
+		GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(obj->priv->source))),
+		TRUE);
+	
+	gtk_container_add(GTK_CONTAINER(obj->priv->source_scroll), obj->priv->source);
 	
 	g_object_unref(gxml);
 }
@@ -306,11 +394,11 @@ gtk_snippets_popup_dialog_show(GtkSnippetsPopupDialog* popup_dialog,
 {
 
 	popup_dialog->priv->selected_snippet = NULL;
+	gspd_cursor_changed_tree_cb(GTK_TREE_VIEW(popup_dialog->priv->tree_view),popup_dialog);
 	
 	gtk_window_move (GTK_WINDOW (popup_dialog->priv->window),popup_dialog->priv->x,popup_dialog->priv->y);
-	gtk_entry_set_text (GTK_ENTRY(popup_dialog->priv->entry),word);
 	gtk_widget_show (popup_dialog->priv->window);
-	gtk_widget_grab_focus(popup_dialog->priv->entry);
+	gtk_widget_grab_focus(popup_dialog->priv->tree_view);
 
 }
 
