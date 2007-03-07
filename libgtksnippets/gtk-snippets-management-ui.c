@@ -167,7 +167,9 @@ smngui_get_active_snippet(GtkSnippetsManagementUI *mng)
 		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
 		if(gtk_tree_model_get_iter(model,&iter,path))
 		{
+			g_debug("temp1");
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
+			g_debug("temp2");
 			if (GTK_IS_SNIPPET(g_value_get_pointer (&value)))
 				snippet = GTK_SNIPPET(g_value_get_pointer (&value));
 		}
@@ -264,6 +266,7 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	
 	g_debug("New button activate");
 	gtk_entry_set_text(GTK_ENTRY(mng->priv->new_dialog_entry),"");
+	
 	//Controlamos la respuesta en la señal response	
 	gtk_dialog_run (GTK_DIALOG (mng->priv->new_dialog));
 
@@ -342,6 +345,7 @@ smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_dat
 	GtkTreeIter parent_iter;
 	GtkTreeModel *model;
 	GtkSourceLanguage *source_lang;
+	gchar* language;
 	GValue value = {0,};
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
@@ -367,14 +371,17 @@ smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_dat
 	}
 	
 	//Highlighting the source view
-	smngui_get_active_language(mng, &parent_iter,NULL);
-	model = gtk_tree_view_get_model(mng->priv->snippets_tree);
-	gtk_tree_model_get_value(model, &parent_iter, COL_SNIPPET, &value);
+	language = smngui_get_active_language(mng, &parent_iter,NULL);
+	if (language != NULL)
+	{
+		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
+		gtk_tree_model_get_value(model, &parent_iter, COL_SNIPPET, &value);
 		
-	source_lang = GTK_SOURCE_LANGUAGE(g_value_get_pointer (&value));
-	gtk_source_buffer_set_language(
-		GTK_SOURCE_BUFFER(buffer),
-		source_lang);
+		source_lang = GTK_SOURCE_LANGUAGE(g_value_get_pointer (&value));
+		gtk_source_buffer_set_language(
+			GTK_SOURCE_BUFFER(buffer),
+			source_lang);
+	}
 		
 }
 
