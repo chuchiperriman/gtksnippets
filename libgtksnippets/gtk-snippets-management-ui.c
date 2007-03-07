@@ -351,15 +351,19 @@ smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_dat
 	{
 		gtk_text_buffer_set_text(buffer, gtk_snippet_get_text(snippet), -1);
 		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), gtk_snippet_get_tag(snippet));
-		//Enable remove button
+		//Enabling boxes
 		gtk_widget_set_sensitive(mng->priv->remove_button,TRUE);
+		gtk_widget_set_sensitive(mng->priv->snippet_tag,TRUE);
+		gtk_widget_set_sensitive(mng->priv->snippet_content,TRUE);
 	}
 	else
 	{
 		gtk_text_buffer_set_text(buffer, "", -1);
 		gtk_entry_set_text(GTK_ENTRY(mng->priv->snippet_tag), "");
-		//Disable remove button
+		//Disabling boxes
 		gtk_widget_set_sensitive(mng->priv->remove_button,FALSE);
+		gtk_widget_set_sensitive(mng->priv->snippet_tag,FALSE);
+		gtk_widget_set_sensitive(mng->priv->snippet_content,FALSE);
 	}
 	
 	//Highlighting the source view
@@ -581,8 +585,8 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 	lang_manager = gtk_source_languages_manager_new();
 	
 	lang_list = gtk_source_languages_manager_get_available_languages(lang_manager);
-	
-	while ((lang_list = g_slist_next(lang_list)) != NULL)
+
+	while(lang_list)
 	{
 		lang = GTK_SOURCE_LANGUAGE(lang_list->data);
 		lang_name = gtk_source_language_get_name(lang);
@@ -598,18 +602,21 @@ gmngui_build_snippets_model(GtkSnippetsManagementUI *mngui)
 		
 		//Preguntamos al loader por los snippets para este lenguage
 		snippets = gtk_snippets_loader_get_snippets_by_language(mngui->priv->loader, lang_name);
-		if (snippets!=NULL)
+		while(snippets)
 		{
-			do
-			{
-				gtk_tree_store_append(store,&actual, &parent);
-				gtk_tree_store_set(store,
-					&actual,
-					COL_NAME, gtk_snippet_get_name(GTK_SNIPPET(snippets->data)) ,
-					COL_SNIPPET, (gpointer)snippets->data,
-					-1);	
-			}while((snippets = g_list_next(snippets)) != NULL);
+			gtk_tree_store_append(store,&actual, &parent);
+			gtk_tree_store_set(store,
+				&actual,
+				COL_NAME, gtk_snippet_get_name(GTK_SNIPPET(snippets->data)) ,
+				COL_SNIPPET, (gpointer)snippets->data,
+				-1);
+			
+			snippets = g_list_next(snippets);
+			
 		}
+		
+		lang_list = g_slist_next(lang_list);
+		
 	}	
 	
 	return GTK_TREE_MODEL(store);

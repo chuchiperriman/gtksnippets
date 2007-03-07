@@ -358,9 +358,6 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 	GtkSourceLanguage *lang;
 	const GSList *lang_list;
 	
-	lang_manager = gtk_source_languages_manager_new();
-	lang_list = gtk_source_languages_manager_get_available_languages(lang_manager);
-	
 	res = TRUE;
 	
 	dir = g_dir_open(path, 0, NULL);
@@ -370,10 +367,11 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 		res = FALSE;
 	}
 	
-	
 	if (res)
 	{
-		while ((lang_list = g_slist_next(lang_list)) != NULL)
+		lang_manager = gtk_source_languages_manager_new();
+		lang_list = gtk_source_languages_manager_get_available_languages(lang_manager);
+		while (lang_list)
 		{
 			lang = GTK_SOURCE_LANGUAGE(lang_list->data);
 			language = gtk_source_language_get_name(lang);
@@ -383,6 +381,7 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader,const gchar *path)
 			{
 				g_warning("Error loading file %s",path_file); 
 			}
+			lang_list = g_slist_next(lang_list);
 		}
 		
 		g_dir_close(dir);
