@@ -27,6 +27,7 @@
 #include <glade/glade.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksourcelanguagesmanager.h>
 #include "gtk-snippet.h"
 #include "gtk-snippets-popup-dialog.h"
 
@@ -44,6 +45,7 @@ struct _GtkSnippetsPopupDialogPrivate
 	GtkWidget* source_scroll;
 	gboolean source_visible;
 	GtkSnippet *selected_snippet;
+	GHashTable* hash_languages;
 	gint x;
 	gint y;
 };
@@ -71,6 +73,7 @@ gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 	popup_dialog->priv->y = 0;
 	popup_dialog->priv->selected_snippet = NULL;
 	popup_dialog->priv->source_visible = FALSE;
+	popup_dialog->priv->hash_languages = g_hash_table_new(g_str_hash,g_str_equal);
 }
 
 static void
@@ -82,6 +85,7 @@ gtk_snippets_popup_dialog_finalize (GObject *object)
 
 	//Si destruimos la ventana se destruyen los hijos
 	gtk_widget_destroy(cobj->priv->window);
+	g_hash_table_destroy(cobj->priv->hash_languages);
 	
 	g_free(cobj->priv);
 	
@@ -328,6 +332,7 @@ gspd_load_glade(GtkSnippetsPopupDialog *obj)
 	//Load the GtkSourceView
 	obj->priv->source_scroll = glade_xml_get_widget(gxml,"snippets_content_scroll");
 	obj->priv->source = gtk_source_view_new();
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(obj->priv->source),FALSE);
 	gtk_source_buffer_set_highlight(
 		GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(obj->priv->source))),
 		TRUE);
@@ -360,6 +365,30 @@ gspd_load_tree(GtkSnippetsPopupDialog *popup_dialog)
 	gtk_tree_view_append_column (GTK_TREE_VIEW(popup_dialog->priv->tree_view), column);
 }
 
+static void
+gspd_load_languages(GtkSnippetsPopupDialog *popup_dialog)
+{
+	GtkSourceLanguagesManager* lang_manager;
+	GtkSourceLanguage *lang;
+	const GSList *lang_list;
+	
+	lang_manager = gtk_source_languages_manager_new();
+	
+	lang_list = gtk_source_languages_manager_get_available_languages(lang_manager);
+
+	while(lang_list)
+	{
+		lang = GTK_SOURCE_LANGUAGE(lang_list->data);
+		g_hash_table_insert(
+			popup_dialog->priv->hash_languages,
+			gtk_source_language_get_name(lang),
+			lang);
+
+		lang_list = g_slist_next(lang_list);
+	}
+	
+}
+
 GtkSnippetsPopupDialog*
 gtk_snippets_popup_dialog_new (void)
 {
@@ -368,8 +397,8 @@ gtk_snippets_popup_dialog_new (void)
 	obj = GTK_SNIPPETS_POPUP_DIALOG(g_object_new(GTK_TYPE_SNIPPETS_POPUP_DIALOG, NULL));
 	
 	/* TODO: Add initialization code here */
+	gspd_load_languages(obj);
 	gspd_load_glade(obj);
-	
 	gspd_load_tree(obj);
 	
 	return obj;	
@@ -510,9 +539,9 @@ gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const Fil
 	g_debug("Iniciamos filtrado");
 	GtkTreeModel *model_filter;
 	GtkTreeModel *model_actual;
+	GtkTextBuffer *buffer;
 		
 	model_actual = gtk_tree_view_get_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view));
-	
 	//TODO comprobar si el lenguaje que mandan es por el que ya está filtrado, entonces no hacemos nada
 	if (GTK_IS_TREE_MODEL_FILTER(model_actual))
 	{
@@ -535,8 +564,16 @@ gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const Fil
 	gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(model_filter));
 			
 	gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),model_filter);
+
+	//Setting source language	
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(popup_dialog->priv->source));
+	gtk_source_buffer_set_language(
+		GTK_SOURCE_BUFFER(buffer),
+		g_hash_table_lookup(popup_dialog->priv->hash_languages,filter_data->language));
+		
 }
 
+/*
 void
 gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language)
 {
@@ -546,5 +583,5 @@ gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialo
 	gtk_snippets_popup_dialog_filter(popup_dialog,&filter_data);
 	
 }
-
+*/
 

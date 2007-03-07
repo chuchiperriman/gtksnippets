@@ -146,8 +146,10 @@ gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const Fil
 *
 * Shows the popup dialog filtered by language.
 **/
+/*
 void
 gtk_snippets_popup_dialog_filter_by_language(GtkSnippetsPopupDialog* popup_dialog,gchar* language);
+*/
 
 G_END_DECLS
 

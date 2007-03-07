@@ -33,9 +33,9 @@ Loader:
 		
 Snippets Management UI:
 
-	.- Set not editable the tag entry and the content source when not snippet selected (if not, crash)
 	.- Set focus on the entry when click on new snippet
 	.- Now we save all the documents when close the dialog. Save only the changed snippets. We must save all user actions like: removed snippet1, added snippet2, edited snippet3 etc and then we can save only the languages changed.
+	.- [OK] Set not editable the tag entry and the content source when not snippet selected (if not, crash)
 	.- [OK] Insert, remove and edit snippets in the dialog.
 	.- [OK] Remove: Remove from loader and remove from tree view
 	.- [OK] Add Snippet:
