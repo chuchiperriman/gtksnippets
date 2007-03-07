@@ -266,6 +266,7 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	
 	g_debug("New button activate");
 	gtk_entry_set_text(GTK_ENTRY(mng->priv->new_dialog_entry),"");
+	gtk_widget_grab_focus(mng->priv->new_dialog_entry);
 	
 	//Controlamos la respuesta en la señal response	
 	gtk_dialog_run (GTK_DIALOG (mng->priv->new_dialog));
@@ -345,7 +346,7 @@ smngui_snippets_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_dat
 	GtkTreeIter parent_iter;
 	GtkTreeModel *model;
 	GtkSourceLanguage *source_lang;
-	gchar* language;
+	const gchar* language;
 	GValue value = {0,};
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);

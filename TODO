@@ -33,7 +33,7 @@ Loader:
 		
 Snippets Management UI:
 
-	.- Set focus on the entry when click on new snippet
+	.- Set default action to Accept button un new snippet dialog 
 	.- Now we save all the documents when close the dialog. Save only the changed snippets. We must save all user actions like: removed snippet1, added snippet2, edited snippet3 etc and then we can save only the languages changed.
 	.- [OK] Set not editable the tag entry and the content source when not snippet selected (if not, crash)
 	.- [OK] Insert, remove and edit snippets in the dialog.
@@ -43,6 +43,7 @@ Snippets Management UI:
 			.- [OK] Add the snippet into the loader
 	.- [OK] Edit: Edit de snippet tag and content
 	.- [OK] HighLight The snippets content 
+	.- [OK] Set focus on the entry when click on new snippet
 
 Manager:
 
