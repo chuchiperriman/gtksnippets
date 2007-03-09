@@ -36,7 +36,7 @@
 #include <regex.h>
 
 #include "libgtksnippets/gtk-snippets-loader.h"
-#include "libgtksnippets/gtk-snippets-manager.h"
+#include "libgtksnippets/gtk-snippets-manager-gsv.h"
 #include "libgtksnippets/gtk-snippets-management-ui.h"
 
 

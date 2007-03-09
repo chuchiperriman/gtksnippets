@@ -58,7 +58,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
-	gtk-snippets-manager.lo gtk-snippets-popup-dialog.lo \
+	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
 	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -235,8 +235,8 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-loader.h     \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
-	gtk-snippets-manager.h      \
-	gtk-snippets-manager.c      \
+	gtk-snippets-manager-gsv.h      \
+	gtk-snippets-manager-gsv.c      \
 	gtk-snippets-popup-dialog.h      \
 	gtk-snippets-popup-dialog.c	\
 	gtk-snippets-gsv-utils.h	\
@@ -256,7 +256,7 @@ INST_H_FILES = \
 	gtk-snippets-gsv-utils.h  \
 	gtk-snippets-loader.h  \
 	gtk-snippets-management-ui.h  \
-	gtk-snippets-manager.h  \
+	gtk-snippets-manager-gsv.h  \
 	gtk-snippets-popup-dialog.h
 
 headerdir = $(prefix)/include/libgtksnippets-1
@@ -337,7 +337,7 @@ include ./$(DEPDIR)/gtk-snippet.Plo
 include ./$(DEPDIR)/gtk-snippets-gsv-utils.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
 include ./$(DEPDIR)/gtk-snippets-management-ui.Plo
-include ./$(DEPDIR)/gtk-snippets-manager.Plo
+include ./$(DEPDIR)/gtk-snippets-manager-gsv.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
 
 .c.o:

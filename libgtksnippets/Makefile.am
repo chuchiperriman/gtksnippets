@@ -27,8 +27,8 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-loader.h     \
 	gtk-snippet.c     \
 	gtk-snippet.h 		\
-	gtk-snippets-manager.h      \
-	gtk-snippets-manager.c      \
+	gtk-snippets-manager-gsv.h      \
+	gtk-snippets-manager-gsv.c      \
 	gtk-snippets-popup-dialog.h      \
 	gtk-snippets-popup-dialog.c	\
 	gtk-snippets-gsv-utils.h	\
@@ -48,7 +48,7 @@ INST_H_FILES = \
 	gtk-snippets-gsv-utils.h  \
 	gtk-snippets-loader.h  \
 	gtk-snippets-management-ui.h  \
-	gtk-snippets-manager.h  \
+	gtk-snippets-manager-gsv.h  \
 	gtk-snippets-popup-dialog.h
 
 headerdir = $(prefix)/include/libgtksnippets-1

@@ -25,7 +25,7 @@
 #include <gdk/gdkkeysyms.h>
 #include "gtk-snippet.h"
 #include "gtk-snippets-gsv-utils.h"
-#include "gtk-snippets-manager.h"
+#include "gtk-snippets-manager-gsv.h"
 #include "gtk-snippets-popup-dialog.h"
 
 static GObjectClass* parent_class = NULL;
