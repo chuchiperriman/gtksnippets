@@ -169,13 +169,13 @@ main (int argc, char *argv[])
 	gtk_snippets_loader_add_snippet(loader, snippet);
 	*/
 	
-	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
+	GtkSnippetsManagerGsv *manager = gtk_snippets_manager_gsv_new(loader);
 	
 	g_object_unref(loader);
 	
-	gtk_snippets_manager_add_support (manager, (gpointer)source, "C");
+	gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
 	
-	//gtk_snippets_manager_remove_support (manager, (gpointer)source);
+	//gtk_snippets_manager_gsv_remove_support (manager, (gpointer)source);
 	
 	GtkSnippetsManagementUI *snippets_ui;
 	snippets_ui = gtk_snippets_management_ui_new(loader);

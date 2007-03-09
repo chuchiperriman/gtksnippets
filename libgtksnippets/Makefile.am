@@ -34,7 +34,7 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-gsv-utils.h	\
 	gtk-snippets-gsv-utils.c	\
 	gtk-snippets-management-ui.h	\
-	gtk-snippets-management-ui.c
+	gtk-snippets-management-ui.c    
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -59,5 +59,17 @@ header_DATA =                           \
 EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
 	
 ## File created by the gnome-build tools
+
+
+
+
+
+
+
+
+
+
+
+
 
 

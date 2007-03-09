@@ -110,8 +110,8 @@ ECHO_C =
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
-ENABLE_GTK_DOC_FALSE = #
-ENABLE_GTK_DOC_TRUE = 
+ENABLE_GTK_DOC_FALSE = 
+ENABLE_GTK_DOC_TRUE = #
 EXEEXT = 
 F77 = 
 FFLAGS = 
@@ -202,7 +202,7 @@ mandir = ${datarootdir}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -242,7 +242,7 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-gsv-utils.h	\
 	gtk-snippets-gsv-utils.c	\
 	gtk-snippets-management-ui.h	\
-	gtk-snippets-management-ui.c
+	gtk-snippets-management-ui.c    
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 

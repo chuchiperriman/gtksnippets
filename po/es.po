@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-24 11:36+0100\n"
+"POT-Creation-Date: 2007-03-09 10:37+0100\n"
 "PO-Revision-Date: 2007-02-17 10:00+0100\n"
 "Last-Translator: Chuchi <chuchiperriman@gmail.com>\n"
 "Language-Team: <en@li.org>\n"
@@ -16,6 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/main.c:142
+#, fuzzy
+msgid "Test i18n"
+msgstr "Prueba lalalaaaaa"
+
+#: src/main.c:144
 msgid "Test"
 msgstr "Prueba lalalaaaaa"
 
@@ -51,10 +56,10 @@ msgstr "_Tab trigget:"
 msgid "Snippet name:"
 msgstr "Nombre del Snippet"
 
-#: libgtksnippets/gtk-snippets-management-ui.glade:343
+#: libgtksnippets/gtk-snippets-management-ui.glade:349
 msgid "gtk-add"
 msgstr "gtk-add"
 
-#: libgtksnippets/gtk-snippets-management-ui.glade:353
+#: libgtksnippets/gtk-snippets-management-ui.glade:359
 msgid "gtk-cancel"
 msgstr "gtk-cancel"

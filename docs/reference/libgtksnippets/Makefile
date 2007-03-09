@@ -83,8 +83,8 @@ ECHO_C =
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
-ENABLE_GTK_DOC_FALSE = #
-ENABLE_GTK_DOC_TRUE = 
+ENABLE_GTK_DOC_FALSE = 
+ENABLE_GTK_DOC_TRUE = #
 EXEEXT = 
 F77 = 
 FFLAGS = 
@@ -175,7 +175,7 @@ mandir = ${datarootdir}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -451,8 +451,8 @@ uninstall-am: uninstall-info-am uninstall-local
 	uninstall-info-am uninstall-local
 
 
-all-local: html-build.stamp
-#all-local:
+#all-local: html-build.stamp
+all-local:
 
 docs: html-build.stamp
 
@@ -541,10 +541,10 @@ uninstall-local:
 #
 # Require gtk-doc when making dist
 #
-dist-check-gtkdoc:
 #dist-check-gtkdoc:
-#	@echo "*** gtk-doc must be installed and enabled in order to make dist"
-#	@false
+dist-check-gtkdoc:
+	@echo "*** gtk-doc must be installed and enabled in order to make dist"
+	@false
 
 dist-hook: dist-check-gtkdoc dist-hook-local
 	mkdir $(distdir)/tmpl

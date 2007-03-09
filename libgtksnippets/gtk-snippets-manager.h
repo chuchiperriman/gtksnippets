@@ -22,8 +22,8 @@
  * 	Boston, MA  02110-1301, USA.
  */
 
-#ifndef _GTK_SNIPPETS_MANAGER_H_
-#define _GTK_SNIPPETS_MANAGER_H_
+#ifndef _GTK_SNIPPETS_MANAGER_GSV_H_
+#define _GTK_SNIPPETS_MANAGER_GSV_H_
 
 #include <glib-object.h>
 #include <gtksourceview/gtksourceview.h>
@@ -31,35 +31,35 @@
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_SNIPPETS_MANAGER             (gtk_snippets_manager_get_type ())
-#define GTK_SNIPPETS_MANAGER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManager))
-#define GTK_SNIPPETS_MANAGER_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManagerClass))
-#define GTK_IS_SNIPPETS_MANAGER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SNIPPETS_MANAGER))
-#define GTK_IS_SNIPPETS_MANAGER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SNIPPETS_MANAGER))
-#define GTK_SNIPPETS_MANAGER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SNIPPETS_MANAGER, GtkSnippetsManagerClass))
+#define GTK_TYPE_SNIPPETS_MANAGER_GSV             (gtk_snippets_manager_gsv_get_type ())
+#define GTK_SNIPPETS_MANAGER_GSV(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SNIPPETS_MANAGER_GSV, GtkSnippetsManagerGsv))
+#define GTK_SNIPPETS_MANAGER_GSV_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SNIPPETS_MANAGER_GSV, GtkSnippetsManagerGsvClass))
+#define GTK_IS_SNIPPETS_MANAGER_GSV(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SNIPPETS_MANAGER_GSV))
+#define GTK_IS_SNIPPETS_MANAGER_GSV_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SNIPPETS_MANAGER_GSV))
+#define GTK_SNIPPETS_MANAGER_GSV_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SNIPPETS_MANAGER_GSV, GtkSnippetsManagerGsvClass))
 
-typedef struct _GtkSnippetsManagerClass GtkSnippetsManagerClass;
-typedef struct _GtkSnippetsManagerPrivate GtkSnippetsManagerPrivate;
-typedef struct _GtkSnippetsManager GtkSnippetsManager;
+typedef struct _GtkSnippetsManagerGsvClass GtkSnippetsManagerGsvClass;
+typedef struct _GtkSnippetsManagerGsvPrivate GtkSnippetsManagerGsvPrivate;
+typedef struct _GtkSnippetsManagerGsv GtkSnippetsManagerGsv;
 
-struct _GtkSnippetsManagerClass
+struct _GtkSnippetsManagerGsvClass
 {
 	GObjectClass parent_class;
 };
 
-struct _GtkSnippetsManager
+struct _GtkSnippetsManagerGsv
 {
 	GObject parent_instance;
-	GtkSnippetsManagerPrivate *priv;
+	GtkSnippetsManagerGsvPrivate *priv;
 };
 
-GType gtk_snippets_manager_get_type (void) G_GNUC_CONST;
+GType gtk_snippets_manager_gsv_get_type (void) G_GNUC_CONST;
 
-GtkSnippetsManager* gtk_snippets_manager_new (GtkSnippetsLoader *loader);
+GtkSnippetsManagerGsv* gtk_snippets_manager_gsv_new (GtkSnippetsLoader *loader);
 
 /**
- * gtk_snippets_manager_add_support:
- * @manager: #GtkSnippetsManager 
+ * gtk_snippets_manager_gsv_add_support:
+ * @manager: #GtkSnippetsManagerGsv 
  * @editor: An editor to add support
  * @language: ----Editor language. We copy this data
  *
@@ -68,10 +68,10 @@ GtkSnippetsManager* gtk_snippets_manager_new (GtkSnippetsLoader *loader);
  *
  **/
 void 
-gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer editor, const gchar* language);
+gtk_snippets_manager_gsv_add_support (GtkSnippetsManagerGsv *manager, const gpointer editor, const gchar* language);
 
 /**
-* gtk_snippets_manager_remove_support:
+* gtk_snippets_manager_gsv_remove_support:
 * @manager: The manager
 * @editor: The editor to remove snippets support
 *
@@ -79,17 +79,17 @@ gtk_snippets_manager_add_support (GtkSnippetsManager *manager, const gpointer ed
 * free all internal data
 **/
 void
-gtk_snippets_manager_remove_support (GtkSnippetsManager *manager, gpointer editor);
+gtk_snippets_manager_gsv_remove_support (GtkSnippetsManagerGsv *manager, gpointer editor);
 
 /**
-* gtk_snippets_manager_get_loader:
+* gtk_snippets_manager_gsv_get_loader:
 * @manager: The manager
 * @Returns: The loader assined to this manager when we create it.
 **/
 GtkSnippetsLoader*
-gtk_snippets_manager_get_loader (GtkSnippetsManager *manager);
+gtk_snippets_manager_gsv_get_loader (GtkSnippetsManagerGsv *manager);
 
 
 G_END_DECLS
 
-#endif /* _GTK_SNIPPETS_MANAGER_H_ */
+#endif /* _GTK_SNIPPETS_MANAGER_GSV_H_ */
