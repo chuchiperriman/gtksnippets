@@ -14,7 +14,7 @@
 
 GETTEXT_PACKAGE = gtksnippets
 PACKAGE = gtksnippets
-VERSION = 0.1
+VERSION = 0.2.0
 
 SHELL = /bin/sh
 

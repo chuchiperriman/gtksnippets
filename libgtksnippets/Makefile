@@ -59,7 +59,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
-	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo
+	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo \
+	gtk-snippets-editor.lo gtk-snippets-manager.lo \
+	gtk-snippets-editor-gsv.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -146,9 +148,9 @@ OBJEXT = o
 PACKAGE = gtksnippets
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = gtksnippets
-PACKAGE_STRING = gtksnippets 0.1
+PACKAGE_STRING = gtksnippets 0.2.0
 PACKAGE_TARNAME = gtksnippets
-PACKAGE_VERSION = 0.1
+PACKAGE_VERSION = 0.2.0
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 POFILES =  es.po
@@ -160,7 +162,7 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 USE_NLS = yes
-VERSION = 0.1
+VERSION = 0.2.0
 XGETTEXT = /usr/bin/xgettext
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -242,7 +244,13 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-gsv-utils.h	\
 	gtk-snippets-gsv-utils.c	\
 	gtk-snippets-management-ui.h	\
-	gtk-snippets-management-ui.c    
+	gtk-snippets-management-ui.c    \
+	gtk-snippets-editor.c    \
+	gtk-snippets-editor.h    \
+	gtk-snippets-manager.c    \
+	gtk-snippets-manager.h    \
+	gtk-snippets-editor-gsv.c    \
+	gtk-snippets-editor-gsv.h 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -334,10 +342,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/gtk-snippet.Plo
+include ./$(DEPDIR)/gtk-snippets-editor-gsv.Plo
+include ./$(DEPDIR)/gtk-snippets-editor.Plo
 include ./$(DEPDIR)/gtk-snippets-gsv-utils.Plo
 include ./$(DEPDIR)/gtk-snippets-loader.Plo
 include ./$(DEPDIR)/gtk-snippets-management-ui.Plo
 include ./$(DEPDIR)/gtk-snippets-manager-gsv.Plo
+include ./$(DEPDIR)/gtk-snippets-manager.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
 
 .c.o:

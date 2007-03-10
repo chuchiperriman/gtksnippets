@@ -59,7 +59,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
 am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
-	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo
+	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo \
+	gtk-snippets-editor.lo gtk-snippets-manager.lo \
+	gtk-snippets-editor-gsv.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -242,7 +244,13 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-gsv-utils.h	\
 	gtk-snippets-gsv-utils.c	\
 	gtk-snippets-management-ui.h	\
-	gtk-snippets-management-ui.c    
+	gtk-snippets-management-ui.c    \
+	gtk-snippets-editor.c    \
+	gtk-snippets-editor.h    \
+	gtk-snippets-manager.c    \
+	gtk-snippets-manager.h    \
+	gtk-snippets-editor-gsv.c    \
+	gtk-snippets-editor-gsv.h 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -334,10 +342,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippet.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-editor-gsv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-gsv-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-loader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-management-ui.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-manager-gsv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-popup-dialog.Plo@am__quote@
 
 .c.o:

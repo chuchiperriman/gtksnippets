@@ -36,6 +36,7 @@
 #include <regex.h>
 
 #include "libgtksnippets/gtk-snippets-loader.h"
+#include "libgtksnippets/gtk-snippets-manager.h"
 #include "libgtksnippets/gtk-snippets-manager-gsv.h"
 #include "libgtksnippets/gtk-snippets-management-ui.h"
 
@@ -169,11 +170,13 @@ main (int argc, char *argv[])
 	gtk_snippets_loader_add_snippet(loader, snippet);
 	*/
 	
-	GtkSnippetsManagerGsv *manager = gtk_snippets_manager_gsv_new(loader);
+	//GtkSnippetsManagerGsv *manager = gtk_snippets_manager_gsv_new(loader);
+	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
 	g_object_unref(loader);
 	
-	gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
+	//gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
+	gtk_snippets_manager_add_support (manager, gtk_snippets_editor_gsv_new(source), "C");
 	
 	//gtk_snippets_manager_gsv_remove_support (manager, (gpointer)source);
 	
