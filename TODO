@@ -13,6 +13,9 @@ Popup List:
 
 Loader:
 
+	.- Function save for save the actual snippets on disk.
+	.- Signal snippet-added when someone add a snippet
+	.- Signal snippet-removes when someone remove a snippet
 	.- [OK] Make the loader, now it return some test snippets. The may load snippets from the xml
 	.- [OK] The hashtable key now is a counter. Snippets hastable key: change. Now the id is the
 		key but the id can be equal for various snippets
@@ -21,14 +24,10 @@ Loader:
 			.- [OK] Get language from GtkSourceLanguage, not from language tag in the xml.
 	.- [OK] Organize snippets in separated lists gruped by language because is more easy to load, to save and 
 		to build the TreeModels.
-		
 	.- [OK] function like gtk-snippets-loader-get-snippets-by-language(gchar* language)
 			than only return a list of snippet for this language
 	.- [OK] Function add-snippet for add new snippet
-	.- Signal snippet-added when someone add a snippet
 	.- [OK] Function remove-snippet for delete a snippet. It Remove a snippet from the list and unref it.
-	.- Signal snippet-removes when someone remove a snippet
-	.- Function save for save the actual snippets on disk.
 	.- [OK] Change the default load. Loads snippets from user home (/home/chuchi/.gnome2/libgtksnippets).
 		
 Snippets Management UI:

@@ -265,6 +265,9 @@ INST_H_FILES = \
 	gtk-snippets-loader.h  \
 	gtk-snippets-management-ui.h  \
 	gtk-snippets-manager-gsv.h  \
+	gtk-snippets-editor.h    \
+	gtk-snippets-manager.h    \
+	gtk-snippets-editor-gsv.h \
 	gtk-snippets-popup-dialog.h
 
 headerdir = $(prefix)/include/libgtksnippets-1

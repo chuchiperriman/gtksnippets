@@ -296,7 +296,7 @@ gtk_snippets_manager_sw_destroy_event (GtkObject *editor,
 void
 gtk_snippets_manager_add_support (GtkSnippetsManager *manager, GtkSnippetsEditor* editor, const gchar* language)
 {
-
+	//FIXME controlar si el editor ya está añadido
 	EditorData *data;
 	GObject* widget;
 	

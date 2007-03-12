@@ -1,0 +1,22 @@
+
+2007-03-12 chuchiperriman <chuchiperriman@gmail.com>
+
+	* Started GtkSnippets 0.2
+	
+	* Added GtkSnippetsEditor interface
+	
+	* Created GtkSnippetsEditorGsv: implements GtkSnippetsEditor interface
+	adding support to GtkSourceView
+	
+	* Bug fixed: When the editor language is NULL, we didn't check it
+	in the popup dialog.
+
+== GtkSnippets 0.1 ==
+
+2007-02-24 chuchiperriman <chuchiperriman@gmail.com>
+	
+	* Finished fist beta version 0.1
+
+2007-01-XX chuchiperriman <chuchiperriman@gmail.com>
+
+	* GtkSnippets project started.

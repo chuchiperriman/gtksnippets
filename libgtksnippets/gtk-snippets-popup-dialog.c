@@ -567,9 +567,12 @@ gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const Fil
 
 	//Setting source language	
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(popup_dialog->priv->source));
-	gtk_source_buffer_set_language(
-		GTK_SOURCE_BUFFER(buffer),
-		g_hash_table_lookup(popup_dialog->priv->hash_languages,filter_data->language));
+	if (filter_data->language != NULL)
+	{
+		gtk_source_buffer_set_language(
+			GTK_SOURCE_BUFFER(buffer),
+			g_hash_table_lookup(popup_dialog->priv->hash_languages,filter_data->language));
+	}
 		
 }
 

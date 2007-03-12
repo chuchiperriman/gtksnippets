@@ -37,6 +37,10 @@ G_BEGIN_DECLS
 #define GTK_SNIPPETS_EDITOR_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GTK_TYPE_SNIPPETS_EDITOR, GtkSnippetsEditorClass))
 
 typedef struct _GtkSnippetsEditorClass GtkSnippetsEditorClass;
+/**
+* GtkSnippetsEditor:
+* Dummy object for the interface
+*/
 typedef struct _GtkSnippetsEditor GtkSnippetsEditor;
 
 struct _GtkSnippetsEditorClass
@@ -50,9 +54,39 @@ struct _GtkSnippetsEditorClass
 
 GType gtk_snippets_editor_get_type (void) G_GNUC_CONST;
 
+/**
+* gtk_snippets_editor_get_current_word:
+* @GtkSnippetsEditor: The editor
+* @Returns: actual word in the editor
+*/
 gchar* gtk_snippets_editor_get_current_word (GtkSnippetsEditor* editor);
+/**
+* gtk_snippets_editor_get_cursor_position:
+* @GtkSnippetsEditor: The editor
+* @x: It allocate the x position of the cursor position in the screen.
+* @y: It allocate the y position of the cursor position in the screen.
+*
+* Used to set the popup position on the screen.
+*/
 void gtk_snippets_editor_get_cursor_position(GtkSnippetsEditor* editor,int* x, int* y);
+/**
+* gtk_snippets_editor_insert_text_in_cursor:
+* @GtkSnippetsEditor: The editor
+* @text: Text to insert.
+*
+* This function must delete the current word and insert the new text.
+*/
 void gtk_snippets_editor_insert_text_in_cursor(GtkSnippetsEditor* editor, const gchar* text);
+/**
+* gtk_snippets_editor_get_widget:
+* @GtkSnippetsEditor: The editor
+* @Returns: The real editor widget.
+*
+* Used to connect the signals to the real object.
+* The returned a object may implement the signals
+* key-press-event
+* destroy
+*/
 GObject* gtk_snippets_editor_get_widget(GtkSnippetsEditor* editor);
 
 G_END_DECLS

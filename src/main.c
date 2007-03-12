@@ -173,8 +173,6 @@ main (int argc, char *argv[])
 	//GtkSnippetsManagerGsv *manager = gtk_snippets_manager_gsv_new(loader);
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
-	g_object_unref(loader);
-	
 	//gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
 	gtk_snippets_manager_add_support (manager, gtk_snippets_editor_gsv_new(source), "C");
 	
@@ -182,6 +180,9 @@ main (int argc, char *argv[])
 	
 	GtkSnippetsManagementUI *snippets_ui;
 	snippets_ui = gtk_snippets_management_ui_new(loader);
+
+	g_object_unref(loader);
+	
 	gtk_snippets_management_ui_show(snippets_ui);
 	
 	gtk_widget_show (window);
