@@ -40,7 +40,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-manager.c    \
 	gtk-snippets-manager.h    \
 	gtk-snippets-editor-gsv.c    \
-	gtk-snippets-editor-gsv.h 
+	gtk-snippets-editor-gsv.h    \
+	gtk-text-completion-popup.h    \
+	gtk-text-completion-popup.c 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -68,6 +70,8 @@ header_DATA =                           \
 EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
 	
 ## File created by the gnome-build tools
+
+
 
 
 

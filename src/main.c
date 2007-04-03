@@ -39,6 +39,7 @@
 #include "libgtksnippets/gtk-snippets-manager.h"
 #include "libgtksnippets/gtk-snippets-manager-gsv.h"
 #include "libgtksnippets/gtk-snippets-management-ui.h"
+#include "libgtksnippets/gtk-text-completion-popup.h"
 
 
 /*
@@ -183,11 +184,13 @@ main (int argc, char *argv[])
 
 	g_object_unref(loader);
 	
-	gtk_snippets_management_ui_show(snippets_ui);
+	//gtk_snippets_management_ui_show(snippets_ui);
 	
 	gtk_widget_show (window);
 	
 	gtk_widget_grab_focus(source);
+	
+	GtkTextCompletionPopup *popup = gtk_text_completion_popup_new(GTK_TEXT_VIEW(source));
 
 	gtk_main ();
 	

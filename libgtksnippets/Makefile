@@ -61,7 +61,7 @@ am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
 	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo \
 	gtk-snippets-editor.lo gtk-snippets-manager.lo \
-	gtk-snippets-editor-gsv.lo
+	gtk-snippets-editor-gsv.lo gtk-text-completion-popup.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -250,7 +250,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-manager.c    \
 	gtk-snippets-manager.h    \
 	gtk-snippets-editor-gsv.c    \
-	gtk-snippets-editor-gsv.h 
+	gtk-snippets-editor-gsv.h    \
+	gtk-text-completion-popup.h    \
+	gtk-text-completion-popup.c 
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -353,6 +355,7 @@ include ./$(DEPDIR)/gtk-snippets-management-ui.Plo
 include ./$(DEPDIR)/gtk-snippets-manager-gsv.Plo
 include ./$(DEPDIR)/gtk-snippets-manager.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
+include ./$(DEPDIR)/gtk-text-completion-popup.Plo
 
 .c.o:
 	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
