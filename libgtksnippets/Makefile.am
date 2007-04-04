@@ -42,7 +42,11 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-editor-gsv.c    \
 	gtk-snippets-editor-gsv.h    \
 	gtk-text-completion-popup.h    \
-	gtk-text-completion-popup.c 
+	gtk-text-completion-popup.c 	\
+	gtk-text-completion-provider.c	\
+	gtk-text-completion-provider.h	\
+	gtc-provider-test.c	\
+	gtc-provider-test.h
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 

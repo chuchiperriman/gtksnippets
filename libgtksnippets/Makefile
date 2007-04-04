@@ -61,7 +61,8 @@ am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
 	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo \
 	gtk-snippets-editor.lo gtk-snippets-manager.lo \
-	gtk-snippets-editor-gsv.lo gtk-text-completion-popup.lo
+	gtk-snippets-editor-gsv.lo gtk-text-completion-popup.lo \
+	gtk-text-completion-provider.lo gtc-provider-test.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -83,14 +84,14 @@ DATA = $(glade_DATA) $(header_DATA) $(snippets_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
 AWK = mawk
 CATALOGS =  es.gmo
 CATOBJEXT = .gmo
@@ -141,7 +142,7 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
@@ -195,7 +196,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/perriman/Projects/gtksnippets/install-sh
+install_sh = /home/chuchi/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -252,7 +253,11 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-editor-gsv.c    \
 	gtk-snippets-editor-gsv.h    \
 	gtk-text-completion-popup.h    \
-	gtk-text-completion-popup.c 
+	gtk-text-completion-popup.c 	\
+	gtk-text-completion-provider.c	\
+	gtk-text-completion-provider.h	\
+	gtc-provider-test.c	\
+	gtc-provider-test.h
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -346,6 +351,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/gtc-provider-test.Plo
 include ./$(DEPDIR)/gtk-snippet.Plo
 include ./$(DEPDIR)/gtk-snippets-editor-gsv.Plo
 include ./$(DEPDIR)/gtk-snippets-editor.Plo
@@ -356,6 +362,7 @@ include ./$(DEPDIR)/gtk-snippets-manager-gsv.Plo
 include ./$(DEPDIR)/gtk-snippets-manager.Plo
 include ./$(DEPDIR)/gtk-snippets-popup-dialog.Plo
 include ./$(DEPDIR)/gtk-text-completion-popup.Plo
+include ./$(DEPDIR)/gtk-text-completion-provider.Plo
 
 .c.o:
 	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

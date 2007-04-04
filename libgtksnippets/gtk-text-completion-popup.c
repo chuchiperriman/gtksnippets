@@ -31,6 +31,8 @@ struct _GtkTextCompletionPopupPrivate
 {
 	GtkTextView *text_view;
 	GtkWidget *window;
+	
+	GList *events;
 };
 
 #define GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTK_TYPE_TEXT_COMPLETION_POPUP, GtkTextCompletionPopupPrivate))
@@ -79,14 +81,28 @@ static void
 gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 {
 	popup->priv = GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(popup);
+	popup->priv->events = NULL;
 	gtcp_load_glade(popup);
 }
 
 static void
 gtk_text_completion_popup_finalize (GObject *object)
 {
+	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP(object);
+	GList *actual;
 	/* TODO: Add deinitalization code here */
-
+	actual = popup->priv->events;
+	if (actual != NULL)
+	{
+		do
+		{
+			g_free(actual->data);
+			
+		}while((actual = g_list_next(actual)) != NULL);
+	}
+	
+	g_list_free(popup->priv->events);
+	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -156,3 +172,24 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	popup->priv->text_view = view;
 	return popup;
 }
+
+void
+gtk_text_completion_popup_add_event(GtkTextCompletionPopup *popup, const gchar *event_name)
+{
+	//Comprueba si existe el evento
+	if (g_list_find_custom(popup->priv->events, event_name, (GCompareFunc)g_ascii_strcasecmp) == NULL)
+		popup->priv->events = g_list_append (popup->priv->events, g_strdup(event_name));
+}
+
+void
+gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, const gchar *event_name, GtkTextCompletionProvider *provider)
+{
+	
+}
+
+GtkTextView*
+gtk_text_completion_popup_get_view(GtkTextCompletionPopup *popup)
+{
+	return popup->priv->text_view;
+}
+

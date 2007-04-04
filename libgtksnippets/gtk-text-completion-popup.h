@@ -28,6 +28,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gtk-text-completion-provider.h"
+
 G_BEGIN_DECLS
 
 #define GTK_TYPE_TEXT_COMPLETION_POPUP             (gtk_text_completion_popup_get_type ())
@@ -59,6 +61,17 @@ struct _GtkTextCompletionPopup
 GType gtk_text_completion_popup_get_type (void) G_GNUC_CONST;
 
 GtkTextCompletionPopup* gtk_text_completion_popup_new (GtkTextView *view);
+
+//Añade un nuevo evento al popup
+void gtk_text_completion_popup_add_event(GtkTextCompletionPopup *popup, const gchar *event_name);
+
+//Lanzará las señales de populate y mostrara el popup.
+void gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar *event_name);
+
+//Registra un proveedor en el popup.
+void gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, const gchar *event_name, GtkTextCompletionProvider *provider);
+
+GtkTextView* gtk_text_completion_popup_get_view(GtkTextCompletionPopup *popup);
 
 G_END_DECLS
 

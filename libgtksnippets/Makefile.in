@@ -61,7 +61,8 @@ am_libgtksnippets_la_OBJECTS = gtk-snippets-loader.lo gtk-snippet.lo \
 	gtk-snippets-manager-gsv.lo gtk-snippets-popup-dialog.lo \
 	gtk-snippets-gsv-utils.lo gtk-snippets-management-ui.lo \
 	gtk-snippets-editor.lo gtk-snippets-manager.lo \
-	gtk-snippets-editor-gsv.lo gtk-text-completion-popup.lo
+	gtk-snippets-editor-gsv.lo gtk-text-completion-popup.lo \
+	gtk-text-completion-provider.lo gtc-provider-test.lo
 libgtksnippets_la_OBJECTS = $(am_libgtksnippets_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -252,7 +253,11 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-editor-gsv.c    \
 	gtk-snippets-editor-gsv.h    \
 	gtk-text-completion-popup.h    \
-	gtk-text-completion-popup.c 
+	gtk-text-completion-popup.c 	\
+	gtk-text-completion-provider.c	\
+	gtk-text-completion-provider.h	\
+	gtc-provider-test.c	\
+	gtc-provider-test.h
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -346,6 +351,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtc-provider-test.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-editor-gsv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-editor.Plo@am__quote@
@@ -356,6 +362,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-snippets-popup-dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-text-completion-popup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk-text-completion-provider.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
