@@ -31,6 +31,8 @@ struct _GtcProviderTestClass {
 
 GType gtc_provider_test_get_type ();
 
+GtcProviderTest* gtc_provider_test_new();
+
 G_END_DECLS
 
 #endif

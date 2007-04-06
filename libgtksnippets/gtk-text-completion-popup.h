@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 #define GTK_IS_TEXT_COMPLETION_POPUP_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_COMPLETION_POPUP))
 #define GTK_TEXT_COMPLETION_POPUP_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_COMPLETION_POPUP, GtkTextCompletionPopupClass))
 
+const gchar* USER_REQUEST_EVENT = "user-request-event";
+
 typedef struct _GtkTextCompletionPopupPrivate GtkTextCompletionPopupPrivate;
 
 typedef struct _GtkTextCompletionPopupClass GtkTextCompletionPopupClass;
@@ -69,7 +71,7 @@ void gtk_text_completion_popup_add_event(GtkTextCompletionPopup *popup, const gc
 void gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar *event_name);
 
 //Registra un proveedor en el popup.
-void gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, const gchar *event_name, GtkTextCompletionProvider *provider);
+void gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, GtkTextCompletionProvider *provider);
 
 GtkTextView* gtk_text_completion_popup_get_view(GtkTextCompletionPopup *popup);
 

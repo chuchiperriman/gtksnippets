@@ -7,7 +7,9 @@
     <property name="can_focus">True</property>
     <property name="has_focus">True</property>
     <property name="is_focus">True</property>
-    <property name="modal">True</property>
+    <property name="type">GTK_WINDOW_POPUP</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="skip_pager_hint">True</property>
     <property name="decorated">False</property>
     <property name="deletable">False</property>
     <child>
@@ -21,7 +23,7 @@
             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <child>
-              <widget class="GtkTreeView" id="snippets_tree_view">
+              <widget class="GtkTreeView" id="data_tree_view">
                 <property name="visible">True</property>
                 <property name="headers_visible">False</property>
               </widget>

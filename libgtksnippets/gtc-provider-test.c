@@ -2,6 +2,7 @@
 #define VALA_FREE_CHECKED(o,f) ((o) == NULL ? NULL : ((o) = (f (o), NULL)))
 #define VALA_FREE_UNCHECKED(o,f) ((o) = (f (o), NULL))
 
+#include <glib/gprintf.h>
 #include "gtc-provider-test.h"
 
 struct _GtcProviderTestPrivate {
@@ -10,17 +11,26 @@ struct _GtcProviderTestPrivate {
 enum  {
 	GTC_PROVIDER_TEST_DUMMY_PROPERTY,
 };
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, GString* event_name);
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, const gchar* event_name);
 static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GObject* completion, GObject* data);
 static gpointer gtc_provider_test_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_provider_test_gtk_text_completion_provider_parent_iface = NULL;
 
 
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, GString* event_name)
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, const gchar* event_name)
 {
+	gint i;
+	GList *list = NULL;
+	gchar temp[10];
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
-	return NULL;
+	
+	for (i=0;i<5000;i++)
+	{
+		g_sprintf(temp,"Hola %i",i);
+		list = g_list_append(list,g_strdup(temp));
+	}
+	return list;
 }
 
 
@@ -76,5 +86,9 @@ GType gtc_provider_test_get_type ()
 }
 
 
-
+GtcProviderTest*
+gtc_provider_test_new()
+{
+	return GTC_PROVIDER_TEST (g_object_new (TYPE_GTC_PROVIDER_TEST, NULL));
+}
 

@@ -40,6 +40,7 @@
 #include "libgtksnippets/gtk-snippets-manager-gsv.h"
 #include "libgtksnippets/gtk-snippets-management-ui.h"
 #include "libgtksnippets/gtk-text-completion-popup.h"
+#include "libgtksnippets/gtc-provider-test.h"
 
 
 /*
@@ -191,7 +192,11 @@ main (int argc, char *argv[])
 	gtk_widget_grab_focus(source);
 	
 	GtkTextCompletionPopup *popup = gtk_text_completion_popup_new(GTK_TEXT_VIEW(source));
+	
+	GtcProviderTest* provider = gtc_provider_test_new();
+	gtk_text_completion_popup_register_provider(popup, provider);
 
+	
 	gtk_main ();
 	
 	

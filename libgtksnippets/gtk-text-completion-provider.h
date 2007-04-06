@@ -19,11 +19,11 @@ typedef struct _GtkTextCompletionProviderIface GtkTextCompletionProviderIface;
 
 struct _GtkTextCompletionProviderIface {
 	GTypeInterface parent;
-	GList* (*get_data) (GtkTextCompletionProvider* self, GObject* completion, GString* event_name);
+	GList* (*get_data) (GtkTextCompletionProvider* self, GObject* completion, const gchar* event_name);
 	void (*data_selected) (GtkTextCompletionProvider* self, GObject* completion, GObject* data);
 };
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GObject* completion, GString* event_name);
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GObject* completion, const gchar* event_name);
 void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GObject* completion, GObject* data);
 GType gtk_text_completion_provider_get_type ();
 
