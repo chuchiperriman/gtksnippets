@@ -27,7 +27,6 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-
 #include "gtk-text-completion-provider.h"
 
 G_BEGIN_DECLS

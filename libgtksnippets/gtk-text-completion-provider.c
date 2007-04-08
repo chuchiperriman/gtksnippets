@@ -6,26 +6,35 @@
 
 
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GObject* completion, const gchar* event_name)
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, GString* event_name)
 {
 	return GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->get_data (self, completion, event_name);
 }
 
 
-void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GObject* completion, GObject* data)
+void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, gpointer data)
 {
 	GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->data_selected (self, completion, data);
 }
 
 
+static void gtk_text_completion_provider_base_init (GtkTextCompletionProviderIface * iface)
+{
+	static gboolean initialized = FALSE;
+	if (!initialized) {
+		initialized = TRUE;
+	}
+}
+
+
 GType gtk_text_completion_provider_get_type ()
 {
-	static GType g_define_type_id = 0;
-	if (G_UNLIKELY (g_define_type_id == 0)) {
-		static const GTypeInfo g_define_type_info = { sizeof (GtkTextCompletionProviderIface), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) NULL, (GClassFinalizeFunc) NULL, NULL, 0, 0, (GInstanceInitFunc) NULL };
-		g_define_type_id = g_type_register_static (G_TYPE_INTERFACE, "GtkTextCompletionProvider", &g_define_type_info, 0);
+	static GType gtk_text_completion_provider_type_id = 0;
+	if (G_UNLIKELY (gtk_text_completion_provider_type_id == 0)) {
+		static const GTypeInfo g_define_type_info = { sizeof (GtkTextCompletionProviderIface), (GBaseInitFunc) gtk_text_completion_provider_base_init, (GBaseFinalizeFunc) NULL, (GClassInitFunc) NULL, (GClassFinalizeFunc) NULL, NULL, 0, 0, (GInstanceInitFunc) NULL };
+		gtk_text_completion_provider_type_id = g_type_register_static (G_TYPE_INTERFACE, "GtkTextCompletionProvider", &g_define_type_info, 0);
 	}
-	return g_define_type_id;
+	return gtk_text_completion_provider_type_id;
 }
 
 

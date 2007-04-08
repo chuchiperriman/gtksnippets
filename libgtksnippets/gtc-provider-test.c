@@ -11,13 +11,13 @@ struct _GtcProviderTestPrivate {
 enum  {
 	GTC_PROVIDER_TEST_DUMMY_PROPERTY,
 };
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, const gchar* event_name);
-static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GObject* completion, GObject* data);
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name);
+static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, gpointer data);
 static gpointer gtc_provider_test_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_provider_test_gtk_text_completion_provider_parent_iface = NULL;
 
 
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GObject* completion, const gchar* event_name)
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name)
 {
 	gint i;
 	GList *list = NULL;
@@ -34,11 +34,16 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 }
 
 
-static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GObject* completion, GObject* data)
+static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, gpointer data)
 {
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
+	g_debug("000");
 	g_return_if_fail (completion == NULL || G_IS_OBJECT (completion));
-	g_return_if_fail (data == NULL || G_IS_OBJECT (data));
+	g_debug("000");
+	g_debug((gchar*)data);
+	
+	gtk_text_buffer_insert_at_cursor(gtk_text_view_get_buffer(completion), (const gchar*)data,-1);	
+	
 }
 
 

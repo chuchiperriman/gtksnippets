@@ -36,10 +36,8 @@ struct _GtkTextCompletionPopupPrivate
 	GtkTextView *text_view;
 	GtkTreeView *data_tree_view;
 	GtkWidget *window;
-	
 	GList *events;
 	GList *providers;
-	
 };
 
 #define GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTK_TYPE_TEXT_COMPLETION_POPUP, GtkTextCompletionPopupPrivate))
@@ -62,62 +60,85 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
 	
-	//TODO Si presiona parriba o pabajo foco al popup
-	if (event->keyval == GDK_Escape || event->keyval == GDK_space)
+	if ( GTK_WIDGET_VISIBLE(popup->priv->window) )
 	{
-		gtk_widget_hide(popup->priv->window);
-	}
-	else if (event->keyval == GDK_Up)
-	{
-		model = gtk_tree_view_get_model(popup->priv->data_tree_view);
-		gtk_tree_view_get_cursor(popup->priv->data_tree_view,&path,NULL);
-		if (path == NULL)
+		//TODO Si presiona parriba o pabajo foco al popup
+		if (event->keyval == GDK_Escape || event->keyval == GDK_space)
 		{
-			if (gtk_tree_model_get_iter_first(model,&iter))
+			gtk_widget_hide(popup->priv->window);
+		}
+		else if (event->keyval == GDK_Up)
+		{
+			model = gtk_tree_view_get_model(popup->priv->data_tree_view);
+			gtk_tree_view_get_cursor(popup->priv->data_tree_view,&path,NULL);
+			if (path == NULL)
 			{
-				path = gtk_tree_model_get_path(model,&iter);
+				if (gtk_tree_model_get_iter_first(model,&iter))
+				{
+					path = gtk_tree_model_get_path(model,&iter);
+					gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
+					gtk_tree_path_free(path);
+				}
+			}
+			else
+			{
+				gtk_tree_path_prev(path);
 				gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
 				gtk_tree_path_free(path);
 			}
+			gtk_widget_grab_focus(GTK_WIDGET(popup->priv->data_tree_view));
+			return TRUE;
 		}
-		else
+		else if (event->keyval == GDK_Down)
 		{
-			gtk_tree_path_prev(path);
-			gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
-		}
-		gtk_widget_grab_focus(GTK_WIDGET(popup->priv->data_tree_view));
-		return TRUE;
-	}
-	else if (event->keyval == GDK_Down)
-	{
-		model = gtk_tree_view_get_model(popup->priv->data_tree_view);
-		gtk_tree_view_get_cursor(popup->priv->data_tree_view,&path,NULL);
-		if (path == NULL)
-		{
-			if (gtk_tree_model_get_iter_first(model,&iter))
+			model = gtk_tree_view_get_model(popup->priv->data_tree_view);
+			gtk_tree_view_get_cursor(popup->priv->data_tree_view,&path,NULL);
+			if (path == NULL)
 			{
-				path = gtk_tree_model_get_path(model,&iter);
+				if (gtk_tree_model_get_iter_first(model,&iter))
+				{
+					path = gtk_tree_model_get_path(model,&iter);
+					gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
+					gtk_tree_path_free(path);
+				}
+			}
+			else
+			{
+				gtk_tree_path_next(path);
 				gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
 				gtk_tree_path_free(path);
 			}
+			gtk_widget_grab_focus(GTK_WIDGET(popup->priv->data_tree_view));
+			return TRUE;
 		}
-		else
+		else if (event->keyval == GDK_Return)
 		{
-			gtk_tree_path_next(path);
-			gtk_tree_view_set_cursor(popup->priv->data_tree_view,path,NULL,FALSE);
+			gtk_tree_view_get_cursor(popup->priv->data_tree_view, &path, &column);
+			if (path != NULL)
+			{
+				gtk_tree_view_row_activated(popup->priv->data_tree_view,path,column);
+				return TRUE;
+			}
+			else
+			{
+				gtk_widget_hide(popup->priv->window);
+			}
 		}
-		gtk_widget_grab_focus(GTK_WIDGET(popup->priv->data_tree_view));
-		return TRUE;
 	}
-	else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+	else
 	{
-		g_debug("lanzamos");
-		gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT);
-		return TRUE;
+		if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+		{
+			g_debug("lanzamos");
+			gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT);
+			return TRUE;
+		}
 	}
-	
+
 	return FALSE;
 }
 
@@ -136,6 +157,32 @@ user_request_event_activate(GtkTextCompletionPopup *popup)
 	
 }
 /*****************************************************/
+static void
+gtcp_popup_row_activated_cb (GtkTreeView *tree_view,
+										GtkTreePath *path,
+										GtkTreeViewColumn *column,
+										gpointer user_data)
+{
+	//gtcp_data_selected(popup);
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	GtkTextCompletionProvider *provider;
+	const gchar* data;
+	GtkTextCompletionPopup *popup;
+	GValue value_prov = {0,};
+	GValue value_name = {0,};
+	
+	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
+	model = gtk_tree_view_get_model(tree_view);
+	
+	gtk_tree_model_get_iter(model,&iter,path);
+	gtk_tree_model_get_value(model,&iter,COL_NAME,&value_name);
+	data = g_value_get_string(&value_name);
+	gtk_tree_model_get_value(model,&iter,COL_PROVIDER,&value_prov);
+	provider = GTK_TEXT_COMPLETION_PROVIDER(g_value_get_pointer(&value_prov));
+	gtk_text_completion_provider_data_selected(provider,popup->priv->text_view,(gpointer)data);
+	gtk_widget_hide(popup->priv->window);
+}
 
 static void
 gtcp_gtv_get_screen_pos(GtkTextView *text_view, gint *x, gint *y)
@@ -268,6 +315,9 @@ gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 	gtcp_load_glade(popup);
 	gtcp_load_tree(popup);
 	gtcp_create_tree_model(popup);
+	
+	g_signal_connect(popup->priv->data_tree_view, "row-activated",
+		G_CALLBACK(gtcp_popup_row_activated_cb),(gpointer) popup);
 }
 
 static void
@@ -375,6 +425,7 @@ gtk_text_completion_popup_add_event(GtkTextCompletionPopup *popup, const gchar *
 void
 gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, GtkTextCompletionProvider *provider)
 {
+	g_object_ref(provider);
 	popup->priv->providers = g_list_append(popup->priv->providers, provider);
 }
 
@@ -406,7 +457,7 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 		do
 		{
 			provider =  GTK_TEXT_COMPLETION_PROVIDER(providers_list->data);
-			data_list = gtk_text_completion_provider_get_data (provider, G_OBJECT(popup), event_name);
+			data_list = gtk_text_completion_provider_get_data (provider, popup->priv->text_view, (gpointer)event_name);
 			if (data_list != NULL)
 			{
 				do
