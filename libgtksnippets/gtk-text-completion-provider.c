@@ -6,13 +6,13 @@
 
 
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, GString* event_name)
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name)
 {
 	return GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->get_data (self, completion, event_name);
 }
 
 
-void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, gpointer data)
+void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, GtkTextCompletionData* data)
 {
 	GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->data_selected (self, completion, data);
 }

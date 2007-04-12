@@ -6,13 +6,15 @@
 #include "gtc-provider-test.h"
 
 struct _GtcProviderTestPrivate {
+	
 };
+
 #define GTC_PROVIDER_TEST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_GTC_PROVIDER_TEST, GtcProviderTestPrivate))
 enum  {
 	GTC_PROVIDER_TEST_DUMMY_PROPERTY,
 };
 static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name);
-static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, gpointer data);
+static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, GtkTextCompletionData* data);
 static gpointer gtc_provider_test_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_provider_test_gtk_text_completion_provider_parent_iface = NULL;
 
@@ -21,20 +23,29 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 {
 	gint i;
 	GList *list = NULL;
+	GtkTextCompletionData *data;
+	GtcProviderTest *test;
 	gchar temp[10];
+	
+	test = GTC_PROVIDER_TEST(base);
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
 	
-	for (i=0;i<5000;i++)
+	for (i=0;i<500;i++)
 	{
+		data = gtk_text_completion_data_new();
 		g_sprintf(temp,"Hola %i",i);
-		list = g_list_append(list,g_strdup(temp));
+		data->name = g_strdup(temp);
+		data->icon = test->icon_test;
+		//TODO Estos strdup se quedan colgados
+		//Seguramente desde el popup tendremos que llamar al provider para indicarle que libere los datos
+		list = g_list_append(list,data);
 	}
 	return list;
 }
 
 
-static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, gpointer data)
+static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, GtkTextCompletionData* data)
 {
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_debug("000");
@@ -75,6 +86,7 @@ static void gtc_provider_test_gtk_text_completion_provider_interface_init (GtkTe
 
 static void gtc_provider_test_init (GtcProviderTest * self)
 {
+	self->icon_test = gdk_pixbuf_new_from_file("/home/chuchi/desarrollo/sources/anjuta/pixmaps/open_project.png",NULL);
 }
 
 

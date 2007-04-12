@@ -6,6 +6,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include "gtk-text-completion-data.h"
 
 G_BEGIN_DECLS
 
@@ -20,12 +21,13 @@ typedef struct _GtkTextCompletionProviderIface GtkTextCompletionProviderIface;
 
 struct _GtkTextCompletionProviderIface {
 	GTypeInterface parent;
-	GList* (*get_data) (GtkTextCompletionProvider* self, GtkTextView* completion, GString* event_name);
-	void (*data_selected) (GtkTextCompletionProvider* self, GtkTextView* completion, gpointer data);
+	GList* (*get_data) (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name);
+	void (*data_selected) (GtkTextCompletionProvider* self, GtkTextView* completion, GtkTextCompletionData* data);
 };
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, GString* event_name);
-void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, gpointer data);
+
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name);
+void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, GtkTextCompletionData* data);
 GType gtk_text_completion_provider_get_type ();
 
 G_END_DECLS

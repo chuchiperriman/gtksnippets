@@ -41,12 +41,15 @@ libgtksnippets_la_SOURCES = \
 	gtk-snippets-manager.h    \
 	gtk-snippets-editor-gsv.c    \
 	gtk-snippets-editor-gsv.h    \
+	gtk-text-completion-data.c	\
+	gtk-text-completion-data.h	\
 	gtk-text-completion-popup.h    \
 	gtk-text-completion-popup.c 	\
 	gtk-text-completion-provider.c	\
 	gtk-text-completion-provider.h	\
 	gtc-provider-test.c	\
-	gtc-provider-test.h
+	gtc-provider-test.h	
+
 
 libgtksnippets_la_LIBADD = \
 	$(PACKAGE_LIBS) 
@@ -64,7 +67,10 @@ INST_H_FILES = \
 	gtk-snippets-editor.h    \
 	gtk-snippets-manager.h    \
 	gtk-snippets-editor-gsv.h \
-	gtk-snippets-popup-dialog.h
+	gtk-snippets-popup-dialog.h	\
+	gtk-text-completion-provider.h	\
+	gtc-provider-test.h	\
+	gtk-text-completion-data.h
 
 headerdir = $(prefix)/include/libgtksnippets-1
 

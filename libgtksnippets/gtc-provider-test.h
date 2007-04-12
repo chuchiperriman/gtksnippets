@@ -23,7 +23,8 @@ typedef struct _GtcProviderTestPrivate GtcProviderTestPrivate;
 
 struct _GtcProviderTest {
 	GObject parent;
-	GtcProviderTestPrivate * priv;
+	GtcProviderTestPrivate * priv;	
+	GdkPixbuf *icon_test;
 };
 struct _GtcProviderTestClass {
 	GObjectClass parent;
