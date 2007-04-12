@@ -254,7 +254,14 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 			}
 			case GDK_Up:
 			{
-				return gtcp_tree_up(popup, 1);
+				if (gtcp_tree_up(popup, 1))
+				{
+					return TRUE;
+				}
+				else
+				{
+					return gtcp_tree_first(popup);
+				}
 			}
 			case GDK_Page_Up:
 			{
@@ -632,6 +639,7 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 		gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
 		//TODO Poner el foco en el primer elemento
 		gtk_widget_show(popup->priv->window);
+		gtcp_tree_first(popup);
 	}
 	
 }
