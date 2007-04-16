@@ -4,6 +4,7 @@
 
 #include <glib/gprintf.h>
 #include "gtc-provider-test.h"
+#include "gtk-snippets-gsv-utils.h"
 
 #define ICON_FILE ICON_DIR"/locals.png"
 
@@ -27,7 +28,8 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	GList *list = NULL;
 	GtkTextCompletionData *data;
 	GtcProviderTest *test;
-	gchar temp[10];
+	gchar *word;
+	gchar temp[255];
 	
 	test = GTC_PROVIDER_TEST(base);
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
@@ -35,7 +37,9 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	
 	for (i=0;i<500;i++)
 	{
-		g_sprintf(temp,"Hola %i",i);
+		word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+		g_sprintf(temp,"-->%s %i<--",word,i);
+		g_free(word);
 		data = gtk_text_completion_data_new_with_data(temp,test->icon_test,NULL);
 		list = g_list_append(list,data);
 	}
