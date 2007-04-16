@@ -5,6 +5,8 @@
 #include <glib/gprintf.h>
 #include "gtc-provider-test.h"
 
+#define ICON_FILE ICON_DIR"/locals.png"
+
 struct _GtcProviderTestPrivate {
 	
 };
@@ -33,12 +35,8 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	
 	for (i=0;i<500;i++)
 	{
-		data = gtk_text_completion_data_new();
 		g_sprintf(temp,"Hola %i",i);
-		data->name = g_strdup(temp);
-		data->icon = test->icon_test;
-		//TODO Estos strdup se quedan colgados
-		//Seguramente desde el popup tendremos que llamar al provider para indicarle que libere los datos
+		data = gtk_text_completion_data_new_with_data(temp,test->icon_test,NULL);
 		list = g_list_append(list,data);
 	}
 	return list;
@@ -86,7 +84,8 @@ static void gtc_provider_test_gtk_text_completion_provider_interface_init (GtkTe
 
 static void gtc_provider_test_init (GtcProviderTest * self)
 {
-	self->icon_test = gdk_pixbuf_new_from_file("/home/chuchi/desarrollo/sources/anjuta/pixmaps/open_project.png",NULL);
+	self->icon_test = gdk_pixbuf_new_from_file(ICON_FILE,NULL);
+	g_debug(ICON_FILE);
 }
 
 

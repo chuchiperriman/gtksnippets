@@ -53,7 +53,8 @@ am__vpath_adj = case $$p in \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)" \
-	"$(DESTDIR)$(headerdir)" "$(DESTDIR)$(snippetsdir)"
+	"$(DESTDIR)$(headerdir)" "$(DESTDIR)$(icondir)" \
+	"$(DESTDIR)$(snippetsdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgtksnippets_la_DEPENDENCIES =
@@ -80,20 +81,21 @@ SOURCES = $(libgtksnippets_la_SOURCES)
 DIST_SOURCES = $(libgtksnippets_la_SOURCES)
 gladeDATA_INSTALL = $(INSTALL_DATA)
 headerDATA_INSTALL = $(INSTALL_DATA)
+iconDATA_INSTALL = $(INSTALL_DATA)
 snippetsDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(glade_DATA) $(header_DATA) $(snippets_DATA)
+DATA = $(glade_DATA) $(header_DATA) $(icon_DATA) $(snippets_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
-AWK = mawk
+AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
+AWK = gawk
 CATALOGS =  es.gmo
 CATOBJEXT = .gmo
 CC = gcc
@@ -123,7 +125,7 @@ GETTEXT_PACKAGE = gtksnippets
 GMOFILES =  es.gmo
 GMSGFMT = /usr/bin/msgfmt
 GREP = /bin/grep
-GTKSNIPPETS_CFLAGS = -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/libglade-2.0 -I/usr/include/libxml2  
+GTKSNIPPETS_CFLAGS = -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/libglade-2.0 -I/usr/include/libxml2  
 GTKSNIPPETS_LIBS = -lglade-2.0 -lgtk-x11-2.0 -lxml2 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lfontconfig -lXext -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXfixes -lpango-1.0 -lcairo -lX11 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
 GTK_DOC_USE_LIBTOOL_FALSE = 
 GTK_DOC_USE_LIBTOOL_TRUE = #
@@ -143,9 +145,10 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
+MSGFMT_OPTS = -c
 OBJEXT = o
 PACKAGE = gtksnippets
 PACKAGE_BUGREPORT = 
@@ -197,7 +200,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/chuchi/Projects/gtksnippets/install-sh
+install_sh = /home/perriman/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -217,12 +220,15 @@ gladedir = $(datadir)/libgtksnippets/glade
 glade_DATA = *.glade
 snippetsdir = $(datadir)/libgtksnippets/snippets
 snippets_DATA = snippets/*.xml
+icondir = $(datadir)/libgtksnippets/pixmaps
+icon_DATA = pixmaps/*.png
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DGLADE_DIR=\""$(gladedir)"\" \
 	-DSNIPPETS_DIR=\""$(snippetsdir)"\" \
+	-DICON_DIR=\""$(icondir)"\" \
 	$(PACKAGE_CFLAGS) \
 	`pkg-config --cflags gtksourceview-1.0` \
 	`pkg-config --cflags libglade-2.0`
@@ -287,7 +293,7 @@ headerdir = $(prefix)/include/libgtksnippets-1
 header_DATA = \
         $(INST_H_FILES) 
 
-EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
+EXTRA_DIST = $(glade_DATA) $(snippets_DATA) $(icon_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -435,6 +441,23 @@ uninstall-headerDATA:
 	  echo " rm -f '$(DESTDIR)$(headerdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(headerdir)/$$f"; \
 	done
+install-iconDATA: $(icon_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(icondir)" || $(mkdir_p) "$(DESTDIR)$(icondir)"
+	@list='$(icon_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(iconDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(icondir)/$$f'"; \
+	  $(iconDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(icondir)/$$f"; \
+	done
+
+uninstall-iconDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(icon_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(icondir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(icondir)/$$f"; \
+	done
 install-snippetsDATA: $(snippets_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(snippetsdir)" || $(mkdir_p) "$(DESTDIR)$(snippetsdir)"
@@ -502,7 +525,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/snippets
+	$(mkdir_p) $(distdir)/pixmaps $(distdir)/snippets
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -533,7 +556,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)" "$(DESTDIR)$(headerdir)" "$(DESTDIR)$(snippetsdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gladedir)" "$(DESTDIR)$(headerdir)" "$(DESTDIR)$(icondir)" "$(DESTDIR)$(snippetsdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -581,7 +604,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-gladeDATA install-headerDATA \
+install-data-am: install-gladeDATA install-headerDATA install-iconDATA \
 	install-snippetsDATA
 
 install-exec-am: install-libLTLIBRARIES
@@ -611,7 +634,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-gladeDATA uninstall-headerDATA \
-	uninstall-info-am uninstall-libLTLIBRARIES \
+	uninstall-iconDATA uninstall-info-am uninstall-libLTLIBRARIES \
 	uninstall-snippetsDATA
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
@@ -620,14 +643,15 @@ uninstall-am: uninstall-gladeDATA uninstall-headerDATA \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-gladeDATA install-headerDATA \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-snippetsDATA install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-gladeDATA \
-	uninstall-headerDATA uninstall-info-am \
-	uninstall-libLTLIBRARIES uninstall-snippetsDATA
+	install-iconDATA install-info install-info-am \
+	install-libLTLIBRARIES install-man install-snippetsDATA \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-gladeDATA uninstall-headerDATA uninstall-iconDATA \
+	uninstall-info-am uninstall-libLTLIBRARIES \
+	uninstall-snippetsDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

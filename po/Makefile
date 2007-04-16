@@ -25,7 +25,8 @@ top_srcdir = ..
 
 prefix = /usr
 exec_prefix = ${prefix}
-datadir = ${prefix}/share
+datarootdir = ${prefix}/share
+datadir = ${datarootdir}
 libdir = ${exec_prefix}/lib
 localedir = $(libdir)/locale
 gnulocaledir = $(datadir)/locale
@@ -40,6 +41,7 @@ CC = gcc
 GENCAT = @GENCAT@
 GMSGFMT = /usr/bin/msgfmt
 MSGFMT = /usr/bin/msgfmt
+MSGFMT_OPTS = -c
 XGETTEXT = /usr/bin/xgettext
 MSGMERGE = msgmerge
 
@@ -80,7 +82,7 @@ INSTOBJEXT = .mo
 
 .po.gmo:
 	file=$(srcdir)/`echo $* | sed 's,.*/,,'`.gmo \
-	  && rm -f $$file && $(GMSGFMT) -c -o $$file $<
+	  && rm -f $$file && $(GMSGFMT) $(MSGFMT_OPTS) -o $$file $<
 
 .po.cat:
 	sed -f ../intl/po2msg.sed < $< > $*.msg \

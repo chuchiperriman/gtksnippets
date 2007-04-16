@@ -402,8 +402,8 @@ gtcp_add_data_to_tree(GtkTextCompletionPopup *popup, GtkTextCompletionData* data
 			
 	gtk_list_store_set (store, 
 						&iter,
-						COL_PIXBUF, data->icon,
-						COL_NAME, data->name,
+						COL_PIXBUF, gtk_text_completion_data_get_icon(data),
+						COL_NAME, gtk_text_completion_data_get_name(data),
 						COL_PROVIDER, (gpointer)provider,
 						-1);
 }
@@ -625,9 +625,12 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 				do
 				{
 					gtcp_add_data_to_tree(popup, (GtkTextCompletionData*)data_list->data, provider);
+					gtk_text_completion_data_free((GtkTextCompletionData*)data_list->data);
 					
 				}while((data_list = g_list_next(data_list)) != NULL);
+				g_list_free(data_list);
 			}
+			
 		}while((providers_list = g_list_next(popup->priv->providers)) != NULL);
 		
 				

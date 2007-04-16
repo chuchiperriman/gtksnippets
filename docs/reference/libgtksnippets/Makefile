@@ -54,15 +54,15 @@ CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run tar
+AMTAR = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run automake-1.9
-AWK = mawk
+AUTOCONF = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run automake-1.9
+AWK = gawk
 CATALOGS =  es.gmo
 CATOBJEXT = .gmo
 CC = gcc
@@ -92,7 +92,7 @@ GETTEXT_PACKAGE = gtksnippets
 GMOFILES =  es.gmo
 GMSGFMT = /usr/bin/msgfmt
 GREP = /bin/grep
-GTKSNIPPETS_CFLAGS = -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/libglade-2.0 -I/usr/include/libxml2  
+GTKSNIPPETS_CFLAGS = -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/libglade-2.0 -I/usr/include/libxml2  
 GTKSNIPPETS_LIBS = -lglade-2.0 -lgtk-x11-2.0 -lxml2 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lfontconfig -lXext -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXfixes -lpango-1.0 -lcairo -lX11 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
 GTK_DOC_USE_LIBTOOL_FALSE = 
 GTK_DOC_USE_LIBTOOL_TRUE = #
@@ -112,9 +112,10 @@ LTLIBOBJS =
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/chuchi/Projects/gtksnippets/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/perriman/Projects/gtksnippets/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
+MSGFMT_OPTS = -c
 OBJEXT = o
 PACKAGE = gtksnippets
 PACKAGE_BUGREPORT = 
@@ -166,7 +167,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/chuchi/Projects/gtksnippets/install-sh
+install_sh = /home/perriman/Projects/gtksnippets/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -461,6 +462,8 @@ docs: html-build.stamp
 scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB)
 	@echo 'gtk-doc: Scanning header files'
 	@-chmod -R u+w $(srcdir)
+	cd $(srcdir) && \
+	  gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES)
 	if grep -l '^..*$$' $(srcdir)/$(DOC_MODULE).types > /dev/null 2>&1 ; then \
 	    CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANGOBJ_OPTIONS) --module=$(DOC_MODULE) --output-dir=$(srcdir) ; \
 	else \
@@ -469,11 +472,9 @@ scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB)
                test -f $$i || touch $$i ; \
 	    done \
 	fi
-	cd $(srcdir) && \
-	  gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" $(SCAN_OPTIONS) $(EXTRA_HFILES)
 	touch scan-build.stamp
 
-$(DOC_MODULE)-decl.txt $(SCANOBJ_FILES): scan-build.stamp
+$(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt: scan-build.stamp
 	@true
 
 #### templates ####
@@ -552,7 +553,7 @@ dist-hook: dist-check-gtkdoc dist-hook-local
 	mkdir $(distdir)/html
 	-cp $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
 	-cp $(srcdir)/xml/*.xml $(distdir)/xml
-	-cp $(srcdir)/html/* $(distdir)/html
+	cp $(srcdir)/html/* $(distdir)/html
 	if test -f $(srcdir)/$(DOC_MODULE).types; then \
 	  cp $(srcdir)/$(DOC_MODULE).types $(distdir)/$(DOC_MODULE).types; \
 	fi

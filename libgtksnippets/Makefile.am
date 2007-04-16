@@ -5,12 +5,16 @@ glade_DATA = *.glade
 snippetsdir = $(datadir)/libgtksnippets/snippets
 snippets_DATA = snippets/*.xml
 
+icondir = $(datadir)/libgtksnippets/pixmaps
+icon_DATA = pixmaps/*.png
+
 INCLUDES = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DGLADE_DIR=\""$(gladedir)"\" \
 	-DSNIPPETS_DIR=\""$(snippetsdir)"\" \
+	-DICON_DIR=\""$(icondir)"\" \
 	$(PACKAGE_CFLAGS) \
 	`pkg-config --cflags gtksourceview-1.0` \
 	`pkg-config --cflags libglade-2.0`
@@ -77,7 +81,7 @@ headerdir = $(prefix)/include/libgtksnippets-1
 header_DATA =                           \
         $(INST_H_FILES) 
 
-EXTRA_DIST = $(glade_DATA) $(snippets_DATA)
+EXTRA_DIST = $(glade_DATA) $(snippets_DATA) $(icon_DATA)
 	
 ## File created by the gnome-build tools
 
