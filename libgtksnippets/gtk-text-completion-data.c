@@ -21,7 +21,6 @@
 
 #include <gtk/gtk.h>
 #include "gtk-text-completion-data.h"
-static gint cuenta = 0;
 
 struct _GtkTextCompletionDataPrivate {
 	const gchar * name;
@@ -101,8 +100,6 @@ ___finalize(GObject *obj_self)
 	memset(&name, 0, sizeof(name));
 #undef VAR
 #undef name
-	cuenta--;
-	g_debug("cuenta de completionData: %i",cuenta);
 }
 #undef __GOB_FUNCTION__
 
@@ -114,7 +111,6 @@ gtk_text_completion_data_init (GtkTextCompletionData * o G_GNUC_UNUSED)
 	o->_priv->name = NULL;
 	o->_priv->icon = NULL;
 	o->_priv->user_data = NULL;
-	cuenta++;
 }
 #undef __GOB_FUNCTION__
 static void 

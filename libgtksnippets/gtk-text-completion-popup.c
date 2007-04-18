@@ -24,8 +24,10 @@
 
 #include <glade/glade.h>
 #include <gdk/gdkkeysyms.h>
+#include <string.h>
 #include "gtk-text-completion-popup.h"
 #include "gtk-text-completion-data.h"
+#include "gtk-snippets-gsv-utils.h"
 
 #define GLADE_FILE GLADE_DIR"/gtk-text-completion-popup.glade"
 
@@ -40,6 +42,11 @@ struct _GtkTextCompletionPopupPrivate
 	GtkWidget *window;
 	GList *events;
 	GList *providers;
+	gulong internal_signal_ids[2];
+	//user-request event
+	gboolean ur_active;
+	//word completion event
+	gboolean wc_active;
 };
 
 #define GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTK_TYPE_TEXT_COMPLETION_POPUP, GtkTextCompletionPopupPrivate))
@@ -50,6 +57,14 @@ enum
 	LAST_SIGNAL
 };
 
+//Internal signals
+enum
+{
+	IS_POPUP_ROW_ACTIVATE,
+	IS_GTK_TEST_VIEW_KP,
+	IS_LAST_SIGNAL
+};
+
 static GObjectClass* parent_class = NULL;
 static guint text_completion_popup_signals[LAST_SIGNAL] = { 0 };
 
@@ -57,6 +72,22 @@ static gboolean
 gtcp_is_active(GtkTextCompletionPopup *popup)
 {
 	return GTK_WIDGET_VISIBLE(popup->priv->window);
+}
+
+//////////////////WORD COMPLETION FUNCTIONS///////////////////////
+static gboolean
+gtcp_wc_process_key_press(GtkTextCompletionPopup *popup)
+{
+	gchar* word;
+	gboolean res = FALSE;
+	
+	word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
+	if (strlen(word)>2)
+	{
+		gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+	}
+	g_free(word);
+	return res;
 }
 
 //////////////////MOVING IN THE TREE//////////////////////////////
@@ -284,10 +315,17 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 	}
 	else
 	{
-		if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+		if (popup->priv->ur_active)
 		{
-			gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT);
-			return TRUE;
+			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+			{
+				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT);
+				return TRUE;
+			}
+		}
+		if (popup->priv->wc_active)
+		{
+			return gtcp_wc_process_key_press(popup);
 		}
 	}
 	return FALSE;
@@ -298,15 +336,14 @@ static void
 user_request_event_activate(GtkTextCompletionPopup *popup)
 {
 	//Catch control+return event
-	GtkTextView *text_view = gtk_text_completion_popup_get_view(popup);
-	if (text_view==NULL)
-		g_debug("pues vaa ser nulo");
-		
-	g_debug("user_request_event activate");
-	g_signal_connect(text_view, "key-press-event",
-		G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
-	g_debug("FIN user_request_event activate");
-	
+	popup->priv->ur_active = TRUE;
+}
+
+static void
+word_completion_event_activate(GtkTextCompletionPopup *popup)
+{
+	//Catch control+return event
+	popup->priv->wc_active = TRUE;
 }
 
 static void
@@ -470,15 +507,23 @@ gtcp_load_glade(GtkTextCompletionPopup *popup)
 static void
 gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 {
+	gint i;
 	popup->priv = GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(popup);
 	popup->priv->events = NULL;
 	popup->priv->providers = NULL;
+	popup->priv->ur_active = FALSE;
+	popup->priv->wc_active = FALSE;
 	gtcp_load_glade(popup);
 	gtcp_load_tree(popup);
 	gtcp_create_tree_model(popup);
 	
-	g_signal_connect(popup->priv->data_tree_view, "row-activated",
-		G_CALLBACK(gtcp_popup_row_activated_cb),(gpointer) popup);
+	for (i=0;i<IS_LAST_SIGNAL;i++)
+	{
+		popup->priv->internal_signal_ids[i] = 0;
+	}
+	
+	popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE] = g_signal_connect(popup->priv->data_tree_view, "row-activated",
+			G_CALLBACK(gtcp_popup_row_activated_cb),(gpointer) popup);
 }
 
 static void
@@ -500,6 +545,14 @@ gtk_text_completion_popup_finalize (GObject *object)
 	g_list_free(popup->priv->events);
 	
 	g_list_free(popup->priv->providers);
+
+	if (popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]!=0)
+		g_signal_handler_is_connected (popup->priv->data_tree_view,
+			popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]);
+	
+	if (popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] != 0)
+		g_signal_handler_is_connected (popup->priv->data_tree_view,
+			popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP]);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -514,7 +567,6 @@ gtk_text_completion_popup_populate_completion (GtkTextCompletionPopup* popup)
 static void
 gtk_text_completion_popup_class_init (GtkTextCompletionPopupClass *klass)
 {
-	g_debug("class init");
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
@@ -531,9 +583,8 @@ gtk_text_completion_popup_class_init (GtkTextCompletionPopupClass *klass)
 		              G_TYPE_NONE, 0,
 		              NULL
 		              );
-	g_debug("casi fin class init");
+
 	g_type_class_add_private (object_class, sizeof(GtkTextCompletionPopupPrivate));
-	g_debug("fin class init");
 }
 
 GType
@@ -572,7 +623,13 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	
 	//Default events
 	gtk_text_completion_popup_add_event(popup,USER_REQUEST_EVENT);
+	
+	popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect(view, "key-press-event",
+			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
+			
 	user_request_event_activate(popup);
+	
+	word_completion_event_activate(popup);
 	
 	return popup;
 }

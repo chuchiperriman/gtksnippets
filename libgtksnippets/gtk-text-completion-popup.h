@@ -40,6 +40,7 @@ G_BEGIN_DECLS
 #define GTK_TEXT_COMPLETION_POPUP_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_COMPLETION_POPUP, GtkTextCompletionPopupClass))
 
 const gchar* USER_REQUEST_EVENT = "user-request-event";
+const gchar* WORD_COMPLETION_EVENT = "word-completion-event";
 
 typedef struct _GtkTextCompletionPopupPrivate GtkTextCompletionPopupPrivate;
 
