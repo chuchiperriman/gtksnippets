@@ -76,17 +76,44 @@ gtcp_is_active(GtkTextCompletionPopup *popup)
 
 //////////////////WORD COMPLETION FUNCTIONS///////////////////////
 static gboolean
-gtcp_wc_process_key_press(GtkTextCompletionPopup *popup)
+gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, guint keyval)
 {
 	gchar* word;
 	gboolean res = FALSE;
-	
-	word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
-	if (strlen(word)>2)
+	//If not is a character key do nothing
+	if  ((GDK_A <= keyval && keyval <= GDK_Z)
+		|| (GDK_a <= keyval && keyval <= GDK_z)
+		|| (GDK_0 <= keyval && keyval <= GDK_9)		
+		|| GDK_underscore == keyval)
 	{
-		gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+		word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
+		if (strlen(word)>=3)
+		{
+			//g_debug("Word -%s%c-",word,keyval);
+			gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+		}
+		g_free(word);
 	}
-	g_free(word);
+	else if (GDK_BackSpace == keyval)
+	{
+		word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
+		//g_debug("Word -%s%c-",word,keyval);
+		if (gtcp_is_active(popup))
+		{
+			//Deleted character is counted here
+			if((strlen(word)>4))
+			{
+				//g_debug("Word -%s%c-",word,keyval);
+				gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+			}
+			else
+			{
+				gtk_widget_hide(popup->priv->window);
+			}
+		}
+		g_free(word);
+	}
+	
 	return res;
 }
 
@@ -323,10 +350,10 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 				return TRUE;
 			}
 		}
-		if (popup->priv->wc_active)
-		{
-			return gtcp_wc_process_key_press(popup);
-		}
+	}
+	if (popup->priv->wc_active)
+	{
+		return gtcp_wc_process_key_press(popup,event->keyval);
 	}
 	return FALSE;
 
