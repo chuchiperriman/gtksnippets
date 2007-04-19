@@ -6,6 +6,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include "gtk-text-completion-provider.h"
+#include "gtk-text-completion-popup.h"
 
 G_BEGIN_DECLS
 

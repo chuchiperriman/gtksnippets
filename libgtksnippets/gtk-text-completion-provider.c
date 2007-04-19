@@ -6,9 +6,9 @@
 
 
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name)
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
-	return GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->get_data (self, completion, event_name);
+	return GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->get_data (self, completion, event_name, event_data);
 }
 
 

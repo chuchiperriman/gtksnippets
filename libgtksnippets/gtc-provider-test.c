@@ -3,6 +3,7 @@
 #define VALA_FREE_UNCHECKED(o,f) ((o) = (f (o), NULL))
 
 #include <glib/gprintf.h>
+#include <string.h>
 #include "gtc-provider-test.h"
 #include "gtk-snippets-gsv-utils.h"
 
@@ -16,33 +17,53 @@ struct _GtcProviderTestPrivate {
 enum  {
 	GTC_PROVIDER_TEST_DUMMY_PROPERTY,
 };
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name);
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data);
 static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, GtkTextCompletionData* data);
 static gpointer gtc_provider_test_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_provider_test_gtk_text_completion_provider_parent_iface = NULL;
 
 
-static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name)
+static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
 	gint i;
 	GList *list = NULL;
 	GtkTextCompletionData *data;
 	GtcProviderTest *test;
 	gchar *word;
-	gchar temp[255];
+	gchar *final_word;
 	
 	test = GTC_PROVIDER_TEST(base);
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
 	
-	for (i=0;i<500;i++)
+	if (strcmp(event_name,USER_REQUEST_EVENT)==0)
 	{
-		word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-		g_sprintf(temp,"-->%s %i<--",word,i);
-		g_free(word);
-		data = gtk_text_completion_data_new_with_data(temp,test->icon_test,NULL);
-		list = g_list_append(list,data);
+		for (i=0;i<500;i++)
+		{
+			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+			final_word = g_strdup_printf("%s%i",word,i);
+			data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
+			list = g_list_append(list,data);
+			g_free(word);
+			g_free(final_word);
+		}
 	}
+	else if (strcmp(event_name,WORD_COMPLETION_EVENT)==0)
+	{
+		for (i=0;i<50;i++)
+		{
+			g_assert(event_data != NULL);
+			
+			guint keyval = ((GdkEventKey*)event_data)->keyval;
+			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+			final_word = g_strdup_printf("%s%c%i",word,keyval,i);
+			data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
+			list = g_list_append(list,data);
+			g_free(word);
+			g_free(final_word);
+		}
+	}
+
 	return list;
 }
 

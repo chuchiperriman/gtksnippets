@@ -21,12 +21,12 @@ typedef struct _GtkTextCompletionProviderIface GtkTextCompletionProviderIface;
 
 struct _GtkTextCompletionProviderIface {
 	GTypeInterface parent;
-	GList* (*get_data) (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name);
+	GList* (*get_data) (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name, gpointer event_data);
 	void (*data_selected) (GtkTextCompletionProvider* self, GtkTextView* completion, GtkTextCompletionData* data);
 };
 
 
-GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name);
+GList* gtk_text_completion_provider_get_data (GtkTextCompletionProvider* self, GtkTextView* completion, const gchar* event_name, gpointer event_data);
 void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self, GtkTextView* completion, GtkTextCompletionData* data);
 GType gtk_text_completion_provider_get_type ();
 

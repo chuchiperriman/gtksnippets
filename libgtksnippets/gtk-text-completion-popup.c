@@ -76,10 +76,11 @@ gtcp_is_active(GtkTextCompletionPopup *popup)
 
 //////////////////WORD COMPLETION FUNCTIONS///////////////////////
 static gboolean
-gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, guint keyval)
+gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, GdkEventKey* event)
 {
 	gchar* word;
 	gboolean res = FALSE;
+	guint keyval = event->keyval;
 	//If not is a character key do nothing
 	if  ((GDK_A <= keyval && keyval <= GDK_Z)
 		|| (GDK_a <= keyval && keyval <= GDK_z)
@@ -90,7 +91,7 @@ gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, guint keyval)
 		if (strlen(word)>=3)
 		{
 			//g_debug("Word -%s%c-",word,keyval);
-			gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+			gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT,event);
 		}
 		g_free(word);
 	}
@@ -104,7 +105,7 @@ gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, guint keyval)
 			if((strlen(word)>4))
 			{
 				//g_debug("Word -%s%c-",word,keyval);
-				gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT);
+				gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT,event);
 			}
 			else
 			{
@@ -346,14 +347,14 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 		{
 			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
 			{
-				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT);
+				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT,NULL);
 				return TRUE;
 			}
 		}
 	}
 	if (popup->priv->wc_active)
 	{
-		return gtcp_wc_process_key_press(popup,event->keyval);
+		return gtcp_wc_process_key_press(popup,event);
 	}
 	return FALSE;
 
@@ -362,15 +363,24 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 static void
 user_request_event_activate(GtkTextCompletionPopup *popup)
 {
-	//Catch control+return event
-	popup->priv->ur_active = TRUE;
+	if (popup->priv->ur_active == FALSE)
+	{
+		//Catch control+return event
+		popup->priv->ur_active = TRUE;
+		//Default events
+		gtk_text_completion_popup_add_event(popup,USER_REQUEST_EVENT);
+	}
 }
 
 static void
 word_completion_event_activate(GtkTextCompletionPopup *popup)
 {
-	//Catch control+return event
-	popup->priv->wc_active = TRUE;
+	if (popup->priv->wc_active == FALSE)
+	{
+		//Catch control+return event
+		popup->priv->wc_active = TRUE;
+		gtk_text_completion_popup_add_event(popup,WORD_COMPLETION_EVENT);
+	}
 }
 
 static void
@@ -648,9 +658,6 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP (g_object_new (GTK_TYPE_TEXT_COMPLETION_POPUP, NULL));
 	popup->priv->text_view = view;
 	
-	//Default events
-	gtk_text_completion_popup_add_event(popup,USER_REQUEST_EVENT);
-	
 	popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect(view, "key-press-event",
 			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
 			
@@ -682,7 +689,7 @@ gtk_text_completion_popup_get_view(GtkTextCompletionPopup *popup)
 }
 
 void
-gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar *event_name)
+gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar *event_name, gpointer event_data)
 {
 	GList* data_list;
 	GList *providers_list;
@@ -703,7 +710,8 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 		do
 		{
 			provider =  GTK_TEXT_COMPLETION_PROVIDER(providers_list->data);
-			data_list = gtk_text_completion_provider_get_data (provider, popup->priv->text_view, event_name);
+			data_list = gtk_text_completion_provider_get_data (
+							provider, popup->priv->text_view, event_name, event_data);
 			if (data_list != NULL)
 			{
 				do
