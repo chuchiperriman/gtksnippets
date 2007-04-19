@@ -41,11 +41,15 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 		for (i=0;i<500;i++)
 		{
 			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-			final_word = g_strdup_printf("%s%i",word,i);
-			data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
-			list = g_list_append(list,data);
+			if (strlen(word)>0)
+			{
+				final_word = g_strdup_printf("%s%i",word,i);
+				data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
+				list = g_list_append(list,data);
+				g_free(final_word);
+			}
 			g_free(word);
-			g_free(final_word);
+			
 		}
 	}
 	else if (strcmp(event_name,WORD_COMPLETION_EVENT)==0)

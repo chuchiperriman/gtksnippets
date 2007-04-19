@@ -90,7 +90,6 @@ gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, GdkEventKey* event)
 		word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
 		if (strlen(word)>=3)
 		{
-			//g_debug("Word -%s%c-",word,keyval);
 			gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT,event);
 		}
 		g_free(word);
@@ -98,13 +97,11 @@ gtcp_wc_process_key_press(GtkTextCompletionPopup *popup, GdkEventKey* event)
 	else if (GDK_BackSpace == keyval)
 	{
 		word = gtk_snippets_gsv_get_last_word_and_iter(popup->priv->text_view, NULL, NULL);
-		//g_debug("Word -%s%c-",word,keyval);
 		if (gtcp_is_active(popup))
 		{
 			//Deleted character is counted here
 			if((strlen(word)>4))
 			{
-				//g_debug("Word -%s%c-",word,keyval);
 				gtk_text_completion_popup_raise_event(popup,WORD_COMPLETION_EVENT,event);
 			}
 			else
@@ -695,6 +692,7 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 	GList *providers_list;
 	GtkTextCompletionProvider *provider;
 	GtkListStore *store;
+	GtkTreeIter iter;
 	gint x, y;
 	
 	//Raise populate
@@ -726,15 +724,16 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 		}while((providers_list = g_list_next(popup->priv->providers)) != NULL);
 		
 				
-		//Pedimos datos a los proveedores
-	
 		//If there are not items, we don't show the popup
-		//Show popup
-		gtcp_gtv_get_screen_pos(popup->priv->text_view,&x,&y);
-		gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
-		//TODO Poner el foco en el primer elemento
-		gtk_widget_show(popup->priv->window);
-		gtcp_tree_first(popup);
+		if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
+		{
+			//Show popup
+			gtcp_gtv_get_screen_pos(popup->priv->text_view,&x,&y);
+			gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
+			//TODO Poner el foco en el primer elemento
+			gtk_widget_show(popup->priv->window);
+			gtcp_tree_first(popup);
+		}
 	}
 	
 }
