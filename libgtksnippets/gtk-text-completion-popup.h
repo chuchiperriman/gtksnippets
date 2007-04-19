@@ -27,6 +27,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include "gtk-text-completion-data.h"
 #include "gtk-text-completion-provider.h"
 

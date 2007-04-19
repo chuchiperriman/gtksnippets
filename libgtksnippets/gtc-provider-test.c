@@ -60,7 +60,16 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 			
 			guint keyval = ((GdkEventKey*)event_data)->keyval;
 			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-			final_word = g_strdup_printf("%s%c%i",word,keyval,i);
+			if (keyval == GDK_BackSpace)
+			{
+				word[strlen(word)-1] = '\0';
+				final_word = g_strdup_printf("%s%i",word,i);
+			}
+			else
+			{
+				final_word = g_strdup_printf("%s%c%i",word,keyval,i);
+			}
+			
 			data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
 			list = g_list_append(list,data);
 			g_free(word);

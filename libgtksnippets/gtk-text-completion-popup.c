@@ -261,7 +261,14 @@ gtcp_tree_selection(GtkTextCompletionPopup *popup)
 	selection = gtk_tree_view_get_selection(popup->priv->data_tree_view);
 	
 	if (gtk_tree_selection_get_mode(selection) == GTK_SELECTION_NONE)
+		return FALSE;	
+		
+	if (gtk_tree_selection_count_selected_rows(selection)==0)
+	{
+		gtk_widget_hide(popup->priv->window);	
 		return FALSE;
+	}
+
 	
 	if (gtk_tree_selection_get_selected(selection, &model, &iter))
 	{
@@ -730,9 +737,8 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			//Show popup
 			gtcp_gtv_get_screen_pos(popup->priv->text_view,&x,&y);
 			gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
-			//TODO Poner el foco en el primer elemento
 			gtk_widget_show(popup->priv->window);
-			gtcp_tree_first(popup);
+			//gtcp_tree_first(popup);
 		}
 	}
 	
