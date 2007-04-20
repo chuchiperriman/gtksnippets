@@ -203,9 +203,13 @@ gtcp_tree_up(GtkTextCompletionPopup *popup, gint rows)
 			gtk_tree_view_scroll_to_cell(popup->priv->data_tree_view, path, NULL, FALSE, 0, 0);
 		}
 		gtk_tree_path_free(path);
-		return TRUE;
 	}
-	return FALSE;
+	else
+	{
+		return gtcp_tree_first(popup);
+	}
+	
+	return TRUE;
 }
 
 static gboolean
@@ -237,12 +241,10 @@ gtcp_tree_down(GtkTextCompletionPopup *popup, gint rows)
 		path = gtk_tree_model_get_path(model, &iter);
 		gtk_tree_view_scroll_to_cell(popup->priv->data_tree_view, path, NULL, FALSE, 0, 0);
 		gtk_tree_path_free(path);
-		return TRUE;
 	}
 	else
-	{	
-		gtk_tree_model_get_iter_first(model, &iter);
-		gtk_tree_selection_select_iter(selection, &iter);
+	{
+		return gtcp_tree_first(popup);
 	}
 	return TRUE;
 }
