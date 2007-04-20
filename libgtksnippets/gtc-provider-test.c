@@ -1,4 +1,7 @@
 /* Advanced Vala Sample Code */
+/*
+ * Some code based in: http://usuarios.lycos.es/acisif/gedit/autocomplete/autocomplete.html
+*/
 #define VALA_FREE_CHECKED(o,f) ((o) == NULL ? NULL : ((o) = (f (o), NULL)))
 #define VALA_FREE_UNCHECKED(o,f) ((o) = (f (o), NULL))
 
@@ -23,6 +26,153 @@ static gpointer gtc_provider_test_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_provider_test_gtk_text_completion_provider_parent_iface = NULL;
 
 
+/** Checks if char is in set " \t\n(){}[],.:;"
+ */
+static gboolean
+char_in(gchar c)
+{
+	gchar *i=" \t\n(){}[],.:;"; /*Set of chars*/
+
+	do{
+		if(c==*i) return TRUE;
+	}while( *(i++)!='\0' );
+
+	return FALSE;
+}
+
+/** Updates word list of document
+ */
+static void
+update_word_list(GtcProviderTest *self, GtkTextView* view)
+{
+	g_debug("update word list");
+
+	GList *wl=NULL; //Word list
+	gchar *text, *i, *f;
+	int number_list_elements=0;
+
+	i = text = gtk_snippets_gsv_get_text(view);
+
+	// Finds words in text.
+	while ( char_in(*i) && *i!='\0' ) i++;
+	
+	f=i;
+
+	//Keeps 2000 words in word list.
+	while( *i!='\0' && number_list_elements < 2000 )
+	{
+		if(f==i) f++;
+
+		if(char_in(*f))
+		{
+			gchar c=*f;
+			GList *l=NULL, *end=NULL;
+			int comparation=0;
+
+			*f='\0';
+
+			if ( strlen(i)>2 )
+			{
+
+				if( number_list_elements > 200 )
+				{
+					int n=0, jump=100;
+					end=l=wl=g_list_first(wl);
+					while( l!=NULL && jump>0 )
+					{
+						comparation=strcmp ( (gchar*)l->data, i );
+
+						if ( 0 < comparation )
+						{
+							end=l;
+							for( n=0; n<jump && l!=NULL; n++)
+								l=l->next;
+						}
+						else if ( 0 > comparation )
+						{
+							l=end;
+							break;
+						}
+						else
+							break;
+					}
+					if ( l==NULL ) l=g_list_first(wl);
+				}
+				else
+					l=g_list_first(wl);
+
+
+				while( l!=NULL && ( 0 < (comparation=strcmp ( (gchar*)l->data, i ) )) )
+				{
+					end=l;
+					l=l->next;
+				}
+
+				if ( (l==NULL || 0 != comparation )  && strlen(i)>2 )
+				{ //Insert new word in word list
+					if ( l==NULL ) 
+						wl=g_list_insert(end,g_strdup(i),-1);
+					else if ( comparation < 0 )
+						wl=g_list_insert(l,g_strdup(i),0);
+					else
+						wl=g_list_insert(l,g_strdup(i),1);
+						
+					number_list_elements++;
+				}
+			}
+
+			i=f;
+			*i=c;
+
+			while ( char_in(*i) && *i!='\0' ) i++;
+
+			f=i;
+		}
+
+		if ( *f!='\0' ) f++;
+		}
+
+
+		/*GList *l=g_list_first(wl);
+		printf("\n");
+		int count=0;
+		while( l!=NULL  )
+		{
+			printf("Palabra: %d %s\n", ++count, (gchar*)l->data);
+			l=l->next;
+		}
+		printf("%d\n",number_list_elements);
+		*/
+
+		// Prepares g_completion GLib util. 
+		g_completion_clear_items (self->completion);
+
+		wl=g_list_first(wl);
+
+		if(g_list_length(wl)!=0)
+		{
+			g_completion_add_items (self->completion, wl );
+			// Frees previus word list.
+			{
+				GList *l=g_list_first( self->word_list );
+
+				while (l!=NULL) {
+					g_free(l->data);
+
+					l=l->next;
+				}
+
+				g_list_free(self->word_list);
+			}
+
+			self->word_list=wl;
+		}
+		
+	g_free(text);
+	
+}
+
+
 static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
 	gint i;
@@ -33,6 +183,10 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	gchar *final_word;
 	
 	test = GTC_PROVIDER_TEST(base);
+	
+	update_word_list(test,completion);
+	
+	
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
 	
@@ -76,6 +230,16 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 			g_free(final_word);
 		}
 	}
+	
+	GList *l=g_list_first(test->word_list);
+	while( l!=NULL  )
+	{
+		data = gtk_text_completion_data_new_with_data(l->data,NULL,NULL);
+		list = g_list_append(list,data);
+		l=l->next;
+	}
+	
+	//g_debug(gtk_snippets_gsv_get_text(completion));
 
 	return list;
 }
@@ -122,7 +286,10 @@ static void gtc_provider_test_gtk_text_completion_provider_interface_init (GtkTe
 
 static void gtc_provider_test_init (GtcProviderTest * self)
 {
+	//TODO We must free this objects
 	self->icon_test = gdk_pixbuf_new_from_file(ICON_FILE,NULL);
+	self->completion = g_completion_new (NULL);
+	self->word_list = NULL;
 	g_debug(ICON_FILE);
 }
 

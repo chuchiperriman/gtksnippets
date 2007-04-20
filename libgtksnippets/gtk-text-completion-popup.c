@@ -295,6 +295,7 @@ gtcp_tree_selection(GtkTextCompletionPopup *popup)
 static gboolean
 view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 {
+	g_debug("kp");
 	GtkTextCompletionPopup *popup;
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
 	
@@ -590,11 +591,11 @@ gtk_text_completion_popup_finalize (GObject *object)
 	g_list_free(popup->priv->providers);
 
 	if (popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]!=0)
-		g_signal_handler_is_connected (popup->priv->data_tree_view,
+		g_signal_handler_disconnect (popup->priv->data_tree_view,
 			popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]);
 	
 	if (popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] != 0)
-		g_signal_handler_is_connected (popup->priv->data_tree_view,
+		g_signal_handler_disconnect (popup->priv->data_tree_view,
 			popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP]);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -666,6 +667,12 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	
 	popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect(view, "key-press-event",
 			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
+	
+	//TODO conectar after esta y utilizarla para las teclas normales. En el key press cazamos las
+	//teclas de las flechas etc.
+	/*popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect_after(view, "key-release-event",
+			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
+	*/
 			
 	user_request_event_activate(popup);
 	

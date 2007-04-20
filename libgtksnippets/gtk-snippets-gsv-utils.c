@@ -131,5 +131,19 @@ gtk_snippets_gsv_get_screen_pos(GtkTextView *text_view, gint *x, gint *y)
 	
 	*x = win_x + xx;
 	*y = win_y + yy + location.height;
+}
+
+gchar*
+gtk_snippets_gsv_get_text(GtkTextView *text_view)
+{
+	GtkTextIter start, end;
+	GtkTextBuffer *buffer;
+	
+	buffer = gtk_text_view_get_buffer(text_view);
+	gtk_text_buffer_get_start_iter (buffer, &start);
+	gtk_text_buffer_get_end_iter (buffer, &end);
+	return gtk_text_buffer_get_text(buffer,&start,&end,FALSE);
 	
 }
+
+
