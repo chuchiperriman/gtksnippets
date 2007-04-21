@@ -468,6 +468,28 @@ gtcp_event_exists(GtkTextCompletionPopup *popup, const gchar *event_name)
 }
 
 static void
+gtc_clean_data(GtkListStore *store)
+{
+	GtkTreeModel *model = GTK_TREE_MODEL(store);
+	GtkTreeIter iter;
+	GtkTextCompletionData *data;
+	
+	
+	if (gtk_tree_model_get_iter_first(model,&iter))
+	{
+		do
+		{
+			GValue value_data = {0,};
+			gtk_tree_model_get_value(model,&iter,COL_DATA,&value_data);
+			data = GTK_TEXT_COMPLETION_DATA(g_value_get_pointer(&value_data));
+			gtk_text_completion_data_free(data);
+		}while(gtk_tree_model_iter_next(model,&iter));
+	}
+	
+	gtk_list_store_clear(store);
+}
+
+static void
 gtcp_create_tree_model(GtkTextCompletionPopup *popup)
 {
 	GtkListStore *list_store;
@@ -587,6 +609,7 @@ gtk_text_completion_popup_finalize (GObject *object)
 	g_debug("finalize del completion popup");
 	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP(object);
 	GList *actual;
+	GtkListStore *store;
 	gint i;
 	/* TODO: Add deinitalization code here */
 	actual = popup->priv->events;
@@ -598,6 +621,9 @@ gtk_text_completion_popup_finalize (GObject *object)
 			
 		}while((actual = g_list_next(actual)) != NULL);
 	}
+	
+	store = GTK_LIST_STORE(gtk_tree_view_get_model(popup->priv->data_tree_view));
+	gtc_clean_data(store);
 	
 	g_list_free(popup->priv->events);
 	
@@ -742,7 +768,8 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 				text_completion_popup_signals[POPULATE_COMPLETION],
 				0);*/
 	store = GTK_LIST_STORE(gtk_tree_view_get_model(popup->priv->data_tree_view));
-	gtk_list_store_clear(store);
+	gtc_clean_data(store);
+	
 	if (popup->priv->providers != NULL)
 	{
 		providers_list = popup->priv->providers;
