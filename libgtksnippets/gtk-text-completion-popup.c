@@ -291,11 +291,36 @@ gtcp_tree_selection(GtkTextCompletionPopup *popup)
 }
 
 //////////////////////////////////////////////////////////////////
+static gboolean
+view_key_release_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
+{
+	//Cazamos las teclas que no son de movimiento en el popup
+	GtkTextCompletionPopup *popup;
+	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
+	
+	if (!gtcp_is_active(popup))
+	{
+		if (popup->priv->ur_active)
+		{
+			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+			{
+				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT,NULL);
+				return TRUE;
+			}
+		}
+	}
+	
+	if (popup->priv->wc_active)
+	{
+		return gtcp_wc_process_key_press(popup,event);
+	}
+	return FALSE;
+}
 
 static gboolean
 view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 {
-	g_debug("kp");
+	//Cazamos solo las teclas especiales de movimiento en el popup
 	GtkTextCompletionPopup *popup;
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
 	
@@ -347,21 +372,6 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 				return gtcp_tree_selection(popup);
 			}
 		}
-	}
-	else
-	{
-		if (popup->priv->ur_active)
-		{
-			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
-			{
-				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT,NULL);
-				return TRUE;
-			}
-		}
-	}
-	if (popup->priv->wc_active)
-	{
-		return gtcp_wc_process_key_press(popup,event);
 	}
 	return FALSE;
 
@@ -670,9 +680,8 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	
 	//TODO conectar after esta y utilizarla para las teclas normales. En el key press cazamos las
 	//teclas de las flechas etc.
-	/*popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect_after(view, "key-release-event",
-			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
-	*/
+	popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect_after(view, "key-release-event",
+			G_CALLBACK(view_key_release_event_cb),(gpointer) popup);
 			
 	user_request_event_activate(popup);
 	
