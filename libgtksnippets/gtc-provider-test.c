@@ -184,9 +184,6 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	
 	test = GTC_PROVIDER_TEST(base);
 	
-	update_word_list(test,completion);
-	
-	
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
 	
@@ -208,34 +205,20 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	}
 	else if (strcmp(event_name,WORD_COMPLETION_EVENT)==0)
 	{
-		/*for (i=0;i<50;i++)
+
+		update_word_list(test,completion);
+		word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+		GList *l = g_completion_complete(test->completion,word,NULL);
+		//only if there are two items (the first item is the actual word)
+		if (l != NULL && l->next != NULL)
 		{
-			g_assert(event_data != NULL);
-			
-			guint keyval = ((GdkEventKey*)event_data)->keyval;
-			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-			if (keyval == GDK_BackSpace)
+			while( l!=NULL  )
 			{
-				word[strlen(word)-1] = '\0';
-				final_word = g_strdup_printf("%s%i",word,i);
+				data = gtk_text_completion_data_new_with_data(l->data,test->icon_test,NULL);
+				list = g_list_append(list,data);
+				l=l->next;
 			}
-			else
-			{
-				final_word = g_strdup_printf("%s%c%i",word,keyval,i);
-			}
-			
-			data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
-			list = g_list_append(list,data);
 			g_free(word);
-			g_free(final_word);
-		}*/
-		
-		GList *l=g_list_first(test->word_list);
-		while( l!=NULL  )
-		{
-			data = gtk_text_completion_data_new_with_data(l->data,test->icon_test,NULL);
-			list = g_list_append(list,data);
-			l=l->next;
 		}
 	}
 	
@@ -245,15 +228,12 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 }
 
 
-static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, GtkTextCompletionData* data)
+static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* text_view, GtkTextCompletionData* data)
 {
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
-	g_debug("000");
-	g_return_if_fail (completion == NULL || G_IS_OBJECT (completion));
-	g_debug("000");
-	g_debug((gchar*)data);
-	
-	gtk_text_buffer_insert_at_cursor(gtk_text_view_get_buffer(completion), (const gchar*)data,-1);	
+	g_return_if_fail (text_view == NULL || G_IS_OBJECT (text_view));
+	//g_debug(gtk_text_completion_data_get_name(data));
+	gtk_snippets_gsv_replace_actual_word(text_view, gtk_text_completion_data_get_name(data));
 	
 }
 

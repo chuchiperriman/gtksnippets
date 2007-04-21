@@ -136,7 +136,6 @@ gtk_text_completion_data_get_name (GtkTextCompletionData * self)
 	g_return_val_if_fail (self != NULL, (const gchar * )0);
 	g_return_val_if_fail (GTK_IS_TEXT_COMPLETION_DATA (self), (const gchar * )0);
 {
-	
 		return self->_priv->name;
 	}}
 #undef __GOB_FUNCTION__

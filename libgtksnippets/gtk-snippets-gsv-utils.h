@@ -38,4 +38,6 @@ gtk_snippets_gsv_get_screen_pos(GtkTextView *text_view, gint *x, gint *y);
 
 gchar* gtk_snippets_gsv_get_text(GtkTextView *text_view);
 
+void gtk_snippets_gsv_replace_actual_word(GtkTextView *text_view, const gchar* text);
+
 #endif /* GTK_SNIPPETS_GSV_UTILS_H */

@@ -34,6 +34,7 @@
 #define COL_PIXBUF 0
 #define COL_NAME 1
 #define COL_PROVIDER 2
+#define COL_DATA 3
 
 struct _GtkTextCompletionPopupPrivate
 {
@@ -409,7 +410,7 @@ gtcp_popup_row_activated_cb (GtkTreeView *tree_view,
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GtkTextCompletionProvider *provider;
-	const gchar* data;
+	GtkTextCompletionData *data;
 	GtkTextCompletionPopup *popup;
 	GValue value_prov = {0,};
 	GValue value_name = {0,};
@@ -418,11 +419,11 @@ gtcp_popup_row_activated_cb (GtkTreeView *tree_view,
 	model = gtk_tree_view_get_model(tree_view);
 	
 	gtk_tree_model_get_iter(model,&iter,path);
-	gtk_tree_model_get_value(model,&iter,COL_NAME,&value_name);
-	data = g_value_get_string(&value_name);
+	gtk_tree_model_get_value(model,&iter,COL_DATA,&value_name);
+	data = GTK_TEXT_COMPLETION_DATA(g_value_get_pointer(&value_name));
 	gtk_tree_model_get_value(model,&iter,COL_PROVIDER,&value_prov);
 	provider = GTK_TEXT_COMPLETION_PROVIDER(g_value_get_pointer(&value_prov));
-	gtk_text_completion_provider_data_selected(provider,popup->priv->text_view,(GtkTextCompletionData*)data);
+	gtk_text_completion_provider_data_selected(provider,popup->priv->text_view, data);
 	gtk_widget_hide(popup->priv->window);
 }
 
@@ -470,7 +471,7 @@ static void
 gtcp_create_tree_model(GtkTextCompletionPopup *popup)
 {
 	GtkListStore *list_store;
-	list_store = gtk_list_store_new (3,GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER);
+	list_store = gtk_list_store_new (4,GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 		
 	g_debug("Asignamos el modelo");
 	gtk_tree_view_set_model(popup->priv->data_tree_view,GTK_TREE_MODEL(list_store));
@@ -495,6 +496,7 @@ gtcp_add_data_to_tree(GtkTextCompletionPopup *popup, GtkTextCompletionData* data
 						COL_PIXBUF, gtk_text_completion_data_get_icon(data),
 						COL_NAME, gtk_text_completion_data_get_name(data),
 						COL_PROVIDER, (gpointer)provider,
+						COL_DATA, data,
 						-1);
 }
 
@@ -753,8 +755,8 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			{
 				do
 				{
-					gtcp_add_data_to_tree(popup, (GtkTextCompletionData*)data_list->data, provider);
-					gtk_text_completion_data_free((GtkTextCompletionData*)data_list->data);
+					gtcp_add_data_to_tree(popup, GTK_TEXT_COMPLETION_DATA(data_list->data), provider);
+					//gtk_text_completion_data_free(GTK_TEXT_COMPLETION_DATA(data_list->data));
 					
 				}while((data_list = g_list_next(data_list)) != NULL);
 				g_list_free(data_list);
@@ -769,8 +771,8 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			//Show popup
 			gtcp_gtv_get_screen_pos(popup->priv->text_view,&x,&y);
 			gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
-			gtk_tree_view_scroll_to_point(popup->priv->data_tree_view,0,0);
 			gtk_widget_show(popup->priv->window);
+			gtk_tree_view_scroll_to_point(popup->priv->data_tree_view,0,0);
 			//gtcp_tree_first(popup);
 		}
 	}

@@ -146,4 +146,18 @@ gtk_snippets_gsv_get_text(GtkTextView *text_view)
 	
 }
 
+void
+gtk_snippets_gsv_replace_actual_word(GtkTextView *text_view, const gchar* text)
+{
+	GtkTextBuffer *buffer;
+	GtkTextIter word_start, word_end;
+	
+	//Hay que borrar la palabra escrita para el snippet
+	buffer = gtk_text_view_get_buffer(text_view);
+
+	gtk_snippets_gsv_get_last_word_and_iter(text_view,&word_start, &word_end);
+									   
+	gtk_text_buffer_delete(buffer,&word_start,&word_end);
+	gtk_text_buffer_insert(buffer, &word_start, text,-1);
+}
 
