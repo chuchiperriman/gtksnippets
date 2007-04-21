@@ -298,18 +298,6 @@ view_key_release_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data
 	GtkTextCompletionPopup *popup;
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
 	
-	if (!gtcp_is_active(popup))
-	{
-		if (popup->priv->ur_active)
-		{
-			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
-			{
-				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT,NULL);
-				return TRUE;
-			}
-		}
-	}
-	
 	if (popup->priv->wc_active)
 	{
 		return gtcp_wc_process_key_press(popup,event);
@@ -370,6 +358,17 @@ view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 			case GDK_Tab:
 			{
 				return gtcp_tree_selection(popup);
+			}
+		}
+	}
+	else
+	{
+		if (popup->priv->ur_active)
+		{
+			if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_Return)
+			{
+				gtk_text_completion_popup_raise_event(popup,USER_REQUEST_EVENT,NULL);
+				return TRUE;
 			}
 		}
 	}
@@ -583,8 +582,10 @@ gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 static void
 gtk_text_completion_popup_finalize (GObject *object)
 {
+	g_debug("finalize del completion popup");
 	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP(object);
 	GList *actual;
+	gint i;
 	/* TODO: Add deinitalization code here */
 	actual = popup->priv->events;
 	if (actual != NULL)
@@ -598,17 +599,30 @@ gtk_text_completion_popup_finalize (GObject *object)
 	
 	g_list_free(popup->priv->events);
 	
+	actual = popup->priv->providers;
+	if (actual != NULL)
+	{
+		do
+		{
+			g_object_unref(actual->data);
+			
+		}while((actual = g_list_next(actual)) != NULL);
+	}
+	
 	g_list_free(popup->priv->providers);
 
-	if (popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]!=0)
-		g_signal_handler_disconnect (popup->priv->data_tree_view,
-			popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]);
-	
-	if (popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] != 0)
-		g_signal_handler_disconnect (popup->priv->data_tree_view,
-			popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP]);
-	
+	for (i=0;i<IS_LAST_SIGNAL;i++)
+	{
+		if (g_signal_handler_is_connected(popup->priv->data_tree_view,popup->priv->internal_signal_ids[i]))
+		{
+			g_signal_handler_disconnect (popup->priv->data_tree_view,
+				popup->priv->internal_signal_ids[i]);
+		}
+		popup->priv->internal_signal_ids[i] = 0;
+	}
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+	
 }
 
 static void
@@ -755,6 +769,7 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			//Show popup
 			gtcp_gtv_get_screen_pos(popup->priv->text_view,&x,&y);
 			gtk_window_move(GTK_WINDOW(popup->priv->window), x, y);
+			gtk_tree_view_scroll_to_point(popup->priv->data_tree_view,0,0);
 			gtk_widget_show(popup->priv->window);
 			//gtcp_tree_first(popup);
 		}

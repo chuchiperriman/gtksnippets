@@ -208,7 +208,7 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 	}
 	else if (strcmp(event_name,WORD_COMPLETION_EVENT)==0)
 	{
-		for (i=0;i<50;i++)
+		/*for (i=0;i<50;i++)
 		{
 			g_assert(event_data != NULL);
 			
@@ -228,15 +228,15 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 			list = g_list_append(list,data);
 			g_free(word);
 			g_free(final_word);
+		}*/
+		
+		GList *l=g_list_first(test->word_list);
+		while( l!=NULL  )
+		{
+			data = gtk_text_completion_data_new_with_data(l->data,test->icon_test,NULL);
+			list = g_list_append(list,data);
+			l=l->next;
 		}
-	}
-	
-	GList *l=g_list_first(test->word_list);
-	while( l!=NULL  )
-	{
-		data = gtk_text_completion_data_new_with_data(l->data,NULL,NULL);
-		list = g_list_append(list,data);
-		l=l->next;
 	}
 	
 	//g_debug(gtk_snippets_gsv_get_text(completion));
@@ -267,12 +267,27 @@ static void gtc_provider_test_set_property (GObject * object, guint property_id,
 {
 }
 
+static void gtc_provider_test_finalize(GObject *object)
+{
+	GtcProviderTest *self;
+	
+	self = GTC_PROVIDER_TEST(object);
+	
+	g_debug("Finalize test");
+	gdk_pixbuf_unref (self->icon_test);
+	g_completion_free(self->completion);
+	g_list_free(self->word_list);
+	
+	G_OBJECT_CLASS(gtc_provider_test_parent_class)->finalize(object);
+}
+
 
 static void gtc_provider_test_class_init (GtcProviderTestClass * klass)
 {
 	gtc_provider_test_parent_class = g_type_class_peek_parent (klass);
 	G_OBJECT_CLASS (klass)->get_property = gtc_provider_test_get_property;
 	G_OBJECT_CLASS (klass)->set_property = gtc_provider_test_set_property;
+	G_OBJECT_CLASS (klass)->finalize = gtc_provider_test_finalize;
 }
 
 
@@ -292,7 +307,6 @@ static void gtc_provider_test_init (GtcProviderTest * self)
 	self->word_list = NULL;
 	g_debug(ICON_FILE);
 }
-
 
 GType gtc_provider_test_get_type ()
 {

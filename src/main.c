@@ -80,6 +80,7 @@ create_window (void)
 {
 	GtkWidget *window;
 	GladeXML *gxml;
+	GtkWidget *scroll;
 	
 	gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 	
@@ -88,10 +89,12 @@ create_window (void)
 	
 	GtkWidget *vbox = gtk_vbox_new(FALSE,0);
 	window = glade_xml_get_widget (gxml, "window");
-	
+	scroll = gtk_scrolled_window_new(NULL,NULL);
 	source = gtk_source_view_new();
 	gtk_widget_show(source);
-	gtk_container_add(window,source);
+	gtk_widget_show(scroll);
+	gtk_container_add(window,scroll);
+	gtk_container_add(scroll,source);
 	
 	return window;
 }
@@ -195,12 +198,14 @@ main (int argc, char *argv[])
 	
 	GtcProviderTest* provider = gtc_provider_test_new();
 	gtk_text_completion_popup_register_provider(popup, provider);
+	g_object_unref(provider);
 
 	
 	gtk_main ();
 	
 	
 	g_object_unref(manager);
+	g_object_unref(popup);
 	
 	g_print("Fin");
 	return 0;
