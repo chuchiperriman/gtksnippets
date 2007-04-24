@@ -473,6 +473,7 @@ gtc_clean_data(GtkListStore *store)
 	GtkTreeModel *model = GTK_TREE_MODEL(store);
 	GtkTreeIter iter;
 	GtkTextCompletionData *data;
+	GtkTextCompletionProvider *prov;
 	
 	
 	if (gtk_tree_model_get_iter_first(model,&iter))
@@ -480,8 +481,11 @@ gtc_clean_data(GtkListStore *store)
 		do
 		{
 			GValue value_data = {0,};
+			GValue value_prov = {0,};
 			gtk_tree_model_get_value(model,&iter,COL_DATA,&value_data);
 			data = GTK_TEXT_COMPLETION_DATA(g_value_get_pointer(&value_data));
+			gtk_tree_model_get_value(model,&iter,COL_PROVIDER,&value_prov);
+			prov = GTK_TEXT_COMPLETION_PROVIDER(g_value_get_pointer(&value_prov));
 			gtk_text_completion_data_free(data);
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
@@ -801,6 +805,13 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			gtk_widget_show(popup->priv->window);
 			gtk_tree_view_scroll_to_point(popup->priv->data_tree_view,0,0);
 			//gtcp_tree_first(popup);
+		}
+		else
+		{
+			if (gtcp_is_active(popup))
+			{
+				gtk_widget_hide(popup->priv->window);
+			}
 		}
 	}
 	

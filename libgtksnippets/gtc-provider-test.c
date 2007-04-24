@@ -238,6 +238,11 @@ static void gtc_provider_test_real_data_selected (GtkTextCompletionProvider* bas
 }
 
 
+static void gtc_provider_test_real_data_free (GtkTextCompletionProvider* self, GtkTextCompletionData* data)
+{
+	gtk_text_completion_data_free(data);
+}
+
 static void gtc_provider_test_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec)
 {
 }
@@ -276,6 +281,7 @@ static void gtc_provider_test_gtk_text_completion_provider_interface_init (GtkTe
 	gtc_provider_test_gtk_text_completion_provider_parent_iface = g_type_interface_peek_parent (iface);
 	iface->get_data = gtc_provider_test_real_get_data;
 	iface->data_selected = gtc_provider_test_real_data_selected;
+	iface->data_free = gtc_provider_test_real_data_free;
 }
 
 

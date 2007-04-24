@@ -18,6 +18,12 @@ void gtk_text_completion_provider_data_selected (GtkTextCompletionProvider* self
 }
 
 
+void gtk_text_completion_provider_data_free (GtkTextCompletionProvider* self, GtkTextCompletionData* data)
+{
+	GTK_TEXT_COMPLETION_PROVIDER_GET_INTERFACE (self)->data_free (self, data);
+}
+
+
 static void gtk_text_completion_provider_base_init (GtkTextCompletionProviderIface * iface)
 {
 	static gboolean initialized = FALSE;

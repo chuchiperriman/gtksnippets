@@ -127,6 +127,18 @@ prueba_regexp()
 	regfree(&compiled);
 }
 
+static
+gboolean funcion_timeout(gpointer data)
+{
+	static guint cont = 0;
+	g_debug("si en timeout");
+	cont++;
+	if (cont>10)
+		return FALSE;
+	else
+		return TRUE;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -200,7 +212,10 @@ main (int argc, char *argv[])
 	gtk_text_completion_popup_register_provider(popup, provider);
 	g_object_unref(provider);
 
+	guint id = g_timeout_add(1000,funcion_timeout,NULL);
 	
+	//Para quitar el timeout g_source_remove(id);
+		
 	gtk_main ();
 	
 	
