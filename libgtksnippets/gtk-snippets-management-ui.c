@@ -49,6 +49,7 @@ struct _GtkSnippetsManagementUIPrivate
 	
 };
 
+
 #define GTK_SNIPPETS_MANAGEMENT_UI_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_SNIPPETS_MANAGEMENT_UI, GtkSnippetsManagementUIPrivate))
 
 static GObjectClass* parent_class = NULL;

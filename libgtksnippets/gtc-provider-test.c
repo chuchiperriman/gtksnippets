@@ -218,8 +218,9 @@ static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, 
 				list = g_list_append(list,data);
 				l=l->next;
 			}
-			g_free(word);
+			//g_list_free(l);
 		}
+		g_free(word);
 	}
 	
 	//g_debug(gtk_snippets_gsv_get_text(completion));
@@ -260,8 +261,11 @@ static void gtc_provider_test_finalize(GObject *object)
 	
 	g_debug("Finalize test");
 	gdk_pixbuf_unref (self->icon_test);
+	g_debug("Finalize test2");
 	g_completion_free(self->completion);
+	g_debug("Finalize test3");
 	g_list_free(self->word_list);
+	g_debug("Finalize test4");
 	
 	G_OBJECT_CLASS(gtc_provider_test_parent_class)->finalize(object);
 }

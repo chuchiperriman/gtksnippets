@@ -77,6 +77,8 @@ void gtk_text_completion_popup_register_provider(GtkTextCompletionPopup *popup, 
 
 GtkTextView* gtk_text_completion_popup_get_view(GtkTextCompletionPopup *popup);
 
+GtkTextView* gtcp_activate_autocomplete(GtkTextCompletionPopup *popup,guint min_char_word);
+
 G_END_DECLS
 
 #endif /* _GTK_TEXT_COMPLETION_POPUP_H_ */
