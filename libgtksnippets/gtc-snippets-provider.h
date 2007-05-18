@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include "gtk-text-completion-provider.h"
 #include "gtk-text-completion-popup.h"
+#include "gtk-snippets-loader.h"
 
 G_BEGIN_DECLS
 
@@ -51,7 +52,7 @@ struct _GtcSnippetsProviderClass {
 
 GType gtc_snippets_provider_get_type ();
 
-GtcSnippetsProvider* gtc_snippets_provider_new();
+GtcSnippetsProvider* gtc_snippets_provider_new(GtkSnippetsLoader *loader);
 
 G_END_DECLS
 

@@ -52,7 +52,9 @@ libgtksnippets_la_SOURCES = \
 	gtk-text-completion-provider.c	\
 	gtk-text-completion-provider.h	\
 	gtc-provider-test.c	\
-	gtc-provider-test.h	
+	gtc-provider-test.h     \
+	gtc-snippets-provider.h     \
+	gtc-snippets-provider.c 
 
 
 libgtksnippets_la_LIBADD = \

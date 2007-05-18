@@ -41,7 +41,7 @@
 #include "libgtksnippets/gtk-snippets-management-ui.h"
 #include "libgtksnippets/gtk-text-completion-popup.h"
 #include "libgtksnippets/gtc-provider-test.h"
-
+#include "libgtksnippets/gtc-snippets-provider.h"
 
 /*
  * Standard gettext macros.
@@ -191,14 +191,12 @@ main (int argc, char *argv[])
 	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
 	//gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
-	gtk_snippets_manager_add_support (manager, gtk_snippets_editor_gsv_new(source), "C");
+	//gtk_snippets_manager_add_support (manager, gtk_snippets_editor_gsv_new(source), "C");
 	
 	//gtk_snippets_manager_gsv_remove_support (manager, (gpointer)source);
 	
 	GtkSnippetsManagementUI *snippets_ui;
 	snippets_ui = gtk_snippets_management_ui_new(loader);
-
-	g_object_unref(loader);
 	
 	//gtk_snippets_management_ui_show(snippets_ui);
 	
@@ -212,10 +210,16 @@ main (int argc, char *argv[])
 	gtk_text_completion_popup_register_provider(popup, provider);
 	g_object_unref(provider);
 
-	guint id = g_timeout_add(1000,funcion_timeout,NULL);
+	GtcSnippetsProvider* prov_snippets = gtc_snippets_provider_new(loader);
+	gtk_text_completion_popup_register_provider(popup, prov_snippets);
+	g_object_unref(prov_snippets);
+
+	//guint id = g_timeout_add(1000,funcion_timeout,NULL);
 	
 	//Para quitar el timeout g_source_remove(id);
-		
+	
+	g_object_unref(loader);
+	
 	gtk_main ();
 	
 	

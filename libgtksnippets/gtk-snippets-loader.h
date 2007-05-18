@@ -126,7 +126,7 @@ gtk_snippets_loader_load_from_dir(GtkSnippetsLoader* loader, const gchar *path);
  * @loader: The loader
  * @Returns: Internal hash table with all the snippets order by language.
  * The hash table is <(gchar*)language,(GList*)snippets>. Returns NULL if anything 
- * have been loaded. Not Free the internal has table!!!
+ * have been loaded. Not Free the internal hashtable!!!
  */
 GHashTable*
 gtk_snippets_loader_get_snippets(GtkSnippetsLoader* loader);

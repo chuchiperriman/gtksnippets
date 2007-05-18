@@ -5,14 +5,13 @@
 #define VALA_FREE_CHECKED(o,f) ((o) == NULL ? NULL : ((o) = (f (o), NULL)))
 #define VALA_FREE_UNCHECKED(o,f) ((o) = (f (o), NULL))
 
-#include <glib/gprintf.h>
 #include <string.h>
 #include "gtc-snippets-provider.h"
-
-#define ICON_FILE ICON_DIR"/locals.png"
+#include "gtk-snippets-gsv-utils.h"
 
 struct _GtcSnippetsProviderPrivate {
-	
+	GtkSnippetsLoader *loader;
+	GList *active_list;
 };
 
 #define GTC_SNIPPETS_PROVIDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_GTC_SNIPPETS_PROVIDER, GtcSnippetsProviderPrivate))
@@ -24,31 +23,110 @@ static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider*
 static gpointer gtc_snippets_provider_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_snippets_provider_gtk_text_completion_provider_parent_iface = NULL;
 
+static void
+gtcsp_hash_for_each_add_snippet (gpointer key,
+		gpointer value,
+		gpointer user_data)
+{
 
+	GtkSnippet *snippet;
+	GList *lista;
+	GtcSnippetsProvider* prov = GTC_SNIPPETS_PROVIDER(user_data);
+	GtkTextCompletionData *data;
+	
+	g_assert(user_data!=NULL);
+	g_assert(key!=NULL);
+	
+	if (value != NULL)
+	{
+		lista = (GList*)value;
+		do
+		{
+			g_assert(lista->data != NULL);
+			
+			snippet = GTK_SNIPPET(lista->data);
+			
+			data = gtk_text_completion_data_new_with_data(
+				gtk_snippet_get_name(snippet),
+				NULL//Icon
+				,NULL);
+			
+			prov->priv->active_list = g_list_append(prov->priv->active_list,data);
+
+			//Insertamos los datos
+			/*gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
+			
+			gtk_list_store_set (GTK_LIST_STORE(user_data), 
+								&iter,
+								COL_LANGUAGE, gtk_snippet_get_language(snippet),
+								COL_NAME, gtk_snippet_get_name(snippet),
+								COL_SNIPPET, snippet,
+								-1);*/
+		}while((lista = g_list_next(lista))!=NULL);
+	}
+
+}
 
 static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
+	GHashTable *snippets;
+	GtcSnippetsProvider *prov;
 	
+	prov = GTC_SNIPPETS_PROVIDER(base);
+	
+	if (strcmp(event_name,USER_REQUEST_EVENT)==0)
+	{
+		snippets = gtk_snippets_loader_get_snippets(prov->priv->loader);
+		if (snippets!=NULL)
+		{
+			g_list_free(prov->priv->active_list);
+			prov->priv->active_list = NULL;
+			g_hash_table_foreach (snippets,gtcsp_hash_for_each_add_snippet,prov);
+			return prov->priv->active_list;
+		}
+		
+		
+		
+		/*for (i=0;i<500;i++)
+		{
+			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+			if (strlen(word)>0)
+			{
+				final_word = g_strdup_printf("%s%i",word,i);
+				data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
+				list = g_list_append(list,data);
+				g_free(final_word);
+			}
+			g_free(word);
+			
+		}*/
+	}
+	
+	return NULL;
+	//gtk_snippets_loader_get_snippets(manager->priv->loader);
 }
 
 
 static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* text_view, GtkTextCompletionData* data)
 {
-	
+	gtk_snippets_gsv_replace_actual_word(text_view, gtk_text_completion_data_get_name(data));
 }
 
 
 static void gtc_snippets_provider_real_data_free (GtkTextCompletionProvider* self, GtkTextCompletionData* data)
 {
+
 }
 
 static void gtc_snippets_provider_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec)
 {
+
 }
 
 
 static void gtc_snippets_provider_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
 {
+
 }
 
 static void gtc_snippets_provider_finalize(GObject *object)
@@ -57,6 +135,9 @@ static void gtc_snippets_provider_finalize(GObject *object)
 	
 	self = GTC_SNIPPETS_PROVIDER(object);
 	
+	g_object_unref(self->priv->active_list);
+	g_object_unref(self->priv->loader);
+
 	G_OBJECT_CLASS(gtc_snippets_provider_parent_class)->finalize(object);
 }
 
@@ -81,7 +162,9 @@ static void gtc_snippets_provider_gtk_text_completion_provider_interface_init (G
 
 static void gtc_snippets_provider_init (GtcSnippetsProvider * self)
 {
-
+	self->priv = g_new0(GtcSnippetsProviderPrivate, 1);
+	self->priv->loader=NULL;
+	self->priv->active_list = NULL;
 }
 
 GType gtc_snippets_provider_get_type ()
@@ -98,8 +181,10 @@ GType gtc_snippets_provider_get_type ()
 
 
 GtcSnippetsProvider*
-gtc_snippets_provider_new()
+gtc_snippets_provider_new(GtkSnippetsLoader *loader)
 {
-	return GTC_SNIPPETS_PROVIDER (g_object_new (TYPE_GTC_SNIPPETS_PROVIDER, NULL));
+	GtcSnippetsProvider *prov = GTC_SNIPPETS_PROVIDER (g_object_new (TYPE_GTC_SNIPPETS_PROVIDER, NULL)); 
+	prov->priv->loader = g_object_ref(loader);
+	return prov;
 }
 

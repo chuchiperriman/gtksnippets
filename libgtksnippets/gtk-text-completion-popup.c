@@ -832,7 +832,7 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 				g_list_free(data_list);
 			}
 			
-		}while((providers_list = g_list_next(popup->priv->providers)) != NULL);
+		}while((providers_list = g_list_next(providers_list)) != NULL);
 		
 		g_debug("raise eventooooooo3");
 				

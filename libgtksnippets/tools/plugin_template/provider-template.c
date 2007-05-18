@@ -81,7 +81,7 @@ static void gtc_##(PLUGIN_ID.lower)_provider_gtk_text_completion_provider_interf
 
 static void gtc_##(PLUGIN_ID.lower)_provider_init (Gtc##(PLUGIN_ID.camel)Provider * self)
 {
-
+	self->priv = g_new0(Gtc##(PLUGIN_ID.camel)ProviderPrivate, 1);
 }
 
 GType gtc_##(PLUGIN_ID.lower)_provider_get_type ()
