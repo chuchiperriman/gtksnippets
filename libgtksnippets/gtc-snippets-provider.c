@@ -49,7 +49,7 @@ gtcsp_hash_for_each_add_snippet (gpointer key,
 			data = gtk_text_completion_data_new_with_data(
 				gtk_snippet_get_name(snippet),
 				NULL//Icon
-				,NULL);
+				,snippet);
 			
 			prov->priv->active_list = g_list_append(prov->priv->active_list,data);
 
@@ -109,7 +109,8 @@ static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* ba
 
 static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* text_view, GtkTextCompletionData* data)
 {
-	gtk_snippets_gsv_replace_actual_word(text_view, gtk_text_completion_data_get_name(data));
+	GtkSnippet* snippet = GTK_SNIPPET(gtk_text_completion_data_get_user_data(data));
+	gtk_snippets_gsv_replace_actual_word(text_view, gtk_snippet_get_text(snippet));
 }
 
 
