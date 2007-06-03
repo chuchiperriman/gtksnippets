@@ -89,7 +89,6 @@ gtk_snippet_init(GtkSnippet *obj)
 	obj->priv->description = NULL;
 	obj->priv->text = NULL;
 	obj->priv->modified = FALSE;
-	g_debug("Construido snippet");
 }
 
 static void
@@ -108,7 +107,6 @@ gtk_snippet_finalize(GObject *object)
 	g_free(cobj->priv);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 	
-	g_debug("Destruido snippet");
 }
 
 GtkSnippet*

@@ -59,7 +59,6 @@ static void
 gtk_snippets_manager_disconnect_editor_signals(
 		EditorData *data)
 {
-	g_debug("Disconnecting editor signals");
 	if (g_signal_handler_is_connected (data->editor, data->signal_handles[HANDLER_ID_EDITOR_KEY_PRESSED]))
 		g_signal_handler_disconnect (data->editor, data->signal_handles[HANDLER_ID_EDITOR_KEY_PRESSED]);
 		
@@ -73,7 +72,6 @@ gtk_snippets_manager_disconnect_popup_signals(
 		GtkSnippetsPopupDialog *popup, 
 		EditorData *data)
 {
-	g_debug("Disconnecting popup signals");
 	if (g_signal_handler_is_connected (popup, data->signal_handles[HANDLER_ID_SNIPPET_SELECTED]))
 		g_signal_handler_disconnect (popup, data->signal_handles[HANDLER_ID_SNIPPET_SELECTED]);
 		
@@ -92,14 +90,12 @@ gtk_snippets_manager_gsv_destroy_editor_data(gpointer data)
 		
 		g_free(ed->language);
 		g_free(ed);
-		g_debug("EditorData Destroyed");
 	}
 }
 
 static void
 gtk_snippets_manager_gsv_init (GtkSnippetsManagerGsv *object)
 {
-	g_debug("Construido GtkSnippetsManagerGsv");
 	/* TODO: Add initialization code here */
 	object->priv = g_new0(GtkSnippetsManagerGsvPrivate, 1);
 	object->priv->loader = NULL;
@@ -130,7 +126,6 @@ gtk_snippets_manager_gsv_finalize (GObject *object)
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 	
-	g_debug("Destruido GtkSnippetsManagerGsv");
 }
 
 static void
@@ -181,7 +176,6 @@ gsm_set_snippets_to_popup(GtkSnippetsManagerGsv *manager)
 static void
 gsm_snippets_changed_cb(GtkSnippetsLoader *loader,gpointer user_data)
 {
-	g_debug("Cambian los snippets");
 	gsm_set_snippets_to_popup(GTK_SNIPPETS_MANAGER_GSV(user_data));
 	
 }
@@ -199,21 +193,18 @@ gtk_snippets_manager_gsv_new (GtkSnippetsLoader *loader)
 {
 	GtkSnippetsManagerGsv *obj;
 
-	g_debug("Empezamos new");
 	obj = GTK_SNIPPETS_MANAGER_GSV(g_object_new(GTK_TYPE_SNIPPETS_MANAGER_GSV, NULL));
 	
 	g_object_ref(loader);
 	
 	obj->priv->loader = loader;
 	
-	g_debug("Antes de poner los snippets");
 	
 	gsm_set_snippets_to_popup(obj);
 		
 	g_signal_connect(loader, "snippets-changed",
 		G_CALLBACK(gsm_snippets_changed_cb),(gpointer) obj);
 		
-	g_debug("Puestos snippets en el dialog");
 	
 	return obj;	
 }
@@ -235,7 +226,6 @@ gtk_snippets_manager_snippet_selected_cb (GtkSnippetsPopupDialog *popup, GtkSnip
 	gtk_text_buffer_delete(buffer,&data->word_start,&data->word_end);
 	gtk_text_buffer_insert(buffer, &data->word_start, text,-1);
 
-	g_debug("Snippet selected");
 }
 
 static void
@@ -293,7 +283,6 @@ static void
 gtk_snippets_manager_sw_destroy_event (GtkObject *editor, 
 										gpointer   data)
 {
-	g_debug("Han destruido un editor");
 	GtkSnippetsManagerGsv *manager = GTK_SNIPPETS_MANAGER_GSV(data);
 	//Se encarga de llamar a la función que destruye los datos
 	g_hash_table_remove(manager->priv->editors_hash,editor);
@@ -307,7 +296,6 @@ gtk_snippets_manager_gsv_add_support (GtkSnippetsManagerGsv *manager, const gpoi
 	EditorData *data;
 	
 	data = g_new0(EditorData,1);
-	g_debug("EditorData created");
 	
 	/* TODO: Poner esto genérico, no solo para el gtksourceview */
 	GtkSourceView *source_view = GTK_SOURCE_VIEW(editor);

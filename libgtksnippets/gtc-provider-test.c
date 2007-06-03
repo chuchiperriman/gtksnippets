@@ -45,7 +45,6 @@ char_in(gchar c)
 static void
 update_word_list(GtcProviderTest *self, GtkTextView* view)
 {
-	g_debug("update word list");
 
 	GList *wl=NULL; //Word list
 	gchar *text, *i, *f;
@@ -259,13 +258,9 @@ static void gtc_provider_test_finalize(GObject *object)
 	
 	self = GTC_PROVIDER_TEST(object);
 	
-	g_debug("Finalize test");
 	gdk_pixbuf_unref (self->icon_test);
-	g_debug("Finalize test2");
 	g_completion_free(self->completion);
-	g_debug("Finalize test3");
 	g_list_free(self->word_list);
-	g_debug("Finalize test4");
 	
 	G_OBJECT_CLASS(gtc_provider_test_parent_class)->finalize(object);
 }
@@ -295,7 +290,6 @@ static void gtc_provider_test_init (GtcProviderTest * self)
 	self->icon_test = gdk_pixbuf_new_from_file(ICON_FILE,NULL);
 	self->completion = g_completion_new (NULL);
 	self->word_list = NULL;
-	g_debug(ICON_FILE);
 }
 
 GType gtc_provider_test_get_type ()

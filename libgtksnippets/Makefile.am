@@ -77,7 +77,8 @@ INST_H_FILES = \
 	gtk-text-completion-provider.h	\
 	gtc-provider-test.h	\
 	gtk-text-completion-popup.h    \
-	gtk-text-completion-data.h
+	gtk-text-completion-data.h	\
+	gtc-snippets-provider.h
 
 headerdir = $(prefix)/include/libgtksnippets-1
 

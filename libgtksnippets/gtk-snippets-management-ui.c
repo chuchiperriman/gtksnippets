@@ -57,7 +57,6 @@ static GObjectClass* parent_class = NULL;
 static void
 gtk_snippets_management_ui_init (GtkSnippetsManagementUI *popup_dialog)
 {
-	g_debug("Construido GtkSnippetsManagementUI");
 	popup_dialog->priv = g_new0(GtkSnippetsManagementUIPrivate, 1);
 }
 
@@ -74,7 +73,6 @@ gtk_snippets_management_ui_finalize (GObject *object)
 	g_free(cobj->priv);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_debug("Destruido GtkSnippetsManagementUI");
 }
 
 static void
@@ -137,8 +135,6 @@ smngui_dialog_response_cb(GtkDialog *dialog,
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	
-	g_debug("Dialog response: %i",response_id);
-	
 	switch(response_id)
 	{
 		case GTK_RESPONSE_CLOSE:
@@ -168,9 +164,7 @@ smngui_get_active_snippet(GtkSnippetsManagementUI *mng)
 		model = gtk_tree_view_get_model(mng->priv->snippets_tree);
 		if(gtk_tree_model_get_iter(model,&iter,path))
 		{
-			g_debug("temp1");
 			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
-			g_debug("temp2");
 			if (GTK_IS_SNIPPET(g_value_get_pointer (&value)))
 				snippet = GTK_SNIPPET(g_value_get_pointer (&value));
 		}
@@ -187,8 +181,6 @@ smngui_get_all_content(GtkSnippetsManagementUI *mng)
 	GtkTextBuffer* buffer;
 	GtkTextIter ini,fin;
 	const gchar* content;
-	
-	g_debug("Content key release");
 	
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mng->priv->snippet_content));
 	gtk_text_buffer_get_start_iter(buffer,&ini);
@@ -212,8 +204,6 @@ smngui_remove_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	GtkTreeModel *model;
 	GtkSnippet *snippet;
 	GtkTreeIter iter,parent_iter;
-	
-	g_debug("remove the snippet");
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	snippet = smngui_get_active_snippet(mng);
@@ -265,7 +255,6 @@ smngui_new_button_activate_cb(GtkWidget *widget, gpointer user_data)
 	GtkSnippetsManagementUI *mng;
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	
-	g_debug("New button activate");
 	gtk_entry_set_text(GTK_ENTRY(mng->priv->new_dialog_entry),"");
 	gtk_widget_grab_focus(mng->priv->new_dialog_entry);
 	
@@ -459,8 +448,6 @@ smngui_new_dialog_response_cb(GtkDialog *dialog,
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	
-	g_debug("New Dialog response: %i",response_id);
-	
 	switch(response_id)
 	{
 		case GTK_RESPONSE_ACCEPT:
@@ -469,9 +456,7 @@ smngui_new_dialog_response_cb(GtkDialog *dialog,
 			//temp = g_strstrip(temp);
 			if (strcmp(temp,"")!=0)
 			{
-				g_debug("antes addtreeloader");
 				smngui_add_snippet_to_tree_and_loader(mng,temp);
-				g_debug("addtreeloader");
 			}
 			break;
 		default:
@@ -487,8 +472,6 @@ smngui_tag_key_release_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	GtkSnippetsManagementUI *mng;
 	GtkSnippet* snippet;
 	const gchar* tag;
-	
-	g_debug("tag key release");
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	
@@ -506,8 +489,6 @@ smngui_content_key_release_cb(GtkWidget *widget, GdkEventKey *event, gpointer us
 	GtkSnippetsManagementUI *mng;
 	GtkSnippet* snippet;
 	const gchar* content;
-	
-	g_debug("Content key release");
 	
 	mng = GTK_SNIPPETS_MANAGEMENT_UI(user_data);
 	

@@ -94,7 +94,6 @@ ___finalize(GObject *obj_self)
 #define name (self->_priv->name)
 #define VAR name
 	{
-		g_debug("fin data");
 			g_free(name);
 		}
 	memset(&name, 0, sizeof(name));
@@ -111,7 +110,6 @@ gtk_text_completion_data_init (GtkTextCompletionData * o G_GNUC_UNUSED)
 	o->_priv->name = NULL;
 	o->_priv->icon = NULL;
 	o->_priv->user_data = NULL;
-	g_debug("init data");
 }
 #undef __GOB_FUNCTION__
 static void 

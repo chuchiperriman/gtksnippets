@@ -74,6 +74,15 @@
 #define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
 	
 static GtkWidget *source;
+static GtkSnippetsLoader *loader;
+
+static void
+manager_button_clicked_cb(GtkWidget *widget, gpointer user_data)
+{
+	GtkSnippetsManagementUI *snippets_ui;
+	snippets_ui = gtk_snippets_management_ui_new(loader);
+	gtk_snippets_management_ui_show(snippets_ui);
+}
 
 GtkWidget*
 create_window (void)
@@ -81,20 +90,36 @@ create_window (void)
 	GtkWidget *window;
 	GladeXML *gxml;
 	GtkWidget *scroll;
+	GtkWidget *vbox;
+	GtkWidget *buttons;
+	GtkWidget *button;
 	
 	gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 	
 	/* This is important */
 	glade_xml_signal_autoconnect (gxml);
 	
-	GtkWidget *vbox = gtk_vbox_new(FALSE,0);
 	window = glade_xml_get_widget (gxml, "window");
+	vbox = gtk_vbox_new(FALSE,5);
+	buttons = gtk_hbox_new(TRUE,5);
+	button = gtk_button_new_with_label("Manager");
 	scroll = gtk_scrolled_window_new(NULL,NULL);
 	source = gtk_source_view_new();
+	gtk_widget_show(vbox);
+	gtk_widget_show(button);
+	gtk_widget_show(buttons);
 	gtk_widget_show(source);
 	gtk_widget_show(scroll);
-	gtk_container_add(window,scroll);
+	
+	gtk_box_pack_start(buttons,button,FALSE,FALSE,5);
+	gtk_box_pack_start(vbox,buttons,FALSE,FALSE,5);
+	gtk_box_pack_end(vbox,scroll,TRUE,TRUE,5);
+	
+	gtk_container_add(window,vbox);
 	gtk_container_add(scroll,source);
+	
+	g_signal_connect(GTK_WIDGET(button), "clicked",
+		G_CALLBACK(manager_button_clicked_cb),NULL);
 	
 	return window;
 }
@@ -162,7 +187,7 @@ main (int argc, char *argv[])
 	g_debug( _("Test") );
 	window = create_window ();
 	
-	GtkSnippetsLoader *loader = gtk_snippets_loader_new();
+	loader = gtk_snippets_loader_new();
 	
 	gtk_snippets_loader_load_default(loader);
 
@@ -218,11 +243,9 @@ main (int argc, char *argv[])
 	
 	//Para quitar el timeout g_source_remove(id);
 	
-	g_object_unref(loader);
-	
 	gtk_main ();
 	
-	
+	g_object_unref(loader);
 	g_object_unref(manager);
 	g_object_unref(popup);
 	

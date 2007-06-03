@@ -101,9 +101,7 @@ gtk_snippets_loader_destroy_snippets_list(gpointer data)
 		do
 		{
 			snippet = GTK_SNIPPET(actual->data);
-			g_debug("Destroy en list destroy");
 			g_object_unref(snippet);
-			g_debug("fin Destroy en list destroy");
 			next = g_list_next(actual);
 		}while((actual = next) != NULL);
 		
@@ -159,7 +157,6 @@ gtk_snippets_loader_init(GtkSnippetsLoader *obj)
 	obj->priv->language_hash = g_hash_table_new_full(g_str_hash, g_str_equal , NULL, gtk_snippets_loader_destroy_snippets_list);
 	obj->priv->snippets_count = 0;
 	obj->priv->default_path = gsl_get_default_path();
-	g_debug("Construido snippets loader");
 }
 
 static void
@@ -175,7 +172,6 @@ gtk_snippets_loader_finalize(GObject *object)
 	g_free(cobj->priv);
 	
 	G_OBJECT_CLASS(parent_class)->finalize(object);
-	g_debug("Destruido snippets loader");
 }
 
 
@@ -247,7 +243,6 @@ gsl_parse_snippet(GtkSnippetsLoader* loader, xmlNode *a_node, gchar* language)
 	xmlFree(description);
 	xmlFree(text);
 	
-	g_debug("XML Snippet found");
 	
 	return res;
 }
@@ -282,7 +277,6 @@ gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node, gchar *language)
 	
 	if (language != NULL)
 	{
-		g_debug("attribute language: %s",language);
 		for (cur_node = a_node->children; cur_node; cur_node = cur_node->next)
 		{
 			if (cur_node->type == XML_ELEMENT_NODE)
@@ -305,7 +299,6 @@ gsl_parse_root(GtkSnippetsLoader* loader, xmlNode * a_node, gchar *language)
 		res = FALSE;
 	}
 	
-	g_debug("Fin parse root");
 	return res;
 }
 
@@ -334,7 +327,6 @@ gtk_snippets_loader_load_from_file(GtkSnippetsLoader* loader, const gchar *file,
 			xmlFreeDoc(doc);
 			xmlCleanupParser();
 			
-			g_debug("Fin limpieza xml");
 		}
 		else
 		{
@@ -395,7 +387,6 @@ void
 gtk_snippets_loader_load_default(GtkSnippetsLoader* loader)
 {
 	gtk_snippets_loader_load_from_dir(loader,loader->priv->default_path);
-	g_debug("Load default end");
 }
 
 GHashTable*
@@ -439,7 +430,6 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 	
 	if (g_list_length(lista)>0)
 	{
-		g_debug("language %s have %i elements",language,g_list_length(lista));
 		do
 		{
 			g_assert(lista->data != NULL);
@@ -462,7 +452,6 @@ gsl_hash_for_each_generate_snippet_xml (gpointer key,
 	}
 
 	sprintf(fich,"%s/%s.xml", loader->priv->default_path, language );
-	g_debug("Saving %s",fich);
 	xmlSaveFormatFileEnc(fich, doc, "UTF-8", 1);
 
 	/*free the document */
@@ -525,28 +514,20 @@ gtk_snippets_loader_remove_snippet(GtkSnippetsLoader* loader, GtkSnippet* snippe
 	GList* snippets_list;
 	GList* new_start;
 	
-	g_debug("Liberamos el snippet: %s", gtk_snippet_get_tag(snippet));
 	
 	language = g_strdup(gtk_snippet_get_language(snippet));
 	snippets_list = (GList*)g_hash_table_lookup(loader->priv->language_hash,language);
 	
 	g_assert(snippets_list != NULL);
 	
-	g_debug("snippets antes: %i",g_list_length(snippets_list));
-	
 	new_start = g_list_remove(snippets_list,snippet);
-	g_debug("snippets después: %i",g_list_length(new_start));
-	g_debug("Se quitó de la lista");
 	if (new_start != snippets_list)
 	{
 		g_hash_table_steal(loader->priv->language_hash,language);
-		g_debug("ositas: %s",language);
 		g_hash_table_insert(loader->priv->language_hash,language,new_start);
 	}
-	g_debug("Destroy en remove loader");
 	
 	g_object_unref(snippet);
-	g_debug("fin Destroy en remove loader");
 	
 	//No lo liberamos porque se queda en el hash_table
 	//g_free(language);

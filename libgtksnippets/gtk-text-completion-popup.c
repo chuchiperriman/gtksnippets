@@ -302,13 +302,10 @@ gtcp_tree_selection(GtkTextCompletionPopup *popup)
 static gboolean
 view_key_release_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 {
-	g_debug("Release popup.....");
 	//Cazamos las teclas que no son de movimiento en el popup
 	GtkTextCompletionPopup *popup;
 	g_assert(GTK_IS_TEXT_COMPLETION_POPUP(user_data));
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
-	
-	g_debug("Release popup: %i",popup->priv->id);
 	
 	if (popup->priv->wc_active)
 	{
@@ -320,14 +317,10 @@ view_key_release_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data
 static gboolean
 view_key_press_event_cb(GtkWidget *view,GdkEventKey *event, gpointer user_data)
 {
-	g_debug("Press popup.....");
 	//Cazamos solo las teclas especiales de movimiento en el popup
 	GtkTextCompletionPopup *popup;
-	g_debug(gtk_widget_get_name(view));
 	g_assert(GTK_IS_TEXT_COMPLETION_POPUP(user_data));
 	popup = GTK_TEXT_COMPLETION_POPUP(user_data);
-	
-	g_debug("Press popup: %i",popup->priv->id);
 	
 	if (gtcp_is_active(popup))
 	{
@@ -515,7 +508,6 @@ gtcp_create_tree_model(GtkTextCompletionPopup *popup)
 	GtkListStore *list_store;
 	list_store = gtk_list_store_new (4,GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 		
-	g_debug("Asignamos el modelo");
 	gtk_tree_view_set_model(popup->priv->data_tree_view,GTK_TREE_MODEL(list_store));
 }
 
@@ -572,16 +564,13 @@ gtcp_load_tree(GtkTextCompletionPopup *popup)
 static void
 gtcp_load_glade(GtkTextCompletionPopup *popup)
 {
-	g_debug("load glade");
 	GladeXML *gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 
 	g_assert(gxml != NULL);
 
 	//glade_xml_signal_autoconnect (gxml);
-	g_debug("despues conect load glade");
 	popup->priv->window = glade_xml_get_widget (gxml, "window");
 	popup->priv->data_tree_view = GTK_TREE_VIEW(glade_xml_get_widget (gxml, "data_tree_view"));
-	g_debug("cogemos el window");
 	
 	/*g_signal_connect(GTK_WIDGET(obj->priv->tree_view), "row-activated",
 		G_CALLBACK(snippets_tree_view_row_activated_cb),(gpointer) obj);*/
@@ -598,13 +587,11 @@ gtcp_load_glade(GtkTextCompletionPopup *popup)
 	*/
 	
 	g_object_unref(gxml);
-	g_debug("sacabo load glade");
 }
 
 static void
 gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 {
-	g_debug("init");
 	gint i;
 	popup->priv = GTK_TEXT_COMPLETION_POPUP_GET_PRIVATE(popup);
 	popup->priv->events = NULL;
@@ -625,22 +612,18 @@ gtk_text_completion_popup_init (GtkTextCompletionPopup *popup)
 			G_CALLBACK(gtcp_popup_row_activated_cb),(gpointer) popup);
 
 	popup->priv->id=contador;
-	g_debug("construido popup: %i",contador);
 	contador++;
 }
 
 static void
 gtk_text_completion_popup_finalize (GObject *object)
 {
-	g_debug("finalize del completion popup");
 	
 	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP(object);
 	GList *actual;
 	GtkListStore *store;
 	gint i;
 	
-	g_debug("Destruimos popup: %i",popup->priv->id);
-
 	actual = popup->priv->events;
 	if (actual != NULL)
 	{
@@ -670,24 +653,19 @@ gtk_text_completion_popup_finalize (GObject *object)
 
 	g_signal_handler_disconnect (popup->priv->data_tree_view,
 				popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]);
-	g_debug("despues desconectar popuprowactivate");
 	for (i=IS_POPUP_ROW_ACTIVATE;i<IS_LAST_SIGNAL;i++)
 	{
 		if (g_signal_handler_is_connected(popup->priv->text_view,popup->priv->internal_signal_ids[i]))
 		{
-			g_debug("finalize del completion popupdisconn-->%i",i);
 			g_signal_handler_disconnect (popup->priv->text_view,
 				popup->priv->internal_signal_ids[i]);
 		}
 		popup->priv->internal_signal_ids[i] = 0;
 	}
-		g_debug("finalize del completion popup2");
 
 	//g_assert(popup->priv->window!=NULL);
 	//g_object_unref(popup->priv->window);
-	g_debug("finalize del completion popup3");
 	//G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_debug("finalize del completion popup4");
 	
 }
 
@@ -755,7 +733,6 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	GtkTextCompletionPopup *popup = GTK_TEXT_COMPLETION_POPUP (g_object_new (GTK_TYPE_TEXT_COMPLETION_POPUP, NULL));
 	popup->priv->text_view = view;
 	
-	g_debug("nuevo popup");
 	popup->priv->internal_signal_ids[IS_GTK_TEST_VIEW_KP] = g_signal_connect(view, "key-press-event",
 			G_CALLBACK(view_key_press_event_cb),(gpointer) popup);
 	
@@ -768,7 +745,6 @@ gtk_text_completion_popup_new (GtkTextView *view)
 	
 	word_completion_event_activate(popup);
 	
-	g_debug("fin new popup");
 	
 	return popup;
 }
@@ -803,7 +779,6 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 	GtkTreeIter iter;
 	gint x, y;
 	
-	g_debug("raise eventooooooo");
 	//Raise populate
 	/*g_signal_emit(
 				popup,
@@ -814,7 +789,6 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 	
 	if (popup->priv->providers != NULL)
 	{
-		g_debug("raise eventooooooo2");
 		providers_list = popup->priv->providers;
 		do
 		{
@@ -834,8 +808,6 @@ gtk_text_completion_popup_raise_event(GtkTextCompletionPopup *popup, const gchar
 			
 		}while((providers_list = g_list_next(providers_list)) != NULL);
 		
-		g_debug("raise eventooooooo3");
-				
 		//If there are not items, we don't show the popup
 		if (gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
 		{

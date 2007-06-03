@@ -158,7 +158,6 @@ gtk_snippets_editor_gsv_new (GtkSourceView *view)
 {
 	GtkSnippetsEditorGsv *editor;
 
-	g_debug("Empezamos new");
 	editor = GTK_SNIPPETS_EDITOR_GSV(g_object_new(GTK_TYPE_SNIPPETS_EDITOR_GSV, NULL));
 
 	g_object_ref(view);

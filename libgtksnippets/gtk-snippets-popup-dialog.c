@@ -67,7 +67,6 @@ static guint gtk_snippets_popup_dialog_signals[LAST_SIGNAL] = { 0 };
 static void
 gtk_snippets_popup_dialog_init (GtkSnippetsPopupDialog *popup_dialog)
 {
-	g_debug("Construido GtkSnippetsPopupDialog");
 	popup_dialog->priv = g_new0(GtkSnippetsPopupDialogPrivate, 1);
 	popup_dialog->priv->x = 0;
 	popup_dialog->priv->y = 0;
@@ -90,7 +89,6 @@ gtk_snippets_popup_dialog_finalize (GObject *object)
 	g_free(cobj->priv);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_debug("Destruido GtkSnippetsPopupDialog");
 }
 
 static void
@@ -166,7 +164,6 @@ snippets_popup_dialog_focus_out_event_cb(GtkWidget *widget,
 	gpointer user_data)
 {
 
-	g_debug("focus out");
 
 	GtkSnippetsPopupDialog *popup = GTK_SNIPPETS_POPUP_DIALOG(user_data);
 	if (popup->priv->selected_snippet == NULL)
@@ -206,9 +203,6 @@ snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
 
 		popup->priv->selected_snippet = snippet;
 		
-		g_debug("Selected item: %s",gtk_snippet_get_tag(snippet));
-		g_debug("item text: %s",gtk_snippet_get_text(snippet));
-		
 		//Lanzamos una señal de que se ha seleccionado un snippet
 		g_signal_emit(
 				popup,
@@ -216,7 +210,6 @@ snippets_tree_view_row_activated_cb(GtkTreeView *tree_view,
 				0,
 				snippet);
 	}
-	g_debug("Row selected");
 }
 
 static gboolean
@@ -474,17 +467,12 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 	
 	if (snippets != NULL)
 	{
-		g_debug("Asignan nuevos snippets");
-
 		GtkListStore *list_store;
-		
-		
 		//lenguaje,nombreSnippet,GtkSnippet
 		list_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 		
 		g_hash_table_foreach (snippets,gspd_hash_for_each_add_snippet,list_store);
 		
-		g_debug("Asignamos el modelo");
 		gtk_tree_view_set_model(GTK_TREE_VIEW(popup_dialog->priv->tree_view),GTK_TREE_MODEL(list_store));
 	}
 	else
@@ -496,7 +484,6 @@ gtk_snippets_popup_dialog_set_snippets(GtkSnippetsPopupDialog* popup_dialog, GHa
 static gboolean
 gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
-	g_debug("Filter function");
 	GValue value = {0,};
 	const gchar *snippet_language;
 	const gchar *snippet_tag;
@@ -507,9 +494,7 @@ gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 	filter_data = (FilterData*)data;
 	
 	gtk_tree_model_get_value(model,iter,COL_SNIPPET,&value);
-	g_debug("antes value");
 	snippet = GTK_SNIPPET(g_value_get_pointer(&value));
-	g_debug("des value");
 	
 	//Language filter
 	if (filter_data->language != NULL)
@@ -536,7 +521,6 @@ gspd_filter_func(GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 void
 gtk_snippets_popup_dialog_filter(GtkSnippetsPopupDialog* popup_dialog, const FilterData *filter_data)
 {
-	g_debug("Iniciamos filtrado");
 	GtkTreeModel *model_filter;
 	GtkTreeModel *model_actual;
 	GtkTextBuffer *buffer;
