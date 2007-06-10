@@ -8,10 +8,12 @@
 #include <string.h>
 #include "gtc-snippets-provider.h"
 #include "gtk-snippets-gsv-utils.h"
+#include <gtksourceview/gtksourceview.h>
 
 struct _GtcSnippetsProviderPrivate {
 	GtkSnippetsLoader *loader;
 	GList *active_list;
+	GtkTextView* temp_view;
 };
 
 #define GTC_SNIPPETS_PROVIDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_GTC_SNIPPETS_PROVIDER, GtcSnippetsProviderPrivate))
@@ -22,6 +24,22 @@ static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* ba
 static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* completion, GtkTextCompletionData* data);
 static gpointer gtc_snippets_provider_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_snippets_provider_gtk_text_completion_provider_parent_iface = NULL;
+
+static void
+gtcsp_list_for_each_add_snippet(gpointer list_data, gpointer user_data )
+{
+	GtkSnippet *snippet = GTK_SNIPPET(list_data);
+	
+	GtcSnippetsProvider* prov = GTC_SNIPPETS_PROVIDER(user_data);
+	GtkTextCompletionData *data;
+	
+	data = gtk_text_completion_data_new_with_data(
+				gtk_snippet_get_name(snippet),
+				NULL//Icon
+				,snippet);
+	prov->priv->active_list = g_list_append(prov->priv->active_list,data);
+	
+}
 
 static void
 gtcsp_hash_for_each_add_snippet (gpointer key,
@@ -50,9 +68,7 @@ gtcsp_hash_for_each_add_snippet (gpointer key,
 				gtk_snippet_get_name(snippet),
 				NULL//Icon
 				,snippet);
-			
 			prov->priv->active_list = g_list_append(prov->priv->active_list,data);
-
 			//Insertamos los datos
 			/*gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
 			
@@ -64,42 +80,53 @@ gtcsp_hash_for_each_add_snippet (gpointer key,
 								-1);*/
 		}while((lista = g_list_next(lista))!=NULL);
 	}
-
 }
 
 static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
+
+	
 	GHashTable *snippets;
+	GList *snippets_list;
 	GtcSnippetsProvider *prov;
+	gchar* lang_text = NULL;
 	
 	prov = GTC_SNIPPETS_PROVIDER(base);
 	
 	if (strcmp(event_name,USER_REQUEST_EVENT)==0)
 	{
-		snippets = gtk_snippets_loader_get_snippets(prov->priv->loader);
-		if (snippets!=NULL)
+		g_list_free(prov->priv->active_list);
+		prov->priv->active_list = NULL;
+		prov->priv->temp_view = completion;
+		
+		if (GTK_IS_SOURCE_VIEW(completion))
 		{
-			g_list_free(prov->priv->active_list);
-			prov->priv->active_list = NULL;
-			g_hash_table_foreach (snippets,gtcsp_hash_for_each_add_snippet,prov);
-			return prov->priv->active_list;
-		}
-		
-		
-		
-		/*for (i=0;i<500;i++)
-		{
-			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-			if (strlen(word)>0)
-			{
-				final_word = g_strdup_printf("%s%i",word,i);
-				data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
-				list = g_list_append(list,data);
-				g_free(final_word);
-			}
-			g_free(word);
+			//Es una lista y no un hashtable
+			GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(completion));
+			GtkSourceLanguage* s_lang = gtk_source_buffer_get_language(buffer);
 			
-		}*/
+			if (s_lang != NULL){
+				lang_text = gtk_source_language_get_name(s_lang);
+			}
+		}
+		if (lang_text!=NULL)
+		{
+			snippets_list = gtk_snippets_loader_get_snippets_by_language(prov->priv->loader,lang_text);
+			if (snippets_list!=NULL)
+			{
+				g_list_foreach(snippets_list,gtcsp_list_for_each_add_snippet,prov);
+			}
+		}
+		else
+		{
+			snippets = gtk_snippets_loader_get_snippets(prov->priv->loader);
+			if (snippets!=NULL)
+			{
+				g_hash_table_foreach (snippets,gtcsp_hash_for_each_add_snippet,prov);
+			}
+		}
+		prov->priv->temp_view = NULL;
+		return prov->priv->active_list;
 	}
 	
 	return NULL;
@@ -109,8 +136,11 @@ static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* ba
 
 static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* text_view, GtkTextCompletionData* data)
 {
+	GtkTextBuffer * buffer = gtk_text_view_get_buffer(text_view);
+	gtk_text_buffer_begin_user_action(buffer);
 	GtkSnippet* snippet = GTK_SNIPPET(gtk_text_completion_data_get_user_data(data));
 	gtk_snippets_gsv_replace_actual_word(text_view, gtk_snippet_get_text(snippet));
+	gtk_text_buffer_end_user_action(buffer);
 }
 
 

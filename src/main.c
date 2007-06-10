@@ -82,6 +82,7 @@ manager_button_clicked_cb(GtkWidget *widget, gpointer user_data)
 	GtkSnippetsManagementUI *snippets_ui;
 	snippets_ui = gtk_snippets_management_ui_new(loader);
 	gtk_snippets_management_ui_show(snippets_ui);
+	g_object_unref(snippets_ui);
 }
 
 GtkWidget*
