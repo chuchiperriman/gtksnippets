@@ -1,6 +1,14 @@
 GtkTextCompletion:
-	.- Hay que conectarse a la señal de destroy del GtktextView y, ocultar el popup si está visible y destruirlo.
-
+	.- Connect to GtktextView destroy signal and hide and destroy the popup if visible
+	.- Add Icon to snippets provider data.
+	.- Configuration support for Snippets provider:
+		.- Configure if filter snippets by language or not.
+	.- TestProvvider:
+		.- Configure if you want autocompletion or only user request completion.
+	
+GtcGeditPlugin:
+	.- Configure the active providers. Show a list of providers and check if you want use it.
+	
 GtkTextView:
 	.- [OK] When we get the last word, if is blank or \n then return the previous word in the line or the
 		previous word in the previous line
