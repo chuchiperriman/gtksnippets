@@ -26,19 +26,38 @@ static gpointer gtc_snippets_provider_parent_class = NULL;
 static GtkTextCompletionProviderIface* gtc_snippets_provider_gtk_text_completion_provider_parent_iface = NULL;
 
 static void
+add_snippet_to_active_list(GtcSnippetsProvider *prov, GtkSnippet *snippet)
+{
+	gchar *last_word = gtk_snippets_gsv_get_last_word(prov->priv->temp_view);
+	const gchar *snippet_name = gtk_snippet_get_name(snippet);
+	GtkTextCompletionData *data;
+	gboolean add = TRUE; 
+	if (last_word != NULL) 
+	{
+		if (strncmp(last_word,snippet_name,strlen(last_word))!=0)
+		{
+			//If not starts with, no insert
+			add = FALSE;
+		}
+	}
+	
+	if (add)
+	{
+		data = gtk_text_completion_data_new_with_data(
+				gtk_snippet_get_name(snippet),
+				NULL//Icon
+				,snippet);
+		prov->priv->active_list = g_list_append(prov->priv->active_list,data);
+	}
+}
+
+static void
 gtcsp_list_for_each_add_snippet(gpointer list_data, gpointer user_data )
 {
 	GtkSnippet *snippet = GTK_SNIPPET(list_data);
 	
 	GtcSnippetsProvider* prov = GTC_SNIPPETS_PROVIDER(user_data);
-	GtkTextCompletionData *data;
-	
-	data = gtk_text_completion_data_new_with_data(
-				gtk_snippet_get_name(snippet),
-				NULL//Icon
-				,snippet);
-	prov->priv->active_list = g_list_append(prov->priv->active_list,data);
-	
+	add_snippet_to_active_list(prov, snippet);		
 }
 
 static void
@@ -50,7 +69,6 @@ gtcsp_hash_for_each_add_snippet (gpointer key,
 	GtkSnippet *snippet;
 	GList *lista;
 	GtcSnippetsProvider* prov = GTC_SNIPPETS_PROVIDER(user_data);
-	GtkTextCompletionData *data;
 	
 	g_assert(user_data!=NULL);
 	g_assert(key!=NULL);
@@ -63,29 +81,14 @@ gtcsp_hash_for_each_add_snippet (gpointer key,
 			g_assert(lista->data != NULL);
 			
 			snippet = GTK_SNIPPET(lista->data);
+			add_snippet_to_active_list(prov, snippet);
 			
-			data = gtk_text_completion_data_new_with_data(
-				gtk_snippet_get_name(snippet),
-				NULL//Icon
-				,snippet);
-			prov->priv->active_list = g_list_append(prov->priv->active_list,data);
-			//Insertamos los datos
-			/*gtk_list_store_append (GTK_LIST_STORE(user_data),&iter);
-			
-			gtk_list_store_set (GTK_LIST_STORE(user_data), 
-								&iter,
-								COL_LANGUAGE, gtk_snippet_get_language(snippet),
-								COL_NAME, gtk_snippet_get_name(snippet),
-								COL_SNIPPET, snippet,
-								-1);*/
 		}while((lista = g_list_next(lista))!=NULL);
 	}
 }
 
 static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
-{
-
-	
+{	
 	GHashTable *snippets;
 	GList *snippets_list;
 	GtcSnippetsProvider *prov;
@@ -136,11 +139,8 @@ static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* ba
 
 static void gtc_snippets_provider_real_data_selected (GtkTextCompletionProvider* base, GtkTextView* text_view, GtkTextCompletionData* data)
 {
-	GtkTextBuffer * buffer = gtk_text_view_get_buffer(text_view);
-	gtk_text_buffer_begin_user_action(buffer);
 	GtkSnippet* snippet = GTK_SNIPPET(gtk_text_completion_data_get_user_data(data));
 	gtk_snippets_gsv_replace_actual_word(text_view, gtk_snippet_get_text(snippet));
-	gtk_text_buffer_end_user_action(buffer);
 }
 
 

@@ -174,54 +174,37 @@ update_word_list(GtcProviderTest *self, GtkTextView* view)
 
 static GList* gtc_provider_test_real_get_data (GtkTextCompletionProvider* base, GtkTextView* completion, const gchar* event_name, gpointer event_data)
 {
-	gint i;
 	GList *list = NULL;
 	GtkTextCompletionData *data;
 	GtcProviderTest *test;
 	gchar *word;
-	gchar *final_word;
 	
 	test = GTC_PROVIDER_TEST(base);
 	
 	//GtcProviderTest * self = GTC_PROVIDER_TEST (base);
 	g_return_val_if_fail (completion == NULL || G_IS_OBJECT (completion), NULL);
 	
-	if (strcmp(event_name,USER_REQUEST_EVENT)==0)
+	if (strcmp(event_name,WORD_COMPLETION_EVENT)==0 || strcmp(event_name,USER_REQUEST_EVENT)==0)
 	{
-		for (i=0;i<500;i++)
+		word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
+		if (word != NULL && strlen(word)>0)
 		{
-			word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-			if (strlen(word)>0)
+			update_word_list(test,completion);
+			GList *l = g_completion_complete(test->completion,word,NULL);
+			//only if there are two items (the first item is the actual word)
+			if (l != NULL && l->next != NULL)
 			{
-				final_word = g_strdup_printf("%s%i",word,i);
-				data = gtk_text_completion_data_new_with_data(final_word,test->icon_test,NULL);
-				list = g_list_append(list,data);
-				g_free(final_word);
+				while( l!=NULL  )
+				{
+					data = gtk_text_completion_data_new_with_data(l->data,test->icon_test,NULL);
+					list = g_list_append(list,data);
+					l=l->next;
+				}
+				//g_list_free(l);
 			}
 			g_free(word);
-			
 		}
 	}
-	else if (strcmp(event_name,WORD_COMPLETION_EVENT)==0)
-	{
-
-		update_word_list(test,completion);
-		word = gtk_snippets_gsv_get_last_word_and_iter(completion, NULL, NULL);
-		GList *l = g_completion_complete(test->completion,word,NULL);
-		//only if there are two items (the first item is the actual word)
-		if (l != NULL && l->next != NULL)
-		{
-			while( l!=NULL  )
-			{
-				data = gtk_text_completion_data_new_with_data(l->data,test->icon_test,NULL);
-				list = g_list_append(list,data);
-				l=l->next;
-			}
-			//g_list_free(l);
-		}
-		g_free(word);
-	}
-	
 	//g_debug(gtk_snippets_gsv_get_text(completion));
 
 	return list;
