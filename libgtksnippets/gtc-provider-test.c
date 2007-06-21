@@ -269,7 +269,6 @@ static void gtc_provider_test_gtk_text_completion_provider_interface_init (GtkTe
 
 static void gtc_provider_test_init (GtcProviderTest * self)
 {
-	//TODO We must free this objects
 	self->icon_test = gdk_pixbuf_new_from_file(ICON_FILE,NULL);
 	self->completion = g_completion_new (NULL);
 	self->word_list = NULL;

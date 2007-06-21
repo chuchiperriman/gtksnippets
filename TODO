@@ -1,3 +1,6 @@
+GtkTextCompletion:
+	.- Hay que conectarse a la señal de destroy del GtktextView y, ocultar el popup si está visible y destruirlo.
+
 GtkTextView:
 	.- [OK] When we get the last word, if is blank or \n then return the previous word in the line or the
 		previous word in the previous line

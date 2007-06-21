@@ -1,4 +1,13 @@
+2007-06-21 chuchiperriman <chuchiperriman@gmail.com>
 
+	* GtkTextCompletion: Added all the code for this with
+	provider interface, events, manager etc.
+	* GtcSnippetsProvider: A provider for GtkTextCompletion that provide 
+	snippets data and show it when user requires completion
+	* GtcTestProvider: An autocompletion test provider.
+	* GTC: Plugin for gedit that adds completion support for the documents
+	* Openldev: Plugin for Openldev that adds completion support for the documents
+	
 2007-03-12 chuchiperriman <chuchiperriman@gmail.com>
 
 	* Started GtkSnippets 0.2

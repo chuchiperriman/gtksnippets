@@ -66,9 +66,6 @@
 #endif
 
 
-
-#include "callbacks.h"
-
 /* For testing propose use the local (not installed) glade file */
 /* #define GLADE_FILE PACKAGE_DATA_DIR"/gtk-source-view-snippets/glade/gtk-source-view-snippets.glade" */
 #define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
@@ -82,6 +79,7 @@ manager_button_clicked_cb(GtkWidget *widget, gpointer user_data)
 	GtkSnippetsManagementUI *snippets_ui;
 	snippets_ui = gtk_snippets_management_ui_new(loader);
 	gtk_snippets_management_ui_show(snippets_ui);
+	//TODO No se puede hacer así porque el show no coge el hilo, lo muestra y deja seguir
 	g_object_unref(snippets_ui);
 }
 
@@ -214,7 +212,7 @@ main (int argc, char *argv[])
 	*/
 	
 	//GtkSnippetsManagerGsv *manager = gtk_snippets_manager_gsv_new(loader);
-	GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
+	//GtkSnippetsManager *manager = gtk_snippets_manager_new(loader);
 	
 	//gtk_snippets_manager_gsv_add_support (manager, (gpointer)source, "C");
 	//gtk_snippets_manager_add_support (manager, gtk_snippets_editor_gsv_new(source), "C");
@@ -225,6 +223,8 @@ main (int argc, char *argv[])
 	snippets_ui = gtk_snippets_management_ui_new(loader);
 	
 	//gtk_snippets_management_ui_show(snippets_ui);
+	
+	
 	
 	gtk_widget_show (window);
 	
@@ -245,10 +245,13 @@ main (int argc, char *argv[])
 	//Para quitar el timeout g_source_remove(id);
 	
 	gtk_main ();
-	
+	g_object_unref(snippets_ui);
 	g_object_unref(loader);
-	g_object_unref(manager);
+	//g_object_unref(manager);
+	g_debug("lala1");
+	//Esto habría que hacerlo en el evento destroy del GtkTextView
 	g_object_unref(popup);
+	g_debug("lala2");
 	
 	g_print("Fin");
 	return 0;

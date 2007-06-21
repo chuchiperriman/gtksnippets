@@ -655,7 +655,7 @@ gtk_text_completion_popup_finalize (GObject *object)
 				popup->priv->internal_signal_ids[IS_POPUP_ROW_ACTIVATE]);
 	for (i=IS_POPUP_ROW_ACTIVATE;i<IS_LAST_SIGNAL;i++)
 	{
-		if (g_signal_handler_is_connected(popup->priv->text_view,popup->priv->internal_signal_ids[i]))
+		if (g_signal_handler_is_connected(popup->priv->text_view, popup->priv->internal_signal_ids[i]))
 		{
 			g_signal_handler_disconnect (popup->priv->text_view,
 				popup->priv->internal_signal_ids[i]);

@@ -21,8 +21,6 @@ AM_CFLAGS =\
 bin_PROGRAMS = gtksnippets
 
 gtksnippets_SOURCES = \
-	callbacks.c \
-	callbacks.h \
 	main.c
 
 gtksnippets_LDFLAGS =  `pkg-config --libs libglade-2.0`

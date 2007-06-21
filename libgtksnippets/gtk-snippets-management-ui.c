@@ -642,5 +642,6 @@ gtk_snippets_management_ui_new (GtkSnippetsLoader *loader)
 void
 gtk_snippets_management_ui_show(GtkSnippetsManagementUI* mng_ui)
 {
-	gtk_widget_show(mng_ui->priv->window);
+	gtk_widget_show_all(mng_ui->priv->window);
+	
 }

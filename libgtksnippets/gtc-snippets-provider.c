@@ -10,9 +10,12 @@
 #include "gtk-snippets-gsv-utils.h"
 #include <gtksourceview/gtksourceview.h>
 
+#define ICON_FILE ICON_DIR"/snippet.png"
+
 struct _GtcSnippetsProviderPrivate {
 	GtkSnippetsLoader *loader;
 	GList *active_list;
+	GdkPixbuf *icon;
 	GtkTextView* temp_view;
 };
 
@@ -133,7 +136,6 @@ static GList* gtc_snippets_provider_real_get_data (GtkTextCompletionProvider* ba
 	}
 	
 	return NULL;
-	//gtk_snippets_loader_get_snippets(manager->priv->loader);
 }
 
 
@@ -166,10 +168,16 @@ static void gtc_snippets_provider_finalize(GObject *object)
 	
 	self = GTC_SNIPPETS_PROVIDER(object);
 	
-	g_object_unref(self->priv->active_list);
+	g_debug("Finalize snip prov");
+	
+	if (self->priv->active_list != NULL)
+		g_list_free(self->priv->active_list);
+	
 	g_object_unref(self->priv->loader);
+	gdk_pixbuf_unref (self->priv->icon);
 
 	G_OBJECT_CLASS(gtc_snippets_provider_parent_class)->finalize(object);
+	g_debug("Fin Finalize snip prov");
 }
 
 
@@ -196,6 +204,7 @@ static void gtc_snippets_provider_init (GtcSnippetsProvider * self)
 	self->priv = g_new0(GtcSnippetsProviderPrivate, 1);
 	self->priv->loader=NULL;
 	self->priv->active_list = NULL;
+	self->priv->icon = gdk_pixbuf_new_from_file(ICON_FILE,NULL);
 }
 
 GType gtc_snippets_provider_get_type ()
