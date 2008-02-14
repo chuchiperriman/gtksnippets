@@ -1,0 +1,23 @@
+AC_INIT(src/main.c)
+
+PACKAGE=gtksnippets
+VERSION=0.1.0
+
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_CONFIG_HEADER(config.h)
+AM_MAINTAINER_MODE
+
+AC_PROG_CC
+
+############ LIBTOOL ##############
+AC_PROG_LIBTOOL
+###################################
+
+
+############ gtk doc ##############
+GTK_DOC_CHECK(1.8)
+###################################
+
+PKG_CHECK_MODULES(GTKSNIPPETS, [gtk+-2.0 libglade-2.0 ])
+
+AC_OUTPUT(Makefile src/Makefile)

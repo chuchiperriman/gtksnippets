@@ -1,30 +1,21 @@
-## Process this file with automake to produce Makefile.in
+bin_PROGRAMS = gtksnippets
 
-## Created by Anjuta
-
-gladedir = $(datadir)/gtksnippets/glade
-glade_DATA = gtksnippets.glade
-
-INCLUDES = \
-	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+INCLUDES=	\
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
-	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
-	-DGLADE_DIR=\""$(gladedir)"\" \
-	`pkg-config --cflags gtksourceview-1.0` \
+	-I$(top_srcdir)/gtksnippets	\
+	`pkg-config --cflags gtk-2.0`	\
 	`pkg-config --cflags libglade-2.0` \
 	$(PACKAGE_CFLAGS)
 
-AM_CFLAGS =\
-	 -Wall\
-	 -g
+AM_CFLAGS = \
+	-Wall	
 
-bin_PROGRAMS = gtksnippets
+gtksnippets_SOURCES = main.c
 
-gtksnippets_SOURCES = \
-	main.c
+gtksnippets_LDFLAGS =  \
+	`pkg-config --libs libglade-2.0`
 
-gtksnippets_LDFLAGS =  `pkg-config --libs libglade-2.0`
+gtksnippets_LDADD = 	\
+	$(PACKAGE_LIBS)
 
-gtksnippets_LDADD = ../libgtksnippets/libgtksnippets.la $(PACKAGE_LIBS) 
-
-EXTRA_DIST = $(glade_DATA)
+ 
