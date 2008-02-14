@@ -1,9 +1,0 @@
-[Gedit Plugin]
-Module=gtc
-IAge=2
-Name=gtc
-Description=Type here a short description of your plugin
-Icon=gedit-plugin
-Authors=chuchi <chuchiperriman@gmail.com>
-Copyright=Copyright © 2007 chuchi
-Website=http://www.gedit.org

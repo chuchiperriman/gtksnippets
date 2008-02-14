@@ -1,9 +1,0 @@
-[Gedit Plugin]
-Module=chuchisnippets
-IAge=2
-_Name=ChuchiSnippets
-_Description=Type here a short description of your plugin
-Icon=gedit-plugin
-Authors=chuchi <chuchi@email.com>
-Copyright=Copyright © 2007 chuchi
-Website=http://www.gedit.org
