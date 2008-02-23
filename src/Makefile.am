@@ -24,12 +24,12 @@ gtksnippets_SOURCES = 		\
 	main.c
 
 gtksnippets_LDFLAGS =  \
-	-lgsnippets-1.0 \
 	`pkg-config --libs libglade-2.0`	\
 	`pkg-config --libs gtksourceview-2.0`	\
 	`pkg-config --libs gsnippets-1.0`	
 
 gtksnippets_LDADD = 	\
+	$(top_srcdir)/gtksnippets/libgtksnippets-1.0.la	\
 	$(PACKAGE_LIBS)
 
  

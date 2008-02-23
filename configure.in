@@ -20,4 +20,4 @@ GTK_DOC_CHECK(1.8)
 
 PKG_CHECK_MODULES(GTKSNIPPETS, [gtk+-2.0 libglade-2.0 gtksourceview-2.0])
 
-AC_OUTPUT(Makefile src/Makefile data/Makefile)
+AC_OUTPUT(Makefile gtksnippets/Makefile src/Makefile data/Makefile)

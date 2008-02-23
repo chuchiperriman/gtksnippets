@@ -4,6 +4,7 @@
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcebuffer.h>
 #include "gtksnippets-manager.h"
+#include "gtksnippets-dialog.h"
 
 #define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
 
@@ -25,6 +26,13 @@ create_window()
 	return w;
 }
 
+static GtkWidget*
+create_dialog()
+{
+	GtkWidget *w = gtksnippets_dialog_new();
+	return w;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -34,7 +42,8 @@ main (int argc, char *argv[])
 	/*GladeXML *gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 	widget = glade_xml_get_widget (gxml, "smngui_dialog");
 	*/
-	widget = create_window();
+	//widget = create_window();
+	widget = create_dialog();
 	gtk_widget_show_all(widget);
 	
 	//g_object_unref(gxml);

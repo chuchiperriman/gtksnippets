@@ -1,1 +1,1 @@
-SUBDIRS = src data
+SUBDIRS = gtksnippets src data
