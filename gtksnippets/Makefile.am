@@ -1,7 +1,7 @@
 ## @start 1
 ## Process this file with automake to produce Makefile.in
 
-gladedir = $(datadir)/	gtksnippets
+gladedir = $(datadir)/gtksnippets
 
 INCLUDES=	\
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \

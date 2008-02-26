@@ -23,12 +23,25 @@
 #include <glade/glade.h>
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcebuffer.h>
+#include <gtksourceview/gtksourcelanguage.h>
+#include <gtksourceview/gtksourcelanguagemanager.h>
+#include <gsnippets/gsnippets-db.h>
+#include <gsnippets/gsnippets-item.h>
+
+#define COL_LANG_NAME 0
+#define COL_LANG_ID 1
+#define COL_SNIPPET 2
 
 struct _GtkSnippetsDialogPrivate
 {
 	/*We need one or more fields*/
 	gint dummy;
 	GladeXML *gxml;
+	GSnippetsDb *db;
+	GtkWidget *tree;
+	GtkWidget *source;
+	GtkWidget *new_dialog;
+	GtkWidget *new_entry;
 };
 
 static GtkWindowClass* parent_class = NULL;
@@ -47,24 +60,289 @@ gtksnippets_dialog_source_new(gchar *widget_name, gchar *string1, gchar
 	return source;
 }
 
+static GSnippetsItem*
+_get_active_snippet(GtkSnippetsDialog *self)
+{
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	GValue value = {0,};
+	GSnippetsItem *snippet = NULL;
+	
+	gtk_tree_view_get_cursor(self->priv->tree,&path,&column);
+	if(path && column) 
+	{
+		model = gtk_tree_view_get_model(self->priv->tree);
+		if(gtk_tree_model_get_iter(model,&iter,path))
+		{
+			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
+			if (GSNIPPETS_IS_ITEM(g_value_get_pointer (&value)))
+				snippet = GSNIPPETS_ITEM(g_value_get_pointer (&value));
+		}
+	}
+
+	if(path) gtk_tree_path_free(path);
+	
+	return snippet;
+}
+
+static gchar*
+_get_source_content(GtkSnippetsDialog *self)
+{
+	gchar *content;
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->source);
+	GtkTextIter start,end;
+	gtk_text_buffer_get_start_iter(buffer,&start);
+	gtk_text_buffer_get_end_iter(buffer,&end);
+	content = gtk_text_buffer_get_text(buffer,
+			&start,
+			&end,
+			FALSE
+			);
+	return content;
+}
+
+static gchar*
+_get_current_language(GtkSnippetsDialog *self)
+{
+	GtkTreeModel* model;
+	GtkTreePath *internal_path;
+	GtkTreeViewColumn *column;
+	GtkTreeIter iter,internal_parent_iter;
+	GValue value = {0,};
+	GValue value_language = {0,};
+	GSnippetsItem* snippet;
+	const gchar* language = NULL;
+	
+	model = gtk_tree_view_get_model(self->priv->tree);
+	
+	gtk_tree_view_get_cursor(self->priv->tree,&internal_path,&column);
+	if(internal_path && column)
+	{
+		if(gtk_tree_model_get_iter(model,&iter,internal_path))
+		{
+			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
+			
+			if (GSNIPPETS_IS_ITEM(g_value_get_pointer (&value)))
+			{
+				gtk_tree_model_iter_parent(model,&internal_parent_iter,&iter);
+				gtk_tree_model_get_value(model, &internal_parent_iter, COL_LANG_ID ,&value_language);
+				language = g_value_get_string (&value_language);
+				g_debug("language1: %s",language);
+			}
+			else
+			{
+				gtk_tree_model_get_value(model, &iter, COL_LANG_ID ,&value_language);
+				language = g_value_get_string (&value_language);
+				g_debug("language2: %s",language);
+				internal_parent_iter = iter;
+			}
+		}
+	}
+		
+	if(internal_path)
+	{
+		gtk_tree_path_free(internal_path);
+	}
+		
+	return language;
+}
+
+static void
+_build_model(GtkSnippetsDialog *self)
+{
+	GtkSourceLanguageManager* lm;
+	GtkSourceLanguage *lang;
+	const gchar* lang_id, *lang_name;
+	GtkTreeIter actual, parent;
+	const gchar * const *ids;
+	GSList *snippet_list, *snippet_list_temp;
+	GSnippetsItem* snippet;
+	
+	GtkTreeStore *store = gtk_tree_store_new(3,
+						 G_TYPE_STRING,
+						 G_TYPE_STRING,
+						 G_TYPE_POINTER);
+	
+	lm = gtk_source_language_manager_get_default();
+	
+	ids = gtk_source_language_manager_get_language_ids(lm);
+	while (*ids != NULL)
+	{
+		lang = gtk_source_language_manager_get_language (lm, *ids);
+		lang_id = gtk_source_language_get_id (lang);
+		lang_name = gtk_source_language_get_name(lang);
+		++ids;
+		/* Inserting language*/
+		gtk_tree_store_append(store,&actual, NULL);
+		gtk_tree_store_set(store,
+				&actual,
+				COL_LANG_NAME, lang_name,
+				COL_LANG_ID, lang_id,
+				COL_SNIPPET, NULL,
+				-1);
+		parent = actual;
+		
+		/* Snippets for this language */
+		snippet_list = gsnippets_db_get_by_language(self->priv->db,lang_id);
+		
+		if (snippet_list!=NULL){
+			snippet_list_temp = snippet_list;	
+			do{
+				snippet = GSNIPPETS_ITEM(snippet_list_temp->data);
+				gtk_tree_store_append(store,&actual, &parent);
+				gtk_tree_store_set(store,
+						&actual,
+						COL_LANG_NAME, gsnippets_item_get_name(GSNIPPETS_ITEM(snippet)) ,
+						COL_LANG_ID, lang_id,
+						COL_SNIPPET, (gpointer)snippet,
+						-1);
+				/*g_object_unref(snippet);*/
+			}while((snippet_list_temp = g_slist_next(snippet_list_temp))!= NULL);
+		
+			g_slist_free(snippet_list);
+		}
+	}
+	
+	gtk_tree_view_set_model(GTK_TREE_VIEW(self->priv->tree),GTK_TREE_MODEL(store));
+}
+
+
+/*****************signals*******************/
+static void
+_close_clicked_cb(GtkButton *button, gpointer user_data)
+{
+	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
+	gtk_widget_hide(GTK_WIDGET(self));
+}
+
+static void
+_new_clicked_cb(GtkButton *button, gpointer user_data)
+{
+	GSnippetsItem *snippet = NULL;
+	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
+	gtk_entry_set_text(GTK_ENTRY(self->priv->new_entry),"");
+	gint result = gtk_dialog_run(GTK_DIALOG(self->priv->new_dialog));
+	switch (result)
+	{
+	case GTK_RESPONSE_ACCEPT:
+		snippet = gsnippets_item_new_full(-1,
+				gtk_entry_get_text(GTK_ENTRY(self->priv->new_entry)),
+				"",
+				"");
+		gsnippets_db_insert_with_lang(self->priv->db,snippet,_get_current_language(self));
+		//TODO not build all the model, only add the newsnippet
+		_build_model(self);
+		break;
+	default:
+		break;
+	}
+	gtk_widget_hide(self->priv->new_dialog);
+}
+
+static void
+_save_clicked_cb(GtkButton *button, gpointer user_data)
+{
+	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
+	GSnippetsItem *snippet = _get_active_snippet(self);
+	gchar *content;
+	if(snippet!=NULL)
+	{
+		content = _get_source_content(self);
+		gsnippets_item_set_content(snippet,content);
+		g_free(content);
+		gsnippets_db_update(self->priv->db, snippet);
+		//TODO update database
+	}
+}
+
+static void
+_tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
+{
+	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->source);
+	GSnippetsItem *snippet = _get_active_snippet(self);
+	g_debug("lang: %s",_get_current_language(self));
+	if(snippet!=NULL)
+	{
+		gtk_text_buffer_set_text(buffer,gsnippets_item_get_content(snippet),-1);
+	}
+	else
+	{
+		gtk_text_buffer_set_text(buffer,"",-1);
+	}
+}
+
+/*******************************************/
+
 static void
 _load_from_glade(GtkSnippetsDialog *self)
 {
 	self->priv->gxml = glade_xml_new (GLADE_FILE, NULL, NULL);
 	g_assert(self->priv->gxml!=NULL);
+	self->priv->tree = glade_xml_get_widget (self->priv->gxml, "tree");
+	self->priv->new_dialog = glade_xml_get_widget (self->priv->gxml, "new_dialog");
+	self->priv->new_entry = glade_xml_get_widget (self->priv->gxml, "new_entry");
+	GtkWidget *close_button = glade_xml_get_widget (self->priv->gxml, "close_button");
+	GtkWidget *new_button = glade_xml_get_widget (self->priv->gxml, "new_button");
 	GtkWidget *main_box = glade_xml_get_widget (self->priv->gxml, "main_box");
+	self->priv->source = glade_xml_get_widget (self->priv->gxml, "source_view");
+	GtkWidget *save_button = glade_xml_get_widget (self->priv->gxml, "save_button");
+	g_assert(self->priv->source != NULL);
 	g_assert(main_box!=NULL);
 	gtk_widget_show_all(main_box);
 	gtk_widget_reparent(main_box,GTK_WIDGET(self));
 	
-	gtk_window_set_default_size(GTK_WINDOW(self),500,400);
+	gtk_window_set_default_size(GTK_WINDOW(self),600,400);
+	gtk_window_set_title(GTK_WINDOW(self),"Snippets Manager");
+	
+	/* Signals */
+	g_signal_connect(
+		close_button,
+		"clicked",
+		G_CALLBACK(_close_clicked_cb),
+		self);
+	g_signal_connect(
+		new_button,
+		"clicked",
+		G_CALLBACK(_new_clicked_cb),
+		self);
+	g_signal_connect(
+		save_button,
+		"clicked",
+		G_CALLBACK(_save_clicked_cb),
+		self);
+	g_signal_connect(
+		self->priv->tree,
+		"cursor-changed",
+		G_CALLBACK(_tree_cursor_changed_cb),
+		self);
+}
+
+static void
+_build_tree(GtkSnippetsDialog *self)
+{
+	GtkTreeView *tree = GTK_TREE_VIEW(self->priv->tree);
+	GtkTreeViewColumn* column = gtk_tree_view_column_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+	
+	gtk_tree_view_column_pack_start(column, renderer, FALSE);
+	gtk_tree_view_column_set_attributes (column,renderer,"text",0,NULL);
+	
+	gtk_tree_view_append_column(tree, column);
+	gtk_tree_view_column_set_visible(column,TRUE);
 }
 
 static void
 gtksnippets_dialog_init (GtkSnippetsDialog *self)
 {
 	self->priv = GTKSNIPPETS_DIALOG_GET_PRIVATE(self);
+	self->priv->db = gsnippets_db_new();
+	gsnippets_db_connect(self->priv->db);
 	_load_from_glade(self);
+	_build_tree(self);
+	_build_model(self);
 }
 
 static void
@@ -72,6 +350,7 @@ gtksnippets_dialog_finalize (GObject *object)
 {
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(object);
 	
+	gsnippets_db_disconnect(self->priv->db);
 	g_object_unref(self->priv->gxml);
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -97,5 +376,7 @@ gtksnippets_dialog_new(void)
 	GTK_WINDOW(self)->type = GTK_WINDOW_TOPLEVEL;
 	return self;
 }
+
+
 
 

@@ -26,10 +26,27 @@ create_window()
 	return w;
 }
 
+static void
+_window_destroy_cb(GtkWidget *w, gpointer user_data)
+{
+	gtk_main_quit();
+}
+
 static GtkWidget*
 create_dialog()
 {
 	GtkWidget *w = gtksnippets_dialog_new();
+	/* Signals */
+	g_signal_connect(
+		w,
+		"destroy",
+		G_CALLBACK(_window_destroy_cb),
+		NULL);
+	g_signal_connect(
+		w,
+		"hide",
+		G_CALLBACK(_window_destroy_cb),
+		NULL);
 	return w;
 }
 

@@ -33,7 +33,7 @@
                     <property name="yalign">0</property>
                     <property name="label" translatable="yes">_Snippets:</property>
                     <property name="use_underline">True</property>
-                    <property name="mnemonic_widget">smngui_snippets_tree</property>
+                    <property name="mnemonic_widget">tree</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -48,7 +48,7 @@
                     <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                     <property name="shadow_type">GTK_SHADOW_IN</property>
                     <child>
-                      <widget class="GtkTreeView" id="smngui_snippets_tree">
+                      <widget class="GtkTreeView" id="tree">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="headers_visible">False</property>
@@ -65,14 +65,13 @@
                     <property name="spacing">6</property>
                     <property name="homogeneous">True</property>
                     <child>
-                      <widget class="GtkButton" id="smngui_new">
+                      <widget class="GtkButton" id="new_button">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="can_default">True</property>
                         <property name="label">gtk-new</property>
                         <property name="use_stock">True</property>
                         <property name="response_id">0</property>
-                        <signal name="clicked" handler="on_button_new_snippet_clicked"/>
                       </widget>
                     </child>
                     <child>
@@ -131,7 +130,7 @@
                         <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                         <property name="shadow_type">GTK_SHADOW_IN</property>
                         <child>
-                          <widget class="Custom" id="smngui_source">
+                          <widget class="Custom" id="source_view">
                             <property name="visible">True</property>
                             <property name="creation_function">gtksnippets_dialog_source_new</property>
                             <signal name="focus_out_event" handler="on_source_view_snippet_focus_out"/>
@@ -145,112 +144,23 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="GtkVBox" id="vbox1">
+                  <widget class="GtkHBox" id="hbox1">
                     <property name="visible">True</property>
-                    <property name="spacing">6</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
-                      <widget class="GtkLabel" id="label3">
+                      <widget class="GtkButton" id="save_button">
                         <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="yalign">0</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Activation&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="label" translatable="yes">gtk-save</property>
+                        <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkHBox" id="hbox1">
-                        <property name="visible">True</property>
-                        <child>
-                          <widget class="GtkLabel" id="label2">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="yalign">0</property>
-                            <property name="label" translatable="yes">    </property>
-                          </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkTable" id="table1">
-                            <property name="visible">True</property>
-                            <property name="n_rows">2</property>
-                            <property name="n_columns">2</property>
-                            <property name="column_spacing">6</property>
-                            <property name="row_spacing">6</property>
-                            <child>
-                              <widget class="GtkEntry" id="entry_accelerator">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="editable">False</property>
-                                <property name="invisible_char">*</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label_tab_trigger">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0</property>
-                                <property name="label" translatable="yes">_Tab trigger:</property>
-                                <property name="use_underline">True</property>
-                                <property name="mnemonic_widget">smngui_tag</property>
-                              </widget>
-                              <packing>
-                                <property name="x_options"></property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label_accelerator">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0</property>
-                                <property name="label" translatable="yes">_Accelerator:</property>
-                                <property name="use_underline">True</property>
-                                <property name="mnemonic_widget">entry_accelerator</property>
-                              </widget>
-                              <packing>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options"></property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkEntry" id="smngui_tag">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="invisible_char">*</property>
-                                <signal name="changed" handler="on_entry_tab_trigger_changed"/>
-                                <signal name="focus_out_event" handler="on_entry_tab_trigger_focus_out"/>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="position">1</property>
+                        <property name="pack_type">GTK_PACK_END</property>
                       </packing>
                     </child>
                   </widget>
@@ -276,7 +186,7 @@
             <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
-              <widget class="GtkButton" id="closebutton1">
+              <widget class="GtkButton" id="close_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -307,7 +217,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="GtkDialog" id="smngui_new_dialog">
+  <widget class="GtkDialog" id="new_dialog">
     <property name="border_width">5</property>
     <property name="modal">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
@@ -326,7 +236,7 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkEntry" id="smngui_new_entry">
+              <widget class="GtkEntry" id="new_entry">
                 <property name="visible">True</property>
                 <property name="has_focus">True</property>
               </widget>
