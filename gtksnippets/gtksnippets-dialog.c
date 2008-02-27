@@ -264,6 +264,11 @@ _tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->source);
 	GSnippetsItem *snippet = _get_active_snippet(self);
 	g_debug("lang: %s",_get_current_language(self));
+	GtkSourceLanguageManager *slm = gtk_source_language_manager_get_default();
+	GtkSourceLanguage *sl = gtk_source_language_manager_get_language(
+					slm,
+					_get_current_language(self));
+	gtk_source_buffer_set_language(GTK_SOURCE_BUFFER(buffer),sl);
 	if(snippet!=NULL)
 	{
 		gtk_text_buffer_set_text(buffer,gsnippets_item_get_content(snippet),-1);
@@ -296,6 +301,9 @@ _load_from_glade(GtkSnippetsDialog *self)
 	
 	gtk_window_set_default_size(GTK_WINDOW(self),600,400);
 	gtk_window_set_title(GTK_WINDOW(self),"Snippets Manager");
+	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source));
+	gtk_source_buffer_set_highlight_syntax(GTK_SOURCE_BUFFER(buffer),TRUE);
 	
 	/* Signals */
 	g_signal_connect(

@@ -1,3 +1,7 @@
+2008-02-28  perriman  <perriman@portatil>
+
+	* gtksnippets-dialog.c: Added syntax highlight in the content box 
+
 2008-02-26  perriman  <chuchiperriman@gmail.com>
 	* gtksnippets-dialog.h: 
 		- Created the main window using glade
