@@ -147,7 +147,7 @@ _build_model(GtkSnippetsManager *self)
 		parent = actual;
 		
 		/* Snippets for this language */
-		snippet_list = gsnippets_db_get_by_language(db,lang_id);
+		snippet_list = gsnippets_db_get_by_lang_name(db,lang_id);
 		
 		if (snippet_list!=NULL){
 			snippet_list_temp = snippet_list;	

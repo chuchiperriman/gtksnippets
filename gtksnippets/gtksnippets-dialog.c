@@ -112,7 +112,6 @@ _get_current_language(GtkSnippetsDialog *self)
 	GtkTreeIter iter,internal_parent_iter;
 	GValue value = {0,};
 	GValue value_language = {0,};
-	GSnippetsItem* snippet;
 	const gchar* language = NULL;
 	
 	model = gtk_tree_view_get_model(self->priv->tree);
@@ -185,7 +184,7 @@ _build_model(GtkSnippetsDialog *self)
 		parent = actual;
 		
 		/* Snippets for this language */
-		snippet_list = gsnippets_db_get_by_language(self->priv->db,lang_id);
+		snippet_list = gsnippets_db_get_by_lang_name(self->priv->db,lang_id);
 		
 		if (snippet_list!=NULL){
 			snippet_list_temp = snippet_list;	
@@ -217,6 +216,18 @@ _close_clicked_cb(GtkButton *button, gpointer user_data)
 	gtk_widget_hide(GTK_WIDGET(self));
 }
 
+static gint
+_get_lang_id(GtkSnippetsDialog *self, gchar* lang_name)
+{
+	gint lang_id = gsnippets_db_lang_get_id(self->priv->db,lang_name);
+	if (lang_id==-1)
+	{
+		/*Insert the new language into db*/
+		lang_id = gsnippets_db_lang_insert(self->priv->db,lang_name);
+	}
+	return lang_id;
+}
+
 static void
 _new_clicked_cb(GtkButton *button, gpointer user_data)
 {
@@ -224,14 +235,17 @@ _new_clicked_cb(GtkButton *button, gpointer user_data)
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
 	gtk_entry_set_text(GTK_ENTRY(self->priv->new_entry),"");
 	gint result = gtk_dialog_run(GTK_DIALOG(self->priv->new_dialog));
+	gint lang_id;
+	
 	switch (result)
 	{
 	case GTK_RESPONSE_ACCEPT:
+		lang_id = _get_lang_id(self, _get_current_language(self));
 		snippet = gsnippets_item_new_full(-1,
 				gtk_entry_get_text(GTK_ENTRY(self->priv->new_entry)),
 				"",
-				"");
-		gsnippets_db_insert_with_lang(self->priv->db,snippet,_get_current_language(self));
+				lang_id);
+		gsnippets_db_save(self->priv->db,snippet);
 		//TODO not build all the model, only add the newsnippet
 		_build_model(self);
 		break;
@@ -252,7 +266,7 @@ _save_clicked_cb(GtkButton *button, gpointer user_data)
 		content = _get_source_content(self);
 		gsnippets_item_set_content(snippet,content);
 		g_free(content);
-		gsnippets_db_update(self->priv->db, snippet);
+		gsnippets_db_save(self->priv->db, snippet);
 		//TODO update database
 	}
 }

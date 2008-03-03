@@ -1,3 +1,7 @@
+2008-03-02  perriman  <perriman@portatil>
+
+	* gtksnippets-dialog.c: Adapted to the new gsnippets API
+
 2008-02-28  perriman  <perriman@portatil>
 
 	* gtksnippets-dialog.c: Added syntax highlight in the content box 
