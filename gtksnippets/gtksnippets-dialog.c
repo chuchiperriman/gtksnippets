@@ -219,41 +219,6 @@ _get_lang_id(GtkSnippetsDialog *self, const gchar* lang_name)
 	return lang_id;
 }
 
-static GSnippetsItem*
-_get_current_snippet(GtkSnippetsDialog *self)
-{
-	GtkTreeModel* model;
-	GtkTreePath *internal_path;
-	GtkTreeViewColumn *column;
-	GtkTreeIter iter;
-	GValue value = {0,};
-	GSnippetsItem *snippet = NULL;
-	
-	model = gtk_tree_view_get_model(GTK_TREE_VIEW(self->priv->tree));
-	
-	gtk_tree_view_get_cursor(GTK_TREE_VIEW(self->priv->tree),&internal_path,&column);
-	if(internal_path && column)
-	{
-		if(gtk_tree_model_get_iter(model,&iter,internal_path))
-		{
-			gtk_tree_model_get_value(model, &iter, COL_SNIPPET, &value);
-			
-			if (GSNIPPETS_IS_ITEM(g_value_get_pointer (&value)))
-			{
-				snippet =  GSNIPPETS_ITEM(g_value_get_pointer (&value));
-			}
-		}
-	}
-		
-	if(internal_path)
-	{
-		gtk_tree_path_free(internal_path);
-	}
-		
-	return snippet;
-}
-
-
 /*****************signals*******************/
 static void
 _close_clicked_cb(GtkButton *button, gpointer user_data)
@@ -294,7 +259,7 @@ static void
 _delete_clicked_cb(GtkButton *button, gpointer user_data)
 {
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
-	GSnippetsItem *snippet = _get_current_snippet(self);
+	GSnippetsItem *snippet = _get_active_snippet(self);
 	if (snippet != NULL)
 	{
 		gsnippets_db_delete(self->priv->db,gsnippets_item_get_id(snippet));
@@ -315,6 +280,7 @@ _save_clicked_cb(GtkButton *button, gpointer user_data)
 		gsnippets_item_set_content(snippet,content);
 		g_free(content);
 		gsnippets_db_save(self->priv->db, snippet);
+		g_debug("Snippet inserted");
 	}
 }
 
