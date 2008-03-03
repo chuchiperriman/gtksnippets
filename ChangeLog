@@ -1,3 +1,8 @@
+2008-03-03  chuchi  <chuchi@ubunchi>
+
+	* gtksnippets-dialog.c: Enabled delete snippet and grab focus on new
+	snippet
+
 2008-03-02  perriman  <perriman@portatil>
 
 	* gtksnippets-dialog.c: Adapted to the new gsnippets API
