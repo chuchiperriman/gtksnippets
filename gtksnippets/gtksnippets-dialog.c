@@ -379,6 +379,7 @@ static void
 gtksnippets_dialog_init (GtkSnippetsDialog *self)
 {
 	self->priv = GTKSNIPPETS_DIALOG_GET_PRIVATE(self);
+	gtk_window_set_position(GTK_WINDOW(self),GTK_WIN_POS_CENTER_ALWAYS);
 	self->priv->db = gsnippets_db_new();
 	gsnippets_db_connect(self->priv->db);
 	_load_from_glade(self);
