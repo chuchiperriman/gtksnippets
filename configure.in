@@ -18,6 +18,36 @@ AC_PROG_LIBTOOL
 GTK_DOC_CHECK(1.8)
 ###################################
 
-PKG_CHECK_MODULES(GTKSNIPPETS, [gtk+-2.0 libglade-2.0 gtksourceview-2.0 gsnippets-1.0 >= 0.1.0])
+############ Testing conditionals ##############
+AC_CHECK_LIB(gtksourcecompletion,gtk_source_completion_register_provider,
+	[have_comple=true],
+	[have_comple=false])
+if test "x$have_comple" == "xtrue"; then
+	PKG_CHECK_MODULES(GTKSOURCECOMPLETION,[gtksourcecompletion-1.0 >= 0.4.0])
+fi
+################################################
 
-AC_OUTPUT(Makefile gtksnippets/Makefile src/Makefile data/Makefile gtksnippets-1.0.pc)
+PKG_CHECK_MODULES(GTKSNIPPETS, [
+gtk+-2.0
+libglade-2.0
+sqlite3 >= 3.0
+gtksourceview-2.0
+])
+
+AC_SUBST(GTKSNIPPETS_CFLAGS)
+AC_SUBST(GTKSNIPPETS_LIBS)
+
+echo "
+	GTKSNIPPETS_CFLAGS = $GTKSNIPPETS_CFLAGS
+	GTKSNIPPETS_LIBS = $GTKSNIPPETS_LIBS
+	GtkSourceCompletion: $have_comple
+"
+
+AC_OUTPUT([
+Makefile
+gsnippets/Makefile
+gtksnippets/Makefile
+src/Makefile
+data/Makefile
+gtksnippets-1.0.pc
+])
