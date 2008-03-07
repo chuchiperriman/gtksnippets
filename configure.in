@@ -19,12 +19,7 @@ GTK_DOC_CHECK(1.8)
 ###################################
 
 ############ Testing conditionals ##############
-AC_CHECK_LIB(gtksourcecompletion,gtk_source_completion_register_provider,
-	[have_comple=true],
-	[have_comple=false])
-if test "x$have_comple" == "xtrue"; then
-	PKG_CHECK_MODULES(GTKSOURCECOMPLETION,[gtksourcecompletion-1.0 >= 0.4.0])
-fi
+PKG_CHECK_MODULES(GTKSOURCECOMPLETION,[gtksourcecompletion-1.0 >= 0.5.0],have_comple=true,have_comple=false)
 ################################################
 
 PKG_CHECK_MODULES(GTKSNIPPETS, [
@@ -38,10 +33,11 @@ AC_SUBST(GTKSNIPPETS_CFLAGS)
 AC_SUBST(GTKSNIPPETS_LIBS)
 
 echo "
-	GTKSNIPPETS_CFLAGS = $GTKSNIPPETS_CFLAGS
-	GTKSNIPPETS_LIBS = $GTKSNIPPETS_LIBS
 	GtkSourceCompletion: $have_comple
 "
+if test "x$have_comple" = "xyes"; then
+        echo ""
+fi
 
 AC_OUTPUT([
 Makefile
