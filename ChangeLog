@@ -1,3 +1,7 @@
+2008-03-08  perriman  <perriman@portatil>
+
+	* fixed #1909914: Adds and remove the snippets correctly
+
 2008-03-03  chuchi  <chuchi@ubunchi>
 
 	* gtksnippets-dialog.c: Enabled delete snippet and grab focus on new
