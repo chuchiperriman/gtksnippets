@@ -1,7 +1,8 @@
 gtksnippetsdir=$(datadir)/gtksnippets
 
 gtksnippets_DATA=	\
-	gtksnippets.glade
+	gtksnippets.glade		\
+	logo.png
 
 
 EXTRA_DIST=			\

@@ -51,7 +51,9 @@ static GtkWindowClass* parent_class = NULL;
 G_DEFINE_TYPE(GtkSnippetsDialog, gtksnippets_dialog, GTK_TYPE_WINDOW);
 
 #define GTKSNIPPETS_DIALOG_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTKSNIPPETS_TYPE_DIALOG, GtkSnippetsDialogPrivate))
+
 #define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
+#define LOGO_FILE GLADE_DIR"/logo.png"
 
 GtkWidget*
 gtksnippets_dialog_source_new(gchar *widget_name, gchar *string1, gchar
@@ -305,35 +307,50 @@ _new_clicked_cb(GtkButton *button, gpointer user_data)
 		break;
 	}
 	gtk_widget_hide(self->priv->new_dialog);
+	gtk_widget_grab_focus(self->priv->source);
 }
 
 static void
 _delete_clicked_cb(GtkButton *button, gpointer user_data)
 {
-	GtkTreeIter iter, parent;
+	GtkTreeIter iter, set_iter;
 	GtkTreeModel *model;
+	GtkTreePath *path;
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
 	GSnippetsItem *snippet = _get_active_snippet(self,&iter);
 	if (snippet != NULL)
 	{
 		gsnippets_db_delete(self->priv->db,gsnippets_item_get_id(snippet));
 		model = gtk_tree_view_get_model(GTK_TREE_VIEW(self->priv->tree));
-		gtk_tree_model_iter_parent(model,&parent,&iter);
+		path = gtk_tree_model_get_path(model,&iter);
+		if (gtk_tree_path_prev(path))
+		{
+			gtk_tree_model_get_iter(model,&set_iter,path);
+		}
+		else
+		{
+			gtk_tree_model_iter_parent(model,&set_iter,&iter);
+		}
+		gtk_tree_path_free(path);
+		
+		_select_tree_iter(self,&set_iter);
 		gtk_tree_store_remove(GTK_TREE_STORE(model),&iter);
-		_select_tree_iter(self,&parent);
 	}
 }
 
 static void
 _save_clicked_cb(GtkButton *button, gpointer user_data)
 {
+	g_debug("focus out");
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
 	GtkTreeIter iter;
 	GSnippetsItem *snippet = _get_active_snippet(self,&iter);
 	gchar *content;
 	if(snippet!=NULL)
 	{
+		g_debug("snippet si ");
 		content = _get_source_content(self);
+		g_debug("content: %s",content);
 		gsnippets_item_set_content(snippet,content);
 		g_free(content);
 		gsnippets_db_save(self->priv->db, snippet);
@@ -343,6 +360,7 @@ _save_clicked_cb(GtkButton *button, gpointer user_data)
 static void
 _tree_cursor_changed_cb(GtkTreeView *tree_view, gpointer user_data)
 {
+	g_debug("cursor changed event");
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(user_data);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source));
 	GtkTreeIter iter;
@@ -441,6 +459,7 @@ gtksnippets_dialog_init (GtkSnippetsDialog *self)
 {
 	self->priv = GTKSNIPPETS_DIALOG_GET_PRIVATE(self);
 	gtk_window_set_position(GTK_WINDOW(self),GTK_WIN_POS_CENTER_ALWAYS);
+	gtk_window_set_icon_from_file(GTK_WINDOW(self),LOGO_FILE,NULL);
 	self->priv->db = gsnippets_db_new();
 	gsnippets_db_connect(self->priv->db);
 	_load_from_glade(self);
