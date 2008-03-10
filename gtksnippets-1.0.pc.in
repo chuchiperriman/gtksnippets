@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE_NAME@
 Description: GUI application to manage snippets with gsnippets library
 Version: @PACKAGE_VERSION@
-Requires: gtksourceview-2.0 sqlite3 gsnippets-1.0
-Libs: -L${libdir} -lgtksnippets-1.0
-Cflags: -I${includedir}/gtksnippets-1.0
+Requires: gtksourceview-2.0 sqlite3
+Libs: -L${libdir} -lgtksnippets-1.0 -lgsnippets-1.0
+Cflags: -I${includedir}/gtksnippets-1.0 -I${includedir}/gsnippets-1.0
