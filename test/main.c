@@ -3,7 +3,7 @@
 #include "../gsnippets/gsnippets-parser.h"
 #include "../gtksnippets/gtksnippets-varsdialog.h"
 
-const gchar* EXAMPLE_TEXT = "${name} is very beautiful, ${name} is the best. Lest's go to ${city}, ${number}!!!!!";
+const gchar* EXAMPLE_TEXT = "${name} is very beautiful, \n${name} is the best. Lest's go \nto ${city}, ${number}!!!!!";
 
 
 /*

@@ -37,6 +37,7 @@ struct _GtkSnippetsVarsDialogPrivate
 	GSList *var_list;
 	GladeXML *gxml;
 	GtkWidget *source;
+	GtkWidget *source2;
 	GtkWidget *main_box;
 	GtkWidget *vars_table;
 	VarData *vars;
@@ -49,6 +50,30 @@ G_DEFINE_TYPE(GtkSnippetsVarsDialog, gtksnippets_varsdialog, GTK_TYPE_DIALOG);
 #define GTKSNIPPETS_VARSDIALOG_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTKSNIPPETS_TYPE_VARSDIALOG, GtkSnippetsVarsDialogPrivate))
 
 #define GLADE_FILE GLADE_DIR"/gtksnippets-vars.glade"
+
+static void
+_update_vars(GtkSnippetsVarsDialog *self)
+{
+	VarData *vdata = self->priv->vars;
+	while(vdata!=NULL && vdata->var != NULL)
+	{
+		g_free(vdata->var->value);
+		vdata->var->value = g_strdup(gtk_entry_get_text(GTK_ENTRY(vdata->entry)));
+		vdata++;
+	}
+}
+
+static gboolean
+_entry_key_rel_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	GtkSnippetsVarsDialog *self = GTKSNIPPETS_VARSDIALOG(user_data);
+	_update_vars(self);
+	gchar* text = gsnippets_parser_replace_vars(self->priv->content,self->priv->var_list);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source2));
+	gtk_text_buffer_set_text(buffer,text,-1);
+	g_free(text);
+	return FALSE;
+}
 
 static void
 _create_var_entries(GtkSnippetsVarsDialog *self)
@@ -75,6 +100,7 @@ _create_var_entries(GtkSnippetsVarsDialog *self)
 					label,
 					0,
 					1,
+		
 					pos,
 					pos+1);
 		gtk_table_attach_defaults(GTK_TABLE(self->priv->vars_table),
@@ -83,6 +109,12 @@ _create_var_entries(GtkSnippetsVarsDialog *self)
 					2,
 					pos,
 					pos+1);
+		g_signal_connect(
+			entry,
+			"key-release-event",
+			G_CALLBACK(_entry_key_rel_cb),
+			self);
+		
 		pos++;
 		vdata->var = var;
 		vdata->entry = entry;
@@ -99,10 +131,13 @@ _load_from_glade(GtkSnippetsVarsDialog *self)
 	g_assert(self->priv->gxml!=NULL);
 	self->priv->main_box = glade_xml_get_widget (self->priv->gxml, "main_box");
 	GtkWidget *scroll = glade_xml_get_widget (self->priv->gxml, "source_scroll");
+	GtkWidget *scroll2 = glade_xml_get_widget (self->priv->gxml, "source_scroll2");
 	self->priv->vars_table = glade_xml_get_widget (self->priv->gxml, "vars_table");
 	gtk_widget_reparent(self->priv->main_box,GTK_DIALOG(self)->vbox);
 	self->priv->source = GTK_WIDGET(gtk_source_view_new());
+	self->priv->source2 = GTK_WIDGET(gtk_source_view_new());
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll),self->priv->source);
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll2),self->priv->source2);
 	
 	gtk_widget_show_all(self->priv->main_box);
 }
@@ -113,13 +148,7 @@ _response_cb(GtkDialog *dialog, gint response_id, gpointer user_data)
 	if (response_id == GTK_RESPONSE_OK)
 	{
 		GtkSnippetsVarsDialog *self = GTKSNIPPETS_VARSDIALOG(user_data);
-		VarData *vdata = self->priv->vars;
-		while(vdata!=NULL && vdata->var != NULL)
-		{
-			vdata->var->value = g_strdup(gtk_entry_get_text(GTK_ENTRY(vdata->entry)));
-			vdata++;
-		}
-	
+		_update_vars(self);
 		gchar* text = gsnippets_parser_replace_vars(self->priv->content,self->priv->var_list);
 		g_free(self->priv->content);
 		self->priv->content = text;
@@ -174,6 +203,8 @@ gtksnippets_varsdialog_new(const gchar *snippet_content)
 	self->priv->content = g_strdup(snippet_content);
 	_create_var_entries(self);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source));
+	gtk_text_buffer_set_text(buffer,snippet_content,-1);
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source2));
 	gtk_text_buffer_set_text(buffer,snippet_content,-1);
 	gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_APPLY,GTK_RESPONSE_OK);
 	gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL);
