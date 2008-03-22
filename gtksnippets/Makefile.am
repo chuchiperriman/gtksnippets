@@ -20,10 +20,12 @@ AM_CFLAGS =\
 lib_LTLIBRARIES=libgtksnippets-1.0.la
 
 libgtksnippets_headers = 	\
-	gtksnippets-dialog.h
+	gtksnippets-dialog.h		\
+	gtksnippets-varsdialog.h
 	
 libgtksnippets_1_0_la_SOURCES	= \
-	gtksnippets-dialog.c		\
+	gtksnippets-dialog.c			\
+	gtksnippets-varsdialog.c	\
 	$(libgtksnippets_headers)
 
 libgtksnippets_1_0_la_LIBADD	= \

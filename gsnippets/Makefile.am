@@ -14,12 +14,14 @@ lib_LTLIBRARIES=libgsnippets-1.0.la
 libgsnippets_headers = 	\
 	gsnippets-common.h		\
 	gsnippets-item.h	\
-	gsnippets-db.h
+	gsnippets-db.h		\
+	gsnippets-parser.h
 	
 libgsnippets_1_0_la_SOURCES	= \
 	gsnippets-common.c		\
 	gsnippets-item.c	\
 	gsnippets-db.c		\
+	gsnippets-parser.c		\
 	$(libgsnippets_headers)
 
 libgsnippets_1_0_la_LIBADD	= \

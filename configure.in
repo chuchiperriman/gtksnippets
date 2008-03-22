@@ -46,4 +46,5 @@ gtksnippets/Makefile
 src/Makefile
 data/Makefile
 gtksnippets-1.0.pc
+test/Makefile
 ])

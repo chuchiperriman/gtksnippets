@@ -1,3 +1,11 @@
+2008-03-22  perriman  <perriman@portatil>
+
+	* gsnippets-parser: Added new parser. This parser can parse the snippets
+	content interpreting the variables. This variables are placeholders like
+	${varname}
+	* gtksnippets-varsdialog: A new widget to show and replace the snippets
+	variables. 
+
 2008-03-08  perriman  <perriman@portatil>
 
 	* icon: Added application icon (I must change it :)

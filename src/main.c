@@ -19,13 +19,6 @@ gtk_smngui_create_source_view()
 	return source;
 }
 
-static GtkWidget*
-create_window()
-{
-	GtkWidget *w = gtksnippets_manager_new();
-	return w;
-}
-
 static void
 _window_destroy_cb(GtkWidget *w, gpointer user_data)
 {
@@ -35,7 +28,7 @@ _window_destroy_cb(GtkWidget *w, gpointer user_data)
 static GtkWidget*
 create_dialog()
 {
-	GtkWidget *w = gtksnippets_dialog_new();
+	GtkWidget *w = GTK_WIDGET(gtksnippets_dialog_new());
 	/* Signals */
 	g_signal_connect(
 		w,
@@ -66,4 +59,5 @@ main (int argc, char *argv[])
 	//g_object_unref(gxml);
         
 	gtk_main();
+    return 0;
 }

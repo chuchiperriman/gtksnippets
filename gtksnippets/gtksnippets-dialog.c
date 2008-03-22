@@ -26,8 +26,8 @@
 #include <gtksourceview/gtksourcebuffer.h>
 #include <gtksourceview/gtksourcelanguage.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
-#include <gsnippets/gsnippets-db.h>
-#include <gsnippets/gsnippets-item.h>
+#include "../gsnippets/gsnippets-db.h"
+#include "../gsnippets/gsnippets-item.h"
 
 #define COL_LANG_NAME 0
 #define COL_LANG_ID 1
@@ -36,7 +36,6 @@
 struct _GtkSnippetsDialogPrivate
 {
 	/*We need one or more fields*/
-	gint dummy;
 	GladeXML *gxml;
 	GSnippetsDb *db;
 	GtkWidget *tree;
