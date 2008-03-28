@@ -1,3 +1,8 @@
+2008-03-28  perriman  <perriman@portatil>
+
+	* fixed #1925659: gtksnippets-varsdialog: Goes to the last entry to the
+	apply button.
+
 2008-03-22  perriman  <perriman@portatil>
 
 	* gsnippets-parser: Added new parser. This parser can parse the snippets

@@ -18,7 +18,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
  
-  
+#include <gdk/gdkkeysyms.h>  
 #include "gtksnippets-varsdialog.h"
 #include <glade/glade.h>
 #include <gtksourceview/gtksourceview.h>
@@ -40,6 +40,9 @@ struct _GtkSnippetsVarsDialogPrivate
 	GtkWidget *source2;
 	GtkWidget *main_box;
 	GtkWidget *vars_table;
+	GtkWidget *apply_button;
+	GtkWidget *cancel_button;
+	GtkWidget *last_entry;
 	VarData *vars;
 };
 
@@ -64,14 +67,23 @@ _update_vars(GtkSnippetsVarsDialog *self)
 }
 
 static gboolean
-_entry_key_rel_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+_entry_key_press_cb(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
 	GtkSnippetsVarsDialog *self = GTKSNIPPETS_VARSDIALOG(user_data);
-	_update_vars(self);
-	gchar* text = gsnippets_parser_replace_vars(self->priv->content,self->priv->var_list);
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source2));
-	gtk_text_buffer_set_text(buffer,text,-1);
-	g_free(text);
+	
+	if (widget == self->priv->last_entry && event->keyval == GDK_Tab)
+	{
+		gtk_widget_grab_focus(self->priv->apply_button);
+		return TRUE;
+	}
+	else
+	{
+		_update_vars(self);
+		gchar* text = gsnippets_parser_replace_vars(self->priv->content,self->priv->var_list);
+		GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source2));
+		gtk_text_buffer_set_text(buffer,text,-1);
+		g_free(text);
+	}
 	return FALSE;
 }
 
@@ -84,7 +96,7 @@ _create_var_entries(GtkSnippetsVarsDialog *self)
 	guint rows =  g_slist_length(temp) + 1;
 	guint pos = 1;
 	gtk_table_resize(GTK_TABLE(self->priv->vars_table),rows,2);
-	GtkWidget *label, *entry;
+	GtkWidget *label, *entry = NULL;
 	
 	/*Data objects + NULL at the end*/
 	self->priv->vars = g_malloc0(sizeof(VarData) * rows);
@@ -111,8 +123,8 @@ _create_var_entries(GtkSnippetsVarsDialog *self)
 					pos+1);
 		g_signal_connect(
 			entry,
-			"key-release-event",
-			G_CALLBACK(_entry_key_rel_cb),
+			"key-press-event",
+			G_CALLBACK(_entry_key_press_cb),
 			self);
 		
 		pos++;
@@ -122,6 +134,7 @@ _create_var_entries(GtkSnippetsVarsDialog *self)
 		vdata++;
 	}
 	vdata->var = NULL;
+	self->priv->last_entry = entry;
 }
 
 static void
@@ -135,7 +148,9 @@ _load_from_glade(GtkSnippetsVarsDialog *self)
 	self->priv->vars_table = glade_xml_get_widget (self->priv->gxml, "vars_table");
 	gtk_widget_reparent(self->priv->main_box,GTK_DIALOG(self)->vbox);
 	self->priv->source = GTK_WIDGET(gtk_source_view_new());
+	g_object_set(self->priv->source,"can-focus",FALSE,NULL);
 	self->priv->source2 = GTK_WIDGET(gtk_source_view_new());
+	g_object_set(self->priv->source2,"can-focus",FALSE,NULL);
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll),self->priv->source);
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll2),self->priv->source2);
 	
@@ -161,6 +176,9 @@ gtksnippets_varsdialog_init (GtkSnippetsVarsDialog *self)
 	self->priv = GTKSNIPPETS_VARSDIALOG_GET_PRIVATE(self);
 	self->priv->content = NULL;
 	self->priv->vars = NULL;
+	self->priv->last_entry = NULL;
+	self->priv->apply_button = gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_APPLY,GTK_RESPONSE_OK);
+	self->priv->cancel_button = gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL);
 	_load_from_glade(self);
 	gtk_window_set_default_size(GTK_WINDOW(self),500,400);
 	gtk_window_set_position(GTK_WINDOW(self),GTK_WIN_POS_CENTER_ALWAYS);
@@ -206,8 +224,6 @@ gtksnippets_varsdialog_new(const gchar *snippet_content)
 	gtk_text_buffer_set_text(buffer,snippet_content,-1);
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->priv->source2));
 	gtk_text_buffer_set_text(buffer,snippet_content,-1);
-	gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_APPLY,GTK_RESPONSE_OK);
-	gtk_dialog_add_button(GTK_DIALOG(self),GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL);
 	
 	return self;
 }
