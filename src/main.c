@@ -4,7 +4,7 @@
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcebuffer.h>
 #include "gtksnippets-manager.h"
-#include "gtksnippets-dialog.h"
+#include "../gtksnippets/gtksnippets-dialog.h"
 
 #define GLADE_FILE GLADE_DIR"/gtksnippets.glade"
 

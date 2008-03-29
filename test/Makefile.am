@@ -21,8 +21,8 @@ gtksnippets_test_LDFLAGS =  \
 	`pkg-config --libs gtksourceview-2.0`	
 
 gtksnippets_test_LDADD = 	\
-	$(top_srcdir)/gsnippets/libgsnippets-1.0.la	\
-	$(top_srcdir)/gtksnippets/libgtksnippets-1.0.la	\
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la	\
+	$(top_builddir)/gtksnippets/libgtksnippets-1.0.la	\
 	$(PACKAGE_LIBS)
 
  

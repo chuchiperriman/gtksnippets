@@ -22,8 +22,8 @@
 #include <gtksourceview/gtksourcebuffer.h> 
 #include <gtksourceview/gtksourcelanguage.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
-#include <gsnippets/gsnippets-db.h>
-#include <gsnippets/gsnippets-item.h>
+#include "../gsnippets/gsnippets-db.h"
+#include "../gsnippets/gsnippets-item.h"
   
 #include "gtksnippets-manager.h"
 
@@ -36,9 +36,6 @@ struct _GtkSnippetsManagerPrivate
 	GtkWidget *tree;
 	GtkWidget *name;
 	GtkWidget *content;
-	
-	gint dummy;
-	
 };
 
 static GObjectClass* parent_class = NULL;

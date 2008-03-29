@@ -29,14 +29,14 @@ libgtksnippets_1_0_la_SOURCES	= \
 	$(libgtksnippets_headers)
 
 libgtksnippets_1_0_la_LIBADD	= \
-	$(top_srcdir)/gsnippets/libgsnippets-1.0.la	\
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la	\
 	$(PACKAGE_CFLAGS)
 
 libgtksnippets_1_0_la_LDFLAGS =	\
 	-version-info 1:0:0 -module	\
 	`pkg-config --libs libglade-2.0`	\
 	`pkg-config --libs gtksourceview-2.0`	\
-	$(top_srcdir)/gsnippets/libgsnippets-1.0.la
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la
 	
 libgtksnippets_1_0_includedir = $(includedir)/gtksnippets-1.0/gtksnippets
 

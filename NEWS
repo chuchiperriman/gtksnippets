@@ -1,0 +1,12 @@
+=================
+GtkSnippets 0.1.0
+=================
+
+New Features and Fixes
+======================
+
+- Reimplemented all the project
+- Created three modules:
+    - gsnippets: Library that manages all Snippets into the database
+    - gtksnippets: Library with gtk widgets to manage snippets and vars replacement
+    - src: An executable using GtkSnippetsDialog to manage the snippets (add,delete,etc.)
