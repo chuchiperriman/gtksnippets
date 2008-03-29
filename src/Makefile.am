@@ -1,4 +1,4 @@
-bin_PROGRAMS = gtksnippets
+bin_PROGRAMS = gtksnippets-manager
 
 gladedir = $(datadir)/gtksnippets
 icondir = $(datadir)/gtksnippets/pixmaps
@@ -18,18 +18,18 @@ INCLUDES=	\
 AM_CFLAGS = \
 	-Wall	
 
-gtksnippets_SOURCES = 		\
+gtksnippets_manager_SOURCES = 		\
 	gtksnippets-manager.c	\
 	gtksnippets-manager.h	\
 	main.c
 
-gtksnippets_LDFLAGS =  \
+gtksnippets_manager_LDFLAGS =  \
 	`pkg-config --libs libglade-2.0`	\
 	`pkg-config --libs gtksourceview-2.0`	
 
-gtksnippets_LDADD = 	\
-	$(top_srcdir)/gsnippets/libgsnippets-1.0.la	\
-	$(top_srcdir)/gtksnippets/libgtksnippets-1.0.la	\
+gtksnippets_manager_LDADD = 	\
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la	\
+	$(top_builddir)/gtksnippets/libgtksnippets-1.0.la	\
 	$(PACKAGE_LIBS)
 
  
