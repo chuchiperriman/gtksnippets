@@ -317,7 +317,7 @@ gsnippets_db_lang_get_id(GSnippetsDb *self, const gchar* lang_name)
 GSList*
 gsnippets_db_get_all(GSnippetsDb *self)
 {
-	return db_snippets_load_from_sql(self,"SELECT id,name,content,lang_id from snippets");
+	return db_snippets_load_from_sql(self,"SELECT id,name,content,lang_id from snippets ORDER BY name");
 }
 
 GSList*
@@ -332,7 +332,7 @@ gsnippets_db_get_by_lang_name(GSnippetsDb *self, const gchar* language_name)
 			"SELECT s.id,s.name,s.content,s.lang_id FROM"
 				" snippets s, languages l WHERE"
 				" s.lang_id = l.id AND"
-				" l.name = '%s' GROUP BY s.id;",
+				" l.name = '%s' GROUP BY s.id ORDER BY s.name;",
 				language_name
 				);
 	list = db_snippets_load_from_sql(self,sql);
@@ -349,7 +349,7 @@ gsnippets_db_get_by_lang_id(GSnippetsDb *self, gint lang_id)
 	
 	sql = sqlite3_mprintf(
 			"SELECT s.id,s.name,s.content,s.lang_id FROM"
-				" snippets s WHERE s.lang_id = %i",
+				" snippets s WHERE s.lang_id = %i ORDER BY s.name",
 				lang_id
 				);
 	list = db_snippets_load_from_sql(self,sql);

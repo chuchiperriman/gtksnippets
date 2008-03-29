@@ -63,6 +63,15 @@ gtksnippets_dialog_source_new(gchar *widget_name, gchar *string1, gchar
 	return source;
 }
 
+static gint
+_compare_lang_name(GtkSourceLanguage *lang1, GtkSourceLanguage *lang2)
+{
+	const gchar *lang_name1, *lang_name2;
+	lang_name1 = gtk_source_language_get_name(lang1);
+	lang_name2 = gtk_source_language_get_name(lang2);
+	return g_utf8_collate(lang_name1,lang_name2);
+}
+
 static GSnippetsItem*
 _get_active_snippet(GtkSnippetsDialog *self,GtkTreeIter *iter)
 {
@@ -205,7 +214,7 @@ _build_model(GtkSnippetsDialog *self)
 	const gchar* lang_id, *lang_name;
 	GtkTreeIter actual, parent;
 	const gchar * const *ids;
-	GSList *snippet_list, *snippet_list_temp;
+	GSList *snippet_list, *snippet_list_temp, *lang_list = NULL, *lang_list_temp;
 	GSnippetsItem* snippet;
 	
 	GtkTreeStore *store = gtk_tree_store_new(3,
@@ -219,6 +228,16 @@ _build_model(GtkSnippetsDialog *self)
 	while (*ids != NULL)
 	{
 		lang = gtk_source_language_manager_get_language (lm, *ids);
+		lang_list = g_slist_append(lang_list,lang);
+		++ids;
+	}
+	
+	lang_list = g_slist_sort(lang_list,(GCompareFunc)_compare_lang_name);
+	
+	lang_list_temp = lang_list;
+	while (lang_list_temp!=NULL)
+	{
+		lang = GTK_SOURCE_LANGUAGE(lang_list_temp->data);
 		lang_id = gtk_source_language_get_id (lang);
 		lang_name = gtk_source_language_get_name(lang);
 		++ids;
@@ -251,7 +270,11 @@ _build_model(GtkSnippetsDialog *self)
 		
 			g_slist_free(snippet_list);
 		}
+		
+		lang_list_temp = g_slist_next(lang_list_temp);
 	}
+	
+	g_slist_free(lang_list);
 	
 	gtk_tree_view_set_model(GTK_TREE_VIEW(self->priv->tree),GTK_TREE_MODEL(store));
 }
@@ -470,7 +493,6 @@ static void
 gtksnippets_dialog_finalize (GObject *object)
 {
 	GtkSnippetsDialog *self = GTKSNIPPETS_DIALOG(object);
-	
 	gsnippets_db_disconnect(self->priv->db);
 	g_object_unref(self->priv->gxml);
 	

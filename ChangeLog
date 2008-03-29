@@ -1,3 +1,7 @@
+2008-03-29  perriman  <perriman@portatil>
+
+	* fixed #1925657: We order alphabetically the langauges and the snippets
+
 2008-03-28  perriman  <perriman@portatil>
 
 	* fixed #1925659: gtksnippets-varsdialog: Goes to the last entry to the
