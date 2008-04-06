@@ -53,36 +53,120 @@ struct _GSnippetsDb
 GType 
 gsnippets_db_get_type (void) G_GNUC_CONST;
 
+/**
+ * gsnippets_db_new:
+ *
+ * Returns A new #GSnippetsDb object without connect.
+ */
 GSnippetsDb*
 gsnippets_db_new(void);
 
+/**
+ * gsnippets_db_connect:
+ * @self: The #GSnippetsDb object
+ * 
+ * Open the connection to the snippets database
+ * 
+ */
 void
 gsnippets_db_connect(GSnippetsDb *self);
 
+/**
+ * gsnippets_db_disconnect:
+ * @self: The #GSnippetsDb object
+ * 
+ * Closes the connection to the snippets database
+ */
 void
 gsnippets_db_disconnect (GSnippetsDb *self);
 
+/**
+ * gsnippets_db_load:
+ * @self: The #GSnippetsDb object
+ * @id: The snippet id to be loaded
+ *
+ * Load a snippet by id.
+ *
+ * Returns A new allocated #GSnippetsItem
+ */
 GSnippetsItem*
 gsnippets_db_load(GSnippetsDb *self, gint id);
 
+/**
+ * gsnippets_db_save:
+ * @self: The #GSnippetsDb object
+ * @snippet: The snippet tobe saved
+ *
+ * This function saves the snippet. It insert or update the snippet if not exists
+ *
+ */
 void
 gsnippets_db_save(GSnippetsDb *self, GSnippetsItem* snippet);
 
+/**
+ * gsnippets_db_delete:
+ * @self: The #GSnippetsDb object
+ * @id: The snippet id to be deleted
+ *
+ * This function delete a snippet from the database
+ *
+ */
 void
 gsnippets_db_delete(GSnippetsDb *self, gint id);
 
+/**
+ * gsnippets_db_get_all:
+ * @self: The #GSnippetsDb object
+ * 
+ * Returns All the database snippets or NULL
+ */
 GSList*
 gsnippets_db_get_all(GSnippetsDb *self);
 
+/**
+ * gsnippets_db_get_by_lang_name:
+ * @self: The #GSnippetsDb object
+ * @lang_name: The lang name.
+ *
+ * This search into the database all snippets of this language
+ *
+ * Returns A new allocated list of #GSnippetsItem objects or NULL
+ */
 GSList*
 gsnippets_db_get_by_lang_name(GSnippetsDb *self, const gchar* language_name);
 
+/**
+ * gsnippets_db_lang_get_id:
+ * @self: The #GSnippetsDb object
+ * @lang_id: The database lang id
+ *
+ * This function search into the database all snippets of this language
+ *
+ * Returns A new allocated list of #GSnippetsItem objects or NULL
+ */
 GSList*
 gsnippets_db_get_by_lang_id(GSnippetsDb *self, gint lang_id);
 
+/**
+ * gsnippets_db_lang_get_id:
+ * @self: The #GSnippetsDb object
+ * @lang_name: The language name
+ *
+ *
+ * Returns The id of this language or -1 if it cannot find the language.
+ */
 gint
 gsnippets_db_lang_get_id(GSnippetsDb *self, const gchar* lang_name);
 
+/**
+ * gsnippets_db_lang_insert:
+ * @self: The #GSnippetsDb object
+ * @lang_name: The language name to be inserted
+ *
+ * Insert a new language into the database
+ *
+ * Returns The inserted language id.
+ */
 gint
 gsnippets_db_lang_insert(GSnippetsDb *self, const gchar* lang_name);
 

@@ -51,27 +51,78 @@ struct _GSnippetsItem
 GType 
 gsnippets_item_get_type (void) G_GNUC_CONST;
 
+/**
+ * gsnippets_item_new_full:
+ * @id: The snippet id
+ * @name: The snippet name
+ * @content: The snippet content
+ * @lang_id: The lang id of this snippet
+ *
+ * This function creates a new #GSnippetsItem object.
+ *
+ */
 GSnippetsItem*
 gsnippets_item_new_full(gint id,
 			const gchar* name,
 			const gchar* content,
 			gint lang_id);
 
+/**
+ * gsnippets_item_get_id:
+ * @self: The #GSnippetsItem
+ *
+ * Returns The snippet id into the database
+ */
 gint
 gsnippets_item_get_id(GSnippetsItem *self);
 
+/**
+ * gsnippets_item_set_id:
+ * @self: The #GSnippetsItem
+ * @id: The snipept id
+ *
+ * Set the id for this snippet into the object
+ *
+ */
 void
 gsnippets_item_set_id(GSnippetsItem *self,gint id);
 
+/**
+ * gsnippets_item_get_name:
+ * @self: The #GSnippetsItem
+ *
+ * Returns The snippet name
+ */
 const gchar*
 gsnippets_item_get_name(GSnippetsItem *self);
 
+/**
+ * gsnippets_item_get_content:
+ * @self: The #GSnippetsItem
+ *
+ * Returns The snippet content
+ */
 const gchar*
 gsnippets_item_get_content(GSnippetsItem *self);
 
+/**
+ * gsnippets_item_set_content:
+ * @self: The #GSnippetsItem
+ * @content: The content to be inserted
+ *
+ * This function sets the snippet content. Internally copy the content.
+ *
+ */
 void
 gsnippets_item_set_content(GSnippetsItem *self, const gchar* content);
 
+/**
+ * gsnippets_item_get_lang_id:
+ * @self: The #GSnippetsItem
+ * 
+ * Returns The lang id of this snippet
+ *
+ */
 gint
 gsnippets_item_get_lang_id(GSnippetsItem *self);
 

@@ -21,9 +21,19 @@
 #ifndef _GSNIPPETS_COMMON_H
 #define _GSNIPPETS_COMMON_H
 
+/**
+ * gsnippets_common_get_gsnippets_user_path:
+ * 
+ * Returns The user home path
+ */
 const gchar*
 gsnippets_common_get_gsnippets_user_path(void);
 
+/**
+ * gsnippets_common_get_gsnippets_db_path:
+ *
+ * Returns the snippets database path for this user
+ */
 const gchar*
 gsnippets_common_get_gsnippets_db_path(void);
 
