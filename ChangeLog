@@ -1,3 +1,8 @@
+2008-06-09  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: Created a new variable parser to replace
+	variables inplace (directly in the GtkTextView). It is not yet usable.
+
 == gtksnippets 0.1.0 ==
 
 2008-03-29  perriman  <perriman@portatil>
