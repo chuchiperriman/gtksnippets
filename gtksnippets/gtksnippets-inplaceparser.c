@@ -35,6 +35,8 @@ struct _GtkSnippetsInPlaceParserPrivate
 	GtkTextTag *var_tag;
 	gboolean active;
 	GList *active_var_pos;
+	guint timeout_id;
+	gboolean updating;
 };
 static GObjectClass* parent_class = NULL;
 
@@ -65,26 +67,42 @@ snippetvar_set_text(GtkTextBuffer *buffer,
 	gtk_text_buffer_delete(buffer,&start_var,&end_var);
 	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,text,-1,VAR_TAG_NAME,NULL);
 }
+
+static gchar*
+snippetvar_get_text(GtkTextBuffer *buffer, 
+		SnippetVar *var)
+{
+	GtkTextIter start_var, end_var;
+	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
+	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
+	return gtk_text_buffer_get_text(buffer,&start_var,&end_var,FALSE);
+}
+
+
 /*#################################################*/
 static void
 gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 {
+	g_debug("GtkSnippetsInPlaceParser init");
 	self->priv = GTKSNIPPETS_INPLACEPARSER_GET_PRIVATE(self);
 	self->priv->view = NULL;
 	self->priv->vars = NULL;
 	self->priv->var_tag = NULL;
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
+	self->priv->timeout_id = 0;
 }
 
 static void
 gtksnippets_inplaceparser_finalize (GObject *object)
 {
+	g_debug("GtkSnippetsInPlaceParser finish");
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(object);
 	
 	gtksnippets_inplaceparser_deactivate(self);
 	
 	self->priv->active_var_pos = NULL;
+	self->priv->timeout_id = 0;
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -228,6 +246,47 @@ active_next_var(GtkSnippetsInPlaceParser *self)
 	return TRUE;
 }
 
+static gboolean
+update_mirrors_cb(gpointer user_data)
+{
+	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
+	self->priv->updating = TRUE;
+	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+	
+	if (self->priv->active_var_pos==NULL)
+	{
+		self->priv->updating = FALSE;
+		self->priv->timeout_id = 0;
+		return FALSE;
+	}
+	
+	gtk_text_buffer_begin_user_action(buffer);
+	
+	GList *list = self->priv->vars;
+	SnippetVar *actual_var = self->priv->active_var_pos->data;
+	SnippetVar *temp_var;
+	gchar* text = snippetvar_get_text(buffer,actual_var);
+	
+	//Search mirror vars
+	do 
+	{
+		temp_var = list->data;
+		if (g_utf8_collate(temp_var->name,actual_var->name)==0)
+		{
+			self->priv->updating = TRUE;
+			snippetvar_set_text(buffer, 
+				list->data,
+				text);
+		}
+	}while ((list = g_list_next(list))!=NULL);
+	
+	g_free(text);
+	self->priv->timeout_id = 0;
+	gtk_text_buffer_end_user_action(buffer);
+	return FALSE;
+}
+
 void
 view_insert_text_cb(GtkTextBuffer *buffer, 
 		    GtkTextIter *location, 
@@ -240,7 +299,6 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	if(self->priv->active_var_pos == NULL)
 		return;
 	
-	gtk_text_buffer_begin_user_action(buffer);
 	//Repaint the tag
 	SnippetVar *var = self->priv->active_var_pos->data;
 	GtkTextIter start_iter,end_iter;
@@ -249,28 +307,35 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_iter, &end_iter);
 	
 	//Update mirror vars
-	//gtk_text_buffer_insert_at_cursor(buffer,"asdas",-1);
-	/*snippetvar_set_text(buffer, 
-		var,
-		"sdfasdf");*/
-	gtk_text_buffer_end_user_action(buffer);
+	if (self->priv->timeout_id==0 && !self->priv->updating)
+	{
+		g_timeout_add(500,update_mirrors_cb,self);
+	}
+	else
+	{
+		self->priv->updating = FALSE;
+	}
 }
 
 gboolean
 view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 {
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
-	if (event->keyval == GDK_Tab)
+	if ((event->keyval == GDK_Tab
+		|| event->keyval == GDK_ISO_Left_Tab))
 	{
-		if (!active_next_var(self))
-			gtksnippets_inplaceparser_deactivate(self);
-		return TRUE;
-	}
-	else if (event->keyval == GDK_space)
-	{
-		if (!active_prev_var(self))
-			gtksnippets_inplaceparser_deactivate(self);
-		return TRUE;
+		if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
+		{
+			if (!active_prev_var(self))
+				gtksnippets_inplaceparser_deactivate(self);
+			return TRUE;
+		}
+		else
+		{
+			if (!active_next_var(self))
+				gtksnippets_inplaceparser_deactivate(self);
+			return TRUE;
+		}
 	}
 	else if (event->keyval == GDK_Escape)
 	{
@@ -335,6 +400,7 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	//TODO Desconectar señales
 	g_signal_handlers_disconnect_by_func(self->priv->view,view_key_press_cb,self);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+	g_signal_handlers_disconnect_by_func(buffer,view_insert_text_cb,self);
 	if (self->priv->var_tag!=NULL)
 	{
 		GtkTextIter start,end;

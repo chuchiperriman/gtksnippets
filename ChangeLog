@@ -1,3 +1,10 @@
+2008-06-14  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: 
+		- Uses tab and shift+tab to change between placeholders
+		- Uses timeout to replace placeholders and mirror
+		placeholders. Works fine now
+
 2008-06-09  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: Created a new variable parser to replace

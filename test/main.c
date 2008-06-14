@@ -24,9 +24,6 @@ activate_cb(GtkWidget action,gpointer user_data)
 	parser = gtksnippets_inplaceparser_new(view);
 	gtksnippets_inplaceparser_activate(parser,EXAMPLE_TEXT);
 	gtk_widget_grab_focus(view);
-	
-	
-
 }
 
 static void
