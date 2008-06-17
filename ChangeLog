@@ -1,6 +1,10 @@
 2008-06-18  Chuchi  <perriman@homer>
 
-	* gtksnippets-inplaceparser: Added mirror variables management
+	* gtksnippets-inplaceparser: 
+		- Added mirror variables management
+		- Simple cursor-changed control. When the cursor goes to a
+		possition out of the snippet management, we deactivate the
+		parser.
 
 2008-06-14  Chuchi  <perriman@homer>
 

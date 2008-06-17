@@ -41,6 +41,7 @@ struct _GtkSnippetsInPlaceParserPrivate
 	GList *active_var_pos;
 	guint timeout_id;
 	gboolean updating;
+	gboolean moving;
 };
 static GObjectClass* parent_class = NULL;
 
@@ -114,6 +115,7 @@ gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
 	self->priv->timeout_id = 0;
+	self->priv->moving = FALSE;
 }
 
 static void
@@ -229,6 +231,7 @@ search_var(GtkTextBuffer *buffer,GtkTextIter *pos, GtkTextIter *limit)
 static void
 set_active_var(GtkSnippetsInPlaceParser *self)
 {
+	self->priv->moving = TRUE;
 	SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
 	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
@@ -390,6 +393,27 @@ store_var(GtkSnippetsInPlaceParser *self, SnippetVar *var)
 	//TODO buscamos una variable en el nivel general con el mismo nombre
 }
 
+static void
+buffer_mark_set_cb(GtkTextBuffer *buffer,
+		GtkTextIter *location,
+		GtkTextMark *mark,
+		gpointer user_data)
+{
+	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
+	if (self->priv->moving)
+	{
+		self->priv->moving = FALSE;
+	}
+	else
+	{
+		if (mark == gtk_text_buffer_get_insert (buffer))
+	        {
+	                gtksnippets_inplaceparser_deactivate(self);
+	        }
+	}
+
+}
+
 gboolean
 gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* content)
 {
@@ -431,6 +455,7 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	active_next_var(self);
 	g_signal_connect(self->priv->view,"key-press-event",G_CALLBACK(view_key_press_cb),self);
 	g_signal_connect_after(buffer,"insert-text",G_CALLBACK(view_insert_text_cb),self);
+	g_signal_connect_after(buffer,"mark-set",G_CALLBACK(buffer_mark_set_cb),self);
 	//snippetvar_set_text(buffer,borrar,"prueba");
 	return TRUE;
 }
@@ -445,6 +470,7 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	g_signal_handlers_disconnect_by_func(self->priv->view,view_key_press_cb,self);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	g_signal_handlers_disconnect_by_func(buffer,view_insert_text_cb,self);
+	g_signal_handlers_disconnect_by_func(buffer,buffer_mark_set_cb,self);
 	if (self->priv->var_tag!=NULL)
 	{
 		GtkTextIter start,end;
