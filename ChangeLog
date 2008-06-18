@@ -1,3 +1,8 @@
+2008-06-19  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: Handled Home and End keys. Home goes to
+	home of the current placeholder and end to the end
+
 2008-06-18  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: 

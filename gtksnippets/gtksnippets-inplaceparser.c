@@ -28,7 +28,6 @@ struct _SnippetVar{
 	gchar *name;
 	GtkTextMark *start;
 	GtkTextMark *end;
-	//TODO L¡nk am SnippetVar with the mirrors
 	GList *mirrors;
 };
 
@@ -364,6 +363,32 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		gtksnippets_inplaceparser_deactivate(self);
 		return TRUE;
 	}
+	else if (event->keyval == GDK_Home || event->keyval == GDK_KP_Home)
+	{
+		if (self->priv->active_var_pos!=NULL)
+		{
+			SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+			GtkTextIter iter;
+			gtk_text_buffer_get_iter_at_mark(buffer,&iter,var->start);
+			self->priv->moving = TRUE;
+			gtk_text_buffer_place_cursor(buffer,&iter);
+			return TRUE;
+		}
+	}
+	else if (event->keyval == GDK_End || event->keyval == GDK_KP_End)
+	{
+		if (self->priv->active_var_pos!=NULL)
+		{
+			SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
+			GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+			GtkTextIter iter;
+			gtk_text_buffer_get_iter_at_mark(buffer,&iter,var->end);
+			self->priv->moving = TRUE;
+			gtk_text_buffer_place_cursor(buffer,&iter);
+			return TRUE;
+		}
+	}
 	return FALSE;
 }
 
@@ -400,14 +425,16 @@ buffer_mark_set_cb(GtkTextBuffer *buffer,
 		gpointer user_data)
 {
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
-	if (self->priv->moving)
+	if (mark == gtk_text_buffer_get_insert (buffer))
 	{
-		self->priv->moving = FALSE;
-	}
-	else
-	{
-		if (mark == gtk_text_buffer_get_insert (buffer))
-	        {
+		if (self->priv->moving)
+		{
+			g_debug("moving");
+			self->priv->moving = FALSE;
+		}
+		else
+		{
+			g_debug("not moving");
 	                gtksnippets_inplaceparser_deactivate(self);
 	        }
 	}
@@ -453,6 +480,8 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	}
 	self->priv->active = TRUE;
 	active_next_var(self);
+	/*The first var is not handled by cursor-changed. We must set moving to FALSE*/
+	self->priv->moving = FALSE;
 	g_signal_connect(self->priv->view,"key-press-event",G_CALLBACK(view_key_press_cb),self);
 	g_signal_connect_after(buffer,"insert-text",G_CALLBACK(view_insert_text_cb),self);
 	g_signal_connect_after(buffer,"mark-set",G_CALLBACK(buffer_mark_set_cb),self);
@@ -497,6 +526,7 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	self->priv->vars = NULL;
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
+	self->priv->moving = FALSE;
 	return TRUE;
 }
 
