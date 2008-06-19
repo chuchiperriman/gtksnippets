@@ -369,10 +369,20 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		{
 			SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
-			GtkTextIter iter;
-			gtk_text_buffer_get_iter_at_mark(buffer,&iter,var->start);
+			GtkTextIter start_iter;
+			gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,var->start);
 			self->priv->moving = TRUE;
-			gtk_text_buffer_place_cursor(buffer,&iter);
+			if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
+			{
+				GtkTextMark *imark = gtk_text_buffer_get_insert(buffer);
+				GtkTextIter current_iter;
+				gtk_text_buffer_get_iter_at_mark(buffer,&current_iter,imark);
+				gtk_text_buffer_select_range(buffer,&start_iter,&current_iter);
+			}
+			else
+			{
+				gtk_text_buffer_place_cursor(buffer,&start_iter);
+			}
 			return TRUE;
 		}
 	}
@@ -385,7 +395,17 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 			GtkTextIter iter;
 			gtk_text_buffer_get_iter_at_mark(buffer,&iter,var->end);
 			self->priv->moving = TRUE;
-			gtk_text_buffer_place_cursor(buffer,&iter);
+			if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
+			{
+				GtkTextMark *imark = gtk_text_buffer_get_insert(buffer);
+				GtkTextIter current_iter;
+				gtk_text_buffer_get_iter_at_mark(buffer,&current_iter,imark);
+				gtk_text_buffer_select_range(buffer,&iter,&current_iter);
+			}
+			else
+			{
+				gtk_text_buffer_place_cursor(buffer,&iter);
+			}
 			return TRUE;
 		}
 	}
@@ -429,13 +449,22 @@ buffer_mark_set_cb(GtkTextBuffer *buffer,
 	{
 		if (self->priv->moving)
 		{
-			g_debug("moving");
 			self->priv->moving = FALSE;
 		}
 		else
 		{
-			g_debug("not moving");
-	                gtksnippets_inplaceparser_deactivate(self);
+			SnippetVar *var = self->priv->active_var_pos->data;
+			gint current_offset = gtk_text_iter_get_offset(location);
+			GtkTextIter start_iter,end_iter;
+			gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,var->start);
+			gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,var->end);
+			gint start_offset = gtk_text_iter_get_offset(&start_iter);
+			gint end_offset = gtk_text_iter_get_offset(&end_iter);
+			/*Test if the cursor is out of the current placeholder*/
+			if (current_offset<start_offset || current_offset > end_offset)
+			{
+		                gtksnippets_inplaceparser_deactivate(self);
+			}
 	        }
 	}
 
