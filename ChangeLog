@@ -1,6 +1,13 @@
-2008-06-20  Chuchi  <perriman@homer>
+2008-06-21  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: 
+		- Catch Right, Left keys
+		- Better timeout control
+		- Fixed bugs moving with mirrors
+
+2008-06-20  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser:
 		- Better cursor control
 		- Shift+home|end select from cursor to home|end
 
