@@ -22,6 +22,8 @@
 #include "gtksnippets-inplaceparser.h"
 #include "../gsnippets/gsnippets-parser.h"
 
+#define DELAY 300
+
 typedef struct _SnippetVar SnippetVar;
 
 struct _SnippetVar{
@@ -126,7 +128,6 @@ gtksnippets_inplaceparser_finalize (GObject *object)
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(object);
 	
 	gtksnippets_inplaceparser_deactivate(self);
-	
 	self->priv->active_var_pos = NULL;
 	self->priv->timeout_id = 0;
 	
@@ -332,7 +333,7 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	//Update mirror vars
 	if (self->priv->timeout_id==0 && !self->priv->updating)
 	{
-		self->priv->timeout_id = g_timeout_add(300,update_mirrors_cb,var);
+		self->priv->timeout_id = g_timeout_add(DELAY,update_mirrors_cb,var);
 	}
 	else
 	{
@@ -503,9 +504,15 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 {
 	gtksnippets_inplaceparser_deactivate(self);
 	
-	if (gsnippets_parser_count_vars(content) < 0)
-		return FALSE;
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(self->priv->view);
+	
+	
+	if (gsnippets_parser_count_vars(content) <= 0)
+	{
+		gtk_text_buffer_insert_at_cursor(buffer,content,-1);
+		return FALSE;
+	}
+	
 	GtkTextMark *insert = gtk_text_buffer_get_insert(buffer);
 	GtkTextIter start_iter, end_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,insert);
@@ -552,6 +559,14 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	if (!self->priv->active)
 		return FALSE;
 	
+	if (self->priv->timeout_id!=0)
+	{
+		/*Wait a moment while finish the vars update*/
+		g_usleep((DELAY*1000)+100000);
+	}
+	
+	g_debug("Deactivating inplace parser...");
+	
 	//TODO Desconectar señales
 	g_signal_handlers_disconnect_by_func(self->priv->view,view_key_press_cb,self);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
@@ -566,8 +581,10 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 						VAR_TAG_NAME,
 						&start,
 						&end);
+		/*
 		GtkTextTagTable *table = gtk_text_buffer_get_tag_table(buffer);
 		gtk_text_tag_table_remove(table,self->priv->var_tag);
+		*/
 	}
 		
 	GList *lista = self->priv->vars;

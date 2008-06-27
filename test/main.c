@@ -18,10 +18,12 @@ destroy_cb(GtkObject *object, gpointer user_data)
 static void
 activate_cb(GtkWidget action,gpointer user_data)
 {
-	if (parser!=NULL)
-		g_object_unref(parser);
+	if (parser==NULL)
+		parser = gtksnippets_inplaceparser_new(view);
+
+	gtksnippets_inplaceparser_deactivate(parser);
 	g_debug("boton activado");
-	parser = gtksnippets_inplaceparser_new(view);
+	
 	gtksnippets_inplaceparser_activate(parser,EXAMPLE_TEXT);
 	gtk_widget_grab_focus(view);
 }
