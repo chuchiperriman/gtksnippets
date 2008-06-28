@@ -10,6 +10,19 @@ const gchar* EXAMPLE_TEXT = "${name} is very beautiful, \n${name} is the best. L
 static GtkTextView *view;
 static GtkSnippetsInPlaceParser *parser = NULL;
 
+
+static void
+start_cb(GtkSnippetsInPlaceParser *parser, gpointer user_data)
+{
+	g_debug("start parsing");
+}
+
+static void
+end_cb(GtkSnippetsInPlaceParser *parser, gpointer user_data)
+{
+	g_debug("end parsing");
+}
+
 static void
 destroy_cb(GtkObject *object, gpointer user_data)
 {
@@ -19,7 +32,11 @@ static void
 activate_cb(GtkWidget action,gpointer user_data)
 {
 	if (parser==NULL)
+	{
 		parser = gtksnippets_inplaceparser_new(view);
+		g_signal_connect(parser,"parser-start",start_cb,NULL);
+		g_signal_connect(parser,"parser-end",end_cb,NULL);
+	}
 
 	gtksnippets_inplaceparser_deactivate(parser);
 	g_debug("boton activado");

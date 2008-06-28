@@ -12,7 +12,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
-
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,6 +33,16 @@ struct _SnippetVar{
 	GList *mirrors;
 	GtkSnippetsInPlaceParser *parser;
 };
+
+/* Signals */
+enum
+{
+	PARSER_START,
+	PARSER_END,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
 
 struct _GtkSnippetsInPlaceParserPrivate
 {
@@ -143,6 +153,28 @@ gtksnippets_inplaceparser_class_init (GtkSnippetsInPlaceParserClass *klass)
 	object_class->finalize = gtksnippets_inplaceparser_finalize;
 
 	g_type_class_add_private (object_class, sizeof(GtkSnippetsInPlaceParserPrivate));
+	
+	signals[PARSER_START] =
+		g_signal_new ("parser-start",
+			      G_TYPE_FROM_CLASS (klass),
+			      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+			      0,
+			      NULL, 
+			      NULL,
+			      g_cclosure_marshal_VOID__VOID, 
+			      G_TYPE_NONE,
+			      0);
+	
+	signals[PARSER_END] =
+		g_signal_new ("parser-end",
+			      G_TYPE_FROM_CLASS (klass),
+			      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+			      0,
+			      NULL, 
+			      NULL,
+			      g_cclosure_marshal_VOID__VOID, 
+			      G_TYPE_NONE,
+			      0);
 }
 
 GType
@@ -506,14 +538,15 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(self->priv->view);
 	
-	
+	GtkTextMark *insert = gtk_text_buffer_get_insert(buffer);
 	if (gsnippets_parser_count_vars(content) <= 0)
 	{
 		gtk_text_buffer_insert_at_cursor(buffer,content,-1);
+		gtk_text_view_scroll_mark_onscreen(self->priv->view,insert);
 		return FALSE;
 	}
 	
-	GtkTextMark *insert = gtk_text_buffer_get_insert(buffer);
+	
 	GtkTextIter start_iter, end_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,insert);
 	GtkTextMark *start_mark = gtk_text_buffer_create_mark(buffer,
@@ -526,6 +559,7 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 							      FALSE);
 
 	gtk_text_buffer_insert_at_cursor(buffer,content,-1);
+	gtk_text_view_scroll_mark_onscreen(self->priv->view,end_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
 	   		            
@@ -549,7 +583,9 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	g_signal_connect(self->priv->view,"key-press-event",G_CALLBACK(view_key_press_cb),self);
 	g_signal_connect_after(buffer,"insert-text",G_CALLBACK(view_insert_text_cb),self);
 	g_signal_connect_after(buffer,"mark-set",G_CALLBACK(buffer_mark_set_cb),self);
-	//snippetvar_set_text(buffer,borrar,"prueba");
+	
+	g_signal_emit (G_OBJECT (self), signals[PARSER_START], 0);
+	
 	return TRUE;
 }
 
@@ -601,6 +637,9 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
 	self->priv->moving = FALSE;
+	
+	g_signal_emit (G_OBJECT (self), signals[PARSER_END], 0);
+	
 	return TRUE;
 }
 

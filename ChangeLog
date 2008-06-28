@@ -1,6 +1,8 @@
 2008-06-28  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: 
+		- Added parser-start and parser-end signals
+		- Scroll view to the inserted text
 		- Fixed problem with the last updating.
 		- We insert the text if it has not variables
 		- Fixed deactivating problems
