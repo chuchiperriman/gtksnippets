@@ -373,6 +373,29 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	}
 }
 
+static void
+buffer_delete_range_cb(GtkTextBuffer *textbuffer,
+			GtkTextIter   *start,
+			GtkTextIter   *end,
+			gpointer       user_data)
+{
+	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
+	
+	if(self->priv->active_var_pos == NULL)
+		return;
+	
+	SnippetVar *var = self->priv->active_var_pos->data;
+	//Update mirror vars
+	if (self->priv->timeout_id==0 && !self->priv->updating)
+	{
+		self->priv->timeout_id = g_timeout_add(DELAY,update_mirrors_cb,var);
+	}
+	else
+	{
+		self->priv->updating = FALSE;
+	}
+}
+
 static gboolean
 mark_in_current_var(GtkSnippetsInPlaceParser *self, GtkTextMark *mark,gint move_offset)
 {
@@ -582,8 +605,8 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	self->priv->moving = FALSE;
 	g_signal_connect(self->priv->view,"key-press-event",G_CALLBACK(view_key_press_cb),self);
 	g_signal_connect_after(buffer,"insert-text",G_CALLBACK(view_insert_text_cb),self);
+	g_signal_connect_after(buffer,"delete-range",G_CALLBACK(buffer_delete_range_cb),self);
 	g_signal_connect_after(buffer,"mark-set",G_CALLBACK(buffer_mark_set_cb),self);
-	
 	g_signal_emit (G_OBJECT (self), signals[PARSER_START], 0);
 	
 	return TRUE;
