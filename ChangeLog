@@ -1,6 +1,7 @@
 2008-06-28  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: 
+		- Place the cursos at end when all vars have been replaced
 		- Fixed bug deleteting text
 		- Added parser-start and parser-end signals
 		- Scroll view to the inserted text

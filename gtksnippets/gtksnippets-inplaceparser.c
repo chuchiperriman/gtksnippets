@@ -23,6 +23,8 @@
 #include "../gsnippets/gsnippets-parser.h"
 
 #define DELAY 300
+#define SNIPPET_START_MARK "snippet_start"
+#define SNIPPET_END_MARK "snippet_end"
 
 typedef struct _SnippetVar SnippetVar;
 
@@ -416,7 +418,18 @@ mark_in_current_var(GtkSnippetsInPlaceParser *self, GtkTextMark *mark,gint move_
 	return TRUE;
 }
 
-gboolean
+static void
+_place_cursor_at_end(GtkSnippetsInPlaceParser *self)
+{
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+	GtkTextMark *mark = gtk_text_buffer_get_mark(buffer,SNIPPET_END_MARK);
+	GtkTextIter iter;
+	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
+	gtk_text_buffer_place_cursor(buffer,&iter);
+	
+}
+
+static gboolean
 view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 {
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
@@ -428,13 +441,19 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
 		{
 			if (!active_prev_var(self))
+			{
 				gtksnippets_inplaceparser_deactivate(self);
+				_place_cursor_at_end(self);
+			}
 			return TRUE;
 		}
 		else
 		{
 			if (!active_next_var(self))
+			{
 				gtksnippets_inplaceparser_deactivate(self);
+				_place_cursor_at_end(self);
+			}
 			return TRUE;
 		}
 	}
@@ -494,20 +513,14 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 		GtkTextMark *imark = gtk_text_buffer_get_insert(buffer);
 		if (!mark_in_current_var(self,imark,-1))
-		{
-			g_debug("no esta en mark");
 			return TRUE;
-		}
 	}
 	else if (event->keyval == GDK_Right)
 	{
 		GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 		GtkTextMark *imark = gtk_text_buffer_get_insert(buffer);
 		if (!mark_in_current_var(self,imark,1))
-		{
-			g_debug("no esta en mark");
 			return TRUE;
-		}
 	}
 	return FALSE;
 }
@@ -573,11 +586,11 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	GtkTextIter start_iter, end_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,insert);
 	GtkTextMark *start_mark = gtk_text_buffer_create_mark(buffer,
-							      "snippet_start",
+							      SNIPPET_START_MARK,
 							      &start_iter,
 							      TRUE);
 	GtkTextMark *end_mark = gtk_text_buffer_create_mark(buffer,
-							      "snippet_end",
+							      SNIPPET_END_MARK,
 							      &start_iter,
 							      FALSE);
 
