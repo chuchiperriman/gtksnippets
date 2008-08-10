@@ -56,6 +56,7 @@ struct _GtkSnippetsInPlaceParserPrivate
 	guint timeout_id;
 	gboolean updating;
 	gboolean moving;
+	GtkTextMark *end_position_mark;
 };
 static GObjectClass* parent_class = NULL;
 
@@ -117,8 +118,9 @@ snippetvar_get_text(GtkTextBuffer *buffer,
 	return gtk_text_buffer_get_text(buffer,&start_var,&end_var,FALSE);
 }
 
-
 /*#################################################*/
+
+
 static void
 gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 {
@@ -131,6 +133,7 @@ gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 	self->priv->active_var_pos = NULL;
 	self->priv->timeout_id = 0;
 	self->priv->moving = FALSE;
+	self->priv->end_position_mark = NULL;
 }
 
 static void
@@ -331,7 +334,6 @@ update_mirrors_cb(gpointer user_data)
 	
 	if (list!=NULL)
 	{
-		g_debug("update");
 		do{
 			self->priv->updating = TRUE;
 			snippetvar_set_text(buffer, 
@@ -419,14 +421,19 @@ mark_in_current_var(GtkSnippetsInPlaceParser *self, GtkTextMark *mark,gint move_
 }
 
 static void
-_place_cursor_at_end(GtkSnippetsInPlaceParser *self)
+_end_var_replacement(GtkSnippetsInPlaceParser *self)
 {
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
-	GtkTextMark *mark = gtk_text_buffer_get_mark(buffer,SNIPPET_END_MARK);
 	GtkTextIter iter;
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+	GtkTextMark *mark = NULL;
+	if (self->priv->end_position_mark!=NULL)
+		mark = self->priv->end_position_mark;
+	else
+		mark = gtk_text_buffer_get_mark(buffer,SNIPPET_END_MARK);
+
 	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
+	gtksnippets_inplaceparser_deactivate(self);
 	gtk_text_buffer_place_cursor(buffer,&iter);
-	
 }
 
 static gboolean
@@ -442,8 +449,7 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		{
 			if (!active_prev_var(self))
 			{
-				gtksnippets_inplaceparser_deactivate(self);
-				_place_cursor_at_end(self);
+				_end_var_replacement(self);
 			}
 			return TRUE;
 		}
@@ -451,8 +457,7 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 		{
 			if (!active_next_var(self))
 			{
-				gtksnippets_inplaceparser_deactivate(self);
-				_place_cursor_at_end(self);
+				_end_var_replacement(self);
 			}
 			return TRUE;
 		}
@@ -600,18 +605,42 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
 	   		            
 	/* Searching variables */
-	SnippetVar *var;
+	SnippetVar *var, *end_position_var = NULL;
+	GtkTextIter start_var, end_var;
 	var = search_var(self,buffer,&start_iter,&end_iter);
 	while(var!=NULL)
 	{
-		GtkTextIter start_var, end_var;
 		gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
 		gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
-		gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_var, &end_var);
-		g_debug("Var found: %s",var->name);
-		store_var(self,var);
+		/*Checking the position var*/
+		if (g_utf8_collate(var->name,"0")==0)
+		{
+			if (self->priv->end_position_mark==NULL)
+				end_position_var = var;
+			else
+				g_warning("Duplicated position var ${0}. It will be ignored");
+		}
+		else
+		{
+			gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_var, &end_var);
+			store_var(self,var);
+		}
 		var = search_var(self,buffer,&end_var,&end_iter);
 	}
+	
+	if (end_position_var!=NULL)
+	{
+		/* We must delete the position var here not in the while */
+		gtk_text_buffer_get_iter_at_mark(buffer,&start_var,end_position_var->start);
+		gtk_text_buffer_get_iter_at_mark(buffer,&end_var,end_position_var->end);
+		gtk_text_buffer_delete(buffer,&start_var, &end_var);
+		self->priv->end_position_mark = gtk_text_buffer_create_mark(buffer,
+									NULL,
+									&start_var,
+									TRUE);
+		snippetvar_free(self,end_position_var);
+	}
+	
 	self->priv->active = TRUE;
 	active_next_var(self);
 	/*The first var is not handled by cursor-changed. We must set moving to FALSE*/
@@ -639,7 +668,6 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	
 	g_debug("Deactivating inplace parser...");
 	
-	//TODO Desconectar señales
 	g_signal_handlers_disconnect_by_func(self->priv->view,view_key_press_cb,self);
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	g_signal_handlers_disconnect_by_func(buffer,view_insert_text_cb,self);
@@ -667,12 +695,20 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 			lista = g_list_next(lista);
 		}while(lista!=NULL);
 	}
-	
 	g_list_free(self->priv->vars);
+	
+	gtk_text_buffer_delete_mark_by_name(buffer,SNIPPET_START_MARK);
+	gtk_text_buffer_delete_mark_by_name(buffer,SNIPPET_END_MARK);
+	
 	self->priv->vars = NULL;
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
 	self->priv->moving = FALSE;
+	if (self->priv->end_position_mark!=NULL)
+	{
+		gtk_text_buffer_delete_mark(buffer,self->priv->end_position_mark);
+		self->priv->end_position_mark = NULL;
+	}
 	
 	g_signal_emit (G_OBJECT (self), signals[PARSER_END], 0);
 	
