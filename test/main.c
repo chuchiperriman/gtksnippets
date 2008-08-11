@@ -5,7 +5,7 @@
 #include "../gtksnippets/gtksnippets-varsdialog.h"
 #include "../gtksnippets/gtksnippets-inplaceparser.h"
 
-const gchar* EXAMPLE_TEXT = "${0}${name} is very beautiful, \n${name} is the best. Lest's go \nto ${city}, ${number}!!!!!\nPosition:><---";
+const gchar* EXAMPLE_TEXT = "${name} is very beautiful, \n${name} is the best. Lest's go \nto ${city}, ${number}!!!!!\nPosition:>${0}<---";
 
 static GtkTextView *view;
 static GtkSnippetsInPlaceParser *parser = NULL;

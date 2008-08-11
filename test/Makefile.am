@@ -1,4 +1,4 @@
-bin_PROGRAMS = gtksnippets-test
+bin_PROGRAMS = gtksnippets-test vars-test
 
 INCLUDES=	\
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -26,3 +26,10 @@ gtksnippets_test_LDADD = 	\
 	$(PACKAGE_LIBS)
 
  
+vars_test_SOURCES = 		\
+	vars-test.c
+
+vars_test_LDADD = 	\
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la	\
+	$(top_builddir)/gtksnippets/libgtksnippets-1.0.la	\
+	$(PACKAGE_LIBS)
