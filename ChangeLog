@@ -1,3 +1,10 @@
+=== version 0.1.1 ===
+
+2008-08-17  Chuchi  <perriman@homer>
+
+	* Release: Closed 0.1.1 version
+
+
 2008-08-10  Chuchi  <perriman@homer>
 
 	* gtksnippets-inplaceparser: Added end position. Setting ${0} in a
