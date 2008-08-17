@@ -1,4 +1,4 @@
-bin_PROGRAMS = gtksnippets-test
+bin_PROGRAMS = gtksnippets-test vars-test
 
 INCLUDES=	\
 	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
@@ -13,6 +13,8 @@ INCLUDES=	\
 AM_CFLAGS = \
 	-Wall	
 
+noinst_PROGRAMS = gtksnippets-test vars-test
+
 gtksnippets_test_SOURCES = 		\
 	main.c
 
@@ -26,3 +28,14 @@ gtksnippets_test_LDADD = 	\
 	$(PACKAGE_LIBS)
 
  
+vars_test_SOURCES = 		\
+	vars-test.c
+
+vars_test_LDFLAGS =  \
+	`pkg-config --libs libglade-2.0`	\
+	`pkg-config --libs gtksourceview-2.0`	
+
+vars_test_LDADD = 	\
+	$(top_builddir)/gsnippets/libgsnippets-1.0.la	\
+	$(top_builddir)/gtksnippets/libgtksnippets-1.0.la	\
+	$(PACKAGE_LIBS)

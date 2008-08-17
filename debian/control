@@ -1,0 +1,33 @@
+Source: gtksnippets
+Section: libs
+Priority: optional
+Maintainer: Jesús Barbero Rodríguez <chuchiperriman@gmail.com>
+Build-Depends: autotools-dev,
+               cdbs,
+               debhelper (>= 5),
+               dh-buildinfo,
+               gnome-pkg-tools (>= 0.7),
+               dpkg-dev (>= 1.13.19),
+               libsqlite3-dev, 
+               libgtk2.0-dev (>= 2.12.0),
+               libglib2.0-dev (>= 2.13.0)
+Standards-Version: 3.8.0
+
+Package: libgtksnippets1.0-0
+Section: libs
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, libsqlite3-0 
+Description: Library to manage snippets into the system. You can use this library
+ to share your snippets between multiple applications.
+ .
+ This package contains the library binaries.
+
+Package: libgtksnippets1.0-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}, libgtksnippets1.0-0 (= ${binary:Version}), libsqlite3-dev 
+Description: Library to manage snippets into the system. You can use this library
+ to share your snippets between multiple applications.
+ .
+ This package contains the header files required if you wish to develop
+ software that uses the GtkSnippets library.

@@ -1,4 +1,14 @@
 =================
+GtkSnippets 0.1.1
+=================
+
+New Features and Fixes
+======================
+
+- Added new in-place variables parser. This object replace snippets variable into the 
+GtkTextView.
+
+=================
 GtkSnippets 0.1.0
 =================
 

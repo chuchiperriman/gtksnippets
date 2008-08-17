@@ -1,3 +1,65 @@
+=== version 0.1.1 ===
+
+2008-08-17  Chuchi  <perriman@homer>
+
+	* Release: Closed 0.1.1 version
+
+
+2008-08-10  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: Added end position. Setting ${0} in a
+	snippet, the cursor will be placed here when the user finish to
+	replace all vars
+
+2008-06-28  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: 
+		- Place the cursos at end when all vars have been replaced
+		- Fixed bug deleteting text
+		- Added parser-start and parser-end signals
+		- Scroll view to the inserted text
+		- Fixed problem with the last updating.
+		- We insert the text if it has not variables
+		- Fixed deactivating problems
+
+2008-06-21  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: 
+		- Catch Right, Left keys
+		- Better timeout control
+		- Fixed bugs moving with mirrors
+
+2008-06-20  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser:
+		- Better cursor control
+		- Shift+home|end select from cursor to home|end
+
+2008-06-19  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: Handled Home and End keys. Home goes to
+	home of the current placeholder and end to the end
+
+2008-06-18  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: 
+		- Added mirror variables management
+		- Simple cursor-changed control. When the cursor goes to a
+		possition out of the snippet management, we deactivate the
+		parser.
+
+2008-06-14  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: 
+		- Uses tab and shift+tab to change between placeholders
+		- Uses timeout to replace placeholders and mirror
+		placeholders. Works fine now
+
+2008-06-09  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser: Created a new variable parser to replace
+	variables inplace (directly in the GtkTextView). It is not yet usable.
+
 == gtksnippets 0.1.0 ==
 
 2008-03-29  perriman  <perriman@portatil>
