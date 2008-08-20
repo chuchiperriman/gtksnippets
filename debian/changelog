@@ -1,3 +1,9 @@
+gtksnippets (0.1.1-2) unstable; urgency=low
+
+  * Fixed problem with glade an icon files
+
+ -- Jesús Barbero Rodríguez <chuchiperriman@gmail.com>  Wed, 20 Aug 2008 14:29:39 +0200
+
 gtksnippets (0.1.1-1) unstable; urgency=low
 
   * Initial release 
