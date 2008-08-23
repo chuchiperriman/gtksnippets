@@ -28,7 +28,7 @@ libgsnippets_1_0_la_LIBADD	= \
 	$(PACKAGE_CFLAGS)
 
 libgsnippets_1_0_la_LDFLAGS =	\
-	-version-info 1:0:0 -module	\
+	-version-info 1:0:0 	\
 	$(GTKSNIPPETS_LIBS)	
 	
 libgsnippets_1_0_includedir = $(includedir)/gsnippets-1.0/gsnippets
