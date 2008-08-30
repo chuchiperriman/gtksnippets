@@ -1,3 +1,15 @@
+2008-08-30  Chuchi  <perriman@homer>
+
+	* fixed #2076627, gtksnippets-inplaceparser.h: Removed timeout
+	functions. We update the mirror variables when the user inserts or
+	removes some text.
+
+2008-08-26  Chuchi  <perriman@homer>
+
+	* fixed #2067246,
+	gtksnippets-inplaceparser.h: Added indentation when insert the
+	snippets
+
 2008-08-23  Chuchi  <perriman@homer>
 
 	* Makefile: Fixed error with portable libraries. I remove all -module

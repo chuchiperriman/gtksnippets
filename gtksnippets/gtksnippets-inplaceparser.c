@@ -18,9 +18,11 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
  
-#include <gdk/gdkkeysyms.h>   
+#include <gdk/gdkkeysyms.h>
+#include <string.h>
 #include "gtksnippets-inplaceparser.h"
 #include "../gsnippets/gsnippets-parser.h"
+
 
 #define DELAY 300
 #define SNIPPET_START_MARK "snippet_start"
@@ -53,7 +55,6 @@ struct _GtkSnippetsInPlaceParserPrivate
 	GtkTextTag *var_tag;
 	gboolean active;
 	GList *active_var_pos;
-	guint timeout_id;
 	gboolean updating;
 	gboolean moving;
 	GtkTextMark *end_position_mark;
@@ -120,6 +121,82 @@ snippetvar_get_text(GtkTextBuffer *buffer,
 
 /*#################################################*/
 
+/*###############indentation management############*/
+static gchar *
+_compute_line_indentation (GtkTextView *view,
+		     GtkTextIter *cur)
+{
+	GtkTextIter start;
+	GtkTextIter end;
+
+	gunichar ch;
+	gint line;
+
+	line = gtk_text_iter_get_line (cur);
+
+	gtk_text_buffer_get_iter_at_line (gtk_text_view_get_buffer (view),
+					  &start,
+					  line);
+
+	end = start;
+
+	ch = gtk_text_iter_get_char (&end);
+
+	while (g_unichar_isspace (ch) &&
+	       (ch != '\n') &&
+	       (ch != '\r') &&
+	       (gtk_text_iter_compare (&end, cur) < 0))
+	{
+		if (!gtk_text_iter_forward_char (&end))
+			break;
+
+		ch = gtk_text_iter_get_char (&end);
+	}
+
+	if (gtk_text_iter_equal (&start, &end))
+		return NULL;
+
+	return gtk_text_iter_get_slice (&start, &end);
+}
+
+static gchar*
+_get_text_with_indent(const gchar* content,gchar *indent)
+{
+	if (indent==NULL)
+		return g_strdup(content);
+	GString *fin = NULL;
+	gchar *ret = NULL;
+	gint len = strlen(content);
+	gint i;
+	gint last_line = 0;
+	for (i=0;i < len;i++)
+	{
+		if (content[i] == '\n' || content[i] =='\r')
+		{
+			if (fin==NULL)
+				fin = g_string_new_len(content,i+1);
+			else
+			{
+				fin = g_string_append_len(fin,&content[last_line+1],i - last_line);
+			}
+			fin = g_string_append(fin,indent);
+			last_line = i;
+		}
+	}
+	if (fin==NULL)
+		ret = g_strdup(content);
+	else
+	{
+		if (last_line < len -1)
+		{
+			fin = g_string_append_len(fin,&content[last_line+1],len - last_line);
+		}
+		ret = g_string_free(fin,FALSE);
+	}
+	return ret;
+}
+
+/*#################################################*/
 
 static void
 gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
@@ -131,7 +208,6 @@ gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 	self->priv->var_tag = NULL;
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
-	self->priv->timeout_id = 0;
 	self->priv->moving = FALSE;
 	self->priv->end_position_mark = NULL;
 }
@@ -144,7 +220,6 @@ gtksnippets_inplaceparser_finalize (GObject *object)
 	
 	gtksnippets_inplaceparser_deactivate(self);
 	self->priv->active_var_pos = NULL;
-	self->priv->timeout_id = 0;
 	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -262,6 +337,16 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextIter *po
 							&end,
 							FALSE);
 		}
+		else
+		{
+			/*
+			If there is ${ but not } in the line, we must to search
+			a new variable because if we return NULL, it is the end
+			of the search
+			*/
+			gtk_text_iter_forward_chars(&start,2);
+			var = search_var(self,buffer,&start,limit);
+		}
 	}
 	
 	return var;
@@ -314,8 +399,15 @@ active_next_var(GtkSnippetsInPlaceParser *self)
 static gboolean
 update_mirrors_cb(gpointer user_data)
 {
+	
+	
+	g_debug("Updating mirrors");
 	SnippetVar *actual_var = (SnippetVar*)user_data;
 	GtkSnippetsInPlaceParser *self = actual_var->parser;
+	if (self->priv->updating)
+		return FALSE;
+	
+	
 	self->priv->updating = TRUE;
 	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
@@ -323,7 +415,6 @@ update_mirrors_cb(gpointer user_data)
 	if (self->priv->active_var_pos==NULL)
 	{
 		self->priv->updating = FALSE;
-		self->priv->timeout_id = 0;
 		return FALSE;
 	}
 	
@@ -335,14 +426,12 @@ update_mirrors_cb(gpointer user_data)
 	if (list!=NULL)
 	{
 		do{
-			self->priv->updating = TRUE;
 			snippetvar_set_text(buffer, 
 				list->data,
 				text);
 		}while((list=g_list_next(list))!=NULL);
 	}
 	g_free(text);
-	self->priv->timeout_id = 0;
 	gtk_text_buffer_end_user_action(buffer);
 	self->priv->updating = FALSE;
 	return FALSE;
@@ -366,15 +455,8 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,var->end);
 	gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_iter, &end_iter);
 	
-	//Update mirror vars
-	if (self->priv->timeout_id==0 && !self->priv->updating)
-	{
-		self->priv->timeout_id = g_timeout_add(DELAY,update_mirrors_cb,var);
-	}
-	else
-	{
-		self->priv->updating = FALSE;
-	}
+	//TODO Update mirror vars
+	update_mirrors_cb(var);
 }
 
 static void
@@ -390,14 +472,7 @@ buffer_delete_range_cb(GtkTextBuffer *textbuffer,
 	
 	SnippetVar *var = self->priv->active_var_pos->data;
 	//Update mirror vars
-	if (self->priv->timeout_id==0 && !self->priv->updating)
-	{
-		self->priv->timeout_id = g_timeout_add(DELAY,update_mirrors_cb,var);
-	}
-	else
-	{
-		self->priv->updating = FALSE;
-	}
+	update_mirrors_cb(var);
 }
 
 static gboolean
@@ -575,6 +650,7 @@ buffer_mark_set_cb(GtkTextBuffer *buffer,
 gboolean
 gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* content)
 {
+	g_debug("inplace activate...");
 	gtksnippets_inplaceparser_deactivate(self);
 	
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(self->priv->view);
@@ -582,11 +658,16 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	GtkTextMark *insert = gtk_text_buffer_get_insert(buffer);
 	if (gsnippets_parser_count_vars(content) <= 0)
 	{
-		gtk_text_buffer_insert_at_cursor(buffer,content,-1);
+		GtkTextIter cur;
+		gtk_text_buffer_get_iter_at_mark(buffer,&cur,insert);
+		gchar *indent = _compute_line_indentation(self->priv->view,&cur);
+		gchar *indent_text = _get_text_with_indent(content, indent);
+		g_free(indent);
+		gtk_text_buffer_insert_at_cursor(buffer,indent_text,-1);
+		g_free(indent_text);
 		gtk_text_view_scroll_mark_onscreen(self->priv->view,insert);
 		return FALSE;
 	}
-	
 	
 	GtkTextIter start_iter, end_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,insert);
@@ -598,47 +679,27 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 							      SNIPPET_END_MARK,
 							      &start_iter,
 							      FALSE);
-
-	gtk_text_buffer_insert_at_cursor(buffer,content,-1);
+	
+	gchar *indent = _compute_line_indentation(self->priv->view,&start_iter);
+	gchar *indent_text = _get_text_with_indent(content, indent);
+	g_free(indent);
+	gtk_text_buffer_insert_at_cursor(buffer,indent_text,-1);
+	g_free(indent_text);
 	gtk_text_view_scroll_mark_onscreen(self->priv->view,end_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
 	   		            
 	/* Searching variables */
-	SnippetVar *var, *end_position_var = NULL;
+	SnippetVar *var;
 	GtkTextIter start_var, end_var;
 	var = search_var(self,buffer,&start_iter,&end_iter);
 	while(var!=NULL)
 	{
 		gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
 		gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
-		/*Checking the position var*/
-		if (g_utf8_collate(var->name,"0")==0)
-		{
-			if (self->priv->end_position_mark==NULL)
-				end_position_var = var;
-			else
-				g_warning("Duplicated position var ${0}. It will be ignored");
-		}
-		else
-		{
-			gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_var, &end_var);
-			store_var(self,var);
-		}
+		gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_var, &end_var);
+		store_var(self,var);
 		var = search_var(self,buffer,&end_var,&end_iter);
-	}
-	
-	if (end_position_var!=NULL)
-	{
-		/* We must delete the position var here not in the while */
-		gtk_text_buffer_get_iter_at_mark(buffer,&start_var,end_position_var->start);
-		gtk_text_buffer_get_iter_at_mark(buffer,&end_var,end_position_var->end);
-		gtk_text_buffer_delete(buffer,&start_var, &end_var);
-		self->priv->end_position_mark = gtk_text_buffer_create_mark(buffer,
-									NULL,
-									&start_var,
-									TRUE);
-		snippetvar_free(self,end_position_var);
 	}
 	
 	self->priv->active = TRUE;
@@ -659,12 +720,6 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 {
 	if (!self->priv->active)
 		return FALSE;
-	
-	if (self->priv->timeout_id!=0)
-	{
-		/*Wait a moment while finish the vars update*/
-		g_usleep((DELAY*1000)+100000);
-	}
 	
 	g_debug("Deactivating inplace parser...");
 	
