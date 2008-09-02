@@ -210,6 +210,7 @@ gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 	self->priv->active_var_pos = NULL;
 	self->priv->moving = FALSE;
 	self->priv->end_position_mark = NULL;
+	self->priv->updating = FALSE;
 }
 
 static void
@@ -363,6 +364,7 @@ set_active_var(GtkSnippetsInPlaceParser *self)
 	gtk_text_buffer_get_iter_at_mark(buffer,&start,var->start);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end,var->end);
 	gtk_text_buffer_select_range(buffer,&start,&end);
+	gtk_text_view_scroll_mark_onscreen(self->priv->view,var->start);
 }
 
 static gboolean
@@ -396,16 +398,12 @@ active_next_var(GtkSnippetsInPlaceParser *self)
 	return TRUE;
 }
 
-static gboolean
-update_mirrors_cb(gpointer user_data)
+static void
+update_mirrors(SnippetVar *actual_var)
 {
-	
-	
-	g_debug("Updating mirrors");
-	SnippetVar *actual_var = (SnippetVar*)user_data;
 	GtkSnippetsInPlaceParser *self = actual_var->parser;
 	if (self->priv->updating)
-		return FALSE;
+		return;
 	
 	
 	self->priv->updating = TRUE;
@@ -415,9 +413,8 @@ update_mirrors_cb(gpointer user_data)
 	if (self->priv->active_var_pos==NULL)
 	{
 		self->priv->updating = FALSE;
-		return FALSE;
+		return;
 	}
-	
 	gtk_text_buffer_begin_user_action(buffer);
 	
 	GList *list = actual_var->mirrors;
@@ -434,7 +431,6 @@ update_mirrors_cb(gpointer user_data)
 	g_free(text);
 	gtk_text_buffer_end_user_action(buffer);
 	self->priv->updating = FALSE;
-	return FALSE;
 }
 
 void
@@ -455,8 +451,7 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,var->end);
 	gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_iter, &end_iter);
 	
-	//TODO Update mirror vars
-	update_mirrors_cb(var);
+	update_mirrors(var);
 }
 
 static void
@@ -471,8 +466,7 @@ buffer_delete_range_cb(GtkTextBuffer *textbuffer,
 		return;
 	
 	SnippetVar *var = self->priv->active_var_pos->data;
-	//Update mirror vars
-	update_mirrors_cb(var);
+	update_mirrors(var);
 }
 
 static gboolean
@@ -507,6 +501,7 @@ _end_var_replacement(GtkSnippetsInPlaceParser *self)
 		mark = gtk_text_buffer_get_mark(buffer,SNIPPET_END_MARK);
 
 	gtk_text_buffer_get_iter_at_mark(buffer,&iter,mark);
+	gtk_text_view_scroll_mark_onscreen(self->priv->view,mark);
 	gtksnippets_inplaceparser_deactivate(self);
 	gtk_text_buffer_place_cursor(buffer,&iter);
 }
@@ -769,5 +764,4 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	
 	return TRUE;
 }
-
 
