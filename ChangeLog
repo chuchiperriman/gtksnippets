@@ -1,6 +1,21 @@
+2008-09-03  Chuchi  <perriman@homer>
+
+	* gsnippets-func-manager.h: Created the skeleton of the funcions
+	manager (for the variables replacement)
+	* fixed #2067243: New variable management fixes this issue
+	* gtksnippets-inplaceparser.c: 
+		- Sort the variables by index
+		- Using the new GtkSnippetsGtvVar object
+	to manage the variable control (mirrors, text etc.)
+
+2008-09-02  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser.c: Scroll the view when the user changes
+	the current variable
+
 2008-08-30  Chuchi  <perriman@homer>
 
-	* fixed #2076627, gtksnippets-inplaceparser.h: Removed timeout
+	* fixed #2076627, gtksnippets-inplaceparser.c: Removed timeout
 	functions. We update the mirror variables when the user inserts or
 	removes some text.
 

@@ -21,22 +21,13 @@
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include "gtksnippets-inplaceparser.h"
+#include "gtksnippets-gtv-var.h"
 #include "../gsnippets/gsnippets-parser.h"
 
 
 #define DELAY 300
 #define SNIPPET_START_MARK "snippet_start"
 #define SNIPPET_END_MARK "snippet_end"
-
-typedef struct _SnippetVar SnippetVar;
-
-struct _SnippetVar{
-	gchar *name;
-	GtkTextMark *start;
-	GtkTextMark *end;
-	GList *mirrors;
-	GtkSnippetsInPlaceParser *parser;
-};
 
 /* Signals */
 enum
@@ -64,62 +55,6 @@ static GObjectClass* parent_class = NULL;
 #define GTKSNIPPETS_INPLACEPARSER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTKSNIPPETS_TYPE_INPLACEPARSER, GtkSnippetsInPlaceParserPrivate))
 
 #define VAR_TAG_NAME "snippet_var"
-
-/*###############SnippetVar functions##############*/
-
-static SnippetVar*
-snippet_new(GtkSnippetsInPlaceParser *parser)
-{
-	SnippetVar *var = g_new0(SnippetVar,1);
-	var->mirrors=NULL;
-	var->parser = parser;
-	return var;
-}
-
-static void
-snippetvar_free(GtkSnippetsInPlaceParser *self, SnippetVar *var)
-{
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
-	gtk_text_buffer_delete_mark(buffer,var->start);
-	gtk_text_buffer_delete_mark(buffer,var->end);
-	g_free(var->name);
-	GList *lista = var->mirrors;
-	if (lista!=NULL)
-	{
-		do{
-			snippetvar_free(self,(SnippetVar*)lista->data);
-			lista = g_list_next(lista);
-		}while(lista!=NULL);
-		g_list_free(var->mirrors);
-	}
-	
-	g_free(var);
-}
-
-static void
-snippetvar_set_text(GtkTextBuffer *buffer, 
-		SnippetVar *var,
-		const gchar* text)
-{
-	/* Esto está por hacer todavía*/
-	GtkTextIter start_var, end_var;
-	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
-	gtk_text_buffer_delete(buffer,&start_var,&end_var);
-	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,text,-1,VAR_TAG_NAME,NULL);
-}
-
-static gchar*
-snippetvar_get_text(GtkTextBuffer *buffer, 
-		SnippetVar *var)
-{
-	GtkTextIter start_var, end_var;
-	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
-	return gtk_text_buffer_get_text(buffer,&start_var,&end_var,FALSE);
-}
-
-/*#################################################*/
 
 /*###############indentation management############*/
 static gchar *
@@ -297,18 +232,23 @@ gtksnippets_inplaceparser_new(GtkTextView *view)
 	return self;
 }
 
-static SnippetVar*
-search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextIter *pos, GtkTextIter *limit)
+static GtkSnippetsGtvVar*
+search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *init_mark, GtkTextMark *limit_mark)
 {
-	SnippetVar *var = NULL;
+	GtkSnippetsGtvVar *var = NULL;
+	GtkTextMark *start_mark, *end_mark, *temp_mark;
+	gchar *definition;
+	const gchar *default_value;
 	GtkTextIter start, end, *temp_iter;
-	gboolean found = gtk_text_iter_forward_search(pos,
+	GtkTextIter pos, limit;
+	gtk_text_buffer_get_iter_at_mark(buffer,&pos, init_mark);
+	gtk_text_buffer_get_iter_at_mark(buffer,&limit, limit_mark);
+	gboolean found = gtk_text_iter_forward_search(&pos,
 				"${",
 				GTK_TEXT_SEARCH_VISIBLE_ONLY,
 				&start,
 				NULL,
-				limit);
-	
+				&limit);
 	if (found)
 	{
 		temp_iter = gtk_text_iter_copy(&start);
@@ -322,21 +262,34 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextIter *po
 		if (found)
 		{
 			gtk_text_iter_forward_char(&end);
-			var = snippet_new(self);
-			var->start = gtk_text_buffer_create_mark(buffer,
+			start_mark = gtk_text_buffer_create_mark(buffer,
 								NULL,
 								&start,
 								TRUE);
-			var->end = gtk_text_buffer_create_mark(buffer,
+			end_mark = gtk_text_buffer_create_mark(buffer,
 								NULL,
 								&end,
 								FALSE);
 			gtk_text_iter_forward_chars(&start,2);
 			gtk_text_iter_forward_chars(&end,-1);
-			var->name = gtk_text_buffer_get_text(buffer,
+			definition = gtk_text_buffer_get_text(buffer,
 							&start,
 							&end,
 							FALSE);
+			
+			var = gtksnippets_gtv_var_new(definition,
+							self->priv->view,
+							start_mark,
+							end_mark);
+			g_free(definition);
+			
+			default_value = gtksnippets_variable_get_default_value(GTKSNIPPETS_VARIABLE(var));
+			if (default_value==NULL)
+				default_value = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(var));
+				
+			gtksnippets_gtv_var_set_text_with_tags_by_name(var,
+									default_value,
+									VAR_TAG_NAME);
 		}
 		else
 		{
@@ -346,7 +299,13 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextIter *po
 			of the search
 			*/
 			gtk_text_iter_forward_chars(&start,2);
-			var = search_var(self,buffer,&start,limit);
+			temp_mark = gtk_text_buffer_create_mark(buffer,
+								NULL,
+								&start,
+								TRUE);
+			gtk_text_buffer_move_mark(buffer,temp_mark,&start);
+			var = search_var(self,buffer,temp_mark,limit_mark);
+			gtk_text_buffer_delete_mark(buffer,temp_mark);
 		}
 	}
 	
@@ -357,14 +316,17 @@ static void
 set_active_var(GtkSnippetsInPlaceParser *self)
 {
 	self->priv->moving = TRUE;
-	SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
+	GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
 	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
+	GtkTextMark *start_mark, *end_mark;
 	GtkTextIter start,end;
-	gtk_text_buffer_get_iter_at_mark(buffer,&start,var->start);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end,var->end);
+	start_mark = gtksnippets_gtv_var_get_start_mark(var);
+	end_mark = gtksnippets_gtv_var_get_end_mark(var);
+	gtk_text_buffer_get_iter_at_mark(buffer,&start,start_mark);
+	gtk_text_buffer_get_iter_at_mark(buffer,&end,end_mark);
 	gtk_text_buffer_select_range(buffer,&start,&end);
-	gtk_text_view_scroll_mark_onscreen(self->priv->view,var->start);
+	gtk_text_view_scroll_mark_onscreen(self->priv->view,start_mark);
 }
 
 static gboolean
@@ -399,12 +361,10 @@ active_next_var(GtkSnippetsInPlaceParser *self)
 }
 
 static void
-update_mirrors(SnippetVar *actual_var)
+update_mirrors(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *actual_var)
 {
-	GtkSnippetsInPlaceParser *self = actual_var->parser;
 	if (self->priv->updating)
 		return;
-	
 	
 	self->priv->updating = TRUE;
 	
@@ -417,17 +377,11 @@ update_mirrors(SnippetVar *actual_var)
 	}
 	gtk_text_buffer_begin_user_action(buffer);
 	
-	GList *list = actual_var->mirrors;
-	gchar* text = snippetvar_get_text(buffer,actual_var);
+	gchar* text = gtksnippets_gtv_var_get_text(actual_var);
 	
-	if (list!=NULL)
-	{
-		do{
-			snippetvar_set_text(buffer, 
-				list->data,
-				text);
-		}while((list=g_list_next(list))!=NULL);
-	}
+	gtksnippets_gtv_var_set_text_with_tags_by_name(actual_var,
+							text,
+							VAR_TAG_NAME);
 	g_free(text);
 	gtk_text_buffer_end_user_action(buffer);
 	self->priv->updating = FALSE;
@@ -440,18 +394,21 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 		    gint len,
 		    gpointer user_data)
 {
+	GtkTextMark *start_mark, *end_mark;
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
 	
 	if(self->priv->active_var_pos == NULL)
 		return;
-	//Repaint the tag
-	SnippetVar *var = self->priv->active_var_pos->data;
+	/*Repaint the tag*/
+	GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
+	start_mark = gtksnippets_gtv_var_get_start_mark(var);
+	end_mark = gtksnippets_gtv_var_get_end_mark(var);
 	GtkTextIter start_iter,end_iter;
-	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,var->start);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,var->end);
+	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
+	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
 	gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_iter, &end_iter);
 	
-	update_mirrors(var);
+	update_mirrors(self, var);
 }
 
 static void
@@ -465,8 +422,8 @@ buffer_delete_range_cb(GtkTextBuffer *textbuffer,
 	if(self->priv->active_var_pos == NULL)
 		return;
 	
-	SnippetVar *var = self->priv->active_var_pos->data;
-	update_mirrors(var);
+	GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
+	update_mirrors(self, var);
 }
 
 static gboolean
@@ -474,13 +431,16 @@ mark_in_current_var(GtkSnippetsInPlaceParser *self, GtkTextMark *mark,gint move_
 {
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(self->priv->view);
 	GtkTextIter location;
+	GtkTextIter start_iter,end_iter;
+	GtkTextMark *start_mark, *end_mark;
 	gtk_text_buffer_get_iter_at_mark(buffer,&location,mark);
 	gtk_text_iter_forward_chars(&location,move_offset);
-	SnippetVar *var = self->priv->active_var_pos->data;
+	GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
+	start_mark = gtksnippets_gtv_var_get_start_mark(var);
+	end_mark = gtksnippets_gtv_var_get_end_mark(var);
 	gint current_offset = gtk_text_iter_get_offset(&location);
-	GtkTextIter start_iter,end_iter;
-	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,var->start);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,var->end);
+	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
+	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
 	gint start_offset = gtk_text_iter_get_offset(&start_iter);
 	gint end_offset = gtk_text_iter_get_offset(&end_iter);
 	/*Test if the cursor is out of the current placeholder*/
@@ -541,10 +501,12 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 	{
 		if (self->priv->active_var_pos!=NULL)
 		{
-			SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
+			GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 			GtkTextIter start_iter;
-			gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,var->start);
+			GtkTextMark *start_mark;
+			start_mark = gtksnippets_gtv_var_get_start_mark(var);
+			gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
 			self->priv->moving = TRUE;
 			if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
 			{
@@ -564,10 +526,12 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 	{
 		if (self->priv->active_var_pos!=NULL)
 		{
-			SnippetVar *var = (SnippetVar*)self->priv->active_var_pos->data;
+			GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 			GtkTextIter iter;
-			gtk_text_buffer_get_iter_at_mark(buffer,&iter,var->end);
+			GtkTextMark *end_mark;
+			end_mark = gtksnippets_gtv_var_get_end_mark(var);
+			gtk_text_buffer_get_iter_at_mark(buffer,&iter,end_mark);
 			self->priv->moving = TRUE;
 			if ((event->state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)
 			{
@@ -601,15 +565,18 @@ view_key_press_cb(GtkWidget *view, GdkEventKey *event, gpointer user_data)
 }
 
 static void
-store_var(GtkSnippetsInPlaceParser *self, SnippetVar *var)
+store_var(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *var)
 {
 	GList *vars = self->priv->vars;
-	SnippetVar *parent = NULL, *temp;
+	GtkSnippetsGtvVar *parent = NULL, *temp;
+	const gchar *name, *temp_name;
 	if (vars!=NULL)
 	{
 		do{
-			temp = (SnippetVar*)vars->data;
-			if (g_utf8_collate(var->name,temp->name)==0)
+			temp = GTKSNIPPETS_GTV_VAR(vars->data);
+			name = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(var));
+			temp_name = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(temp));
+			if (g_utf8_collate(name,temp_name)==0)
 			{
 				parent = temp;
 				break;
@@ -617,13 +584,17 @@ store_var(GtkSnippetsInPlaceParser *self, SnippetVar *var)
 		}while(parent == NULL && (vars = g_list_next(vars))!=NULL);
 		
 		if (parent !=NULL)
-			parent->mirrors = g_list_append(parent->mirrors,var);
+		{
+			gtksnippets_gtv_var_add_mirror(parent,var);
+			g_object_unref(var);
+		}
 		else
+		{
 			self->priv->vars = g_list_append(self->priv->vars,var);
+		}
 	}
 	else
 		self->priv->vars = g_list_append(self->priv->vars,var);
-	//TODO buscamos una variable en el nivel general con el mismo nombre
 }
 
 static void
@@ -640,6 +611,16 @@ buffer_mark_set_cb(GtkTextBuffer *buffer,
 		else if (!mark_in_current_var(self,mark,0))
 	                gtksnippets_inplaceparser_deactivate(self);
 	}
+}
+
+static gint
+sort_variables(gconstpointer a,
+		gconstpointer b)
+{
+	GtkSnippetsVariable *vara, *varb;
+	vara = GTKSNIPPETS_VARIABLE(a);
+	varb = GTKSNIPPETS_VARIABLE(b);
+	return gtksnippets_variable_get_index(vara) - gtksnippets_variable_get_index(varb);
 }
 
 gboolean
@@ -664,38 +645,38 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 		return FALSE;
 	}
 	
-	GtkTextIter start_iter, end_iter;
+	GtkTextIter start_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,insert);
 	GtkTextMark *start_mark = gtk_text_buffer_create_mark(buffer,
 							      SNIPPET_START_MARK,
 							      &start_iter,
 							      TRUE);
-	GtkTextMark *end_mark = gtk_text_buffer_create_mark(buffer,
+	GtkTextMark *end_text_mark = gtk_text_buffer_create_mark(buffer,
 							      SNIPPET_END_MARK,
 							      &start_iter,
 							      FALSE);
+	GtkTextMark *end_mark;
 	
 	gchar *indent = _compute_line_indentation(self->priv->view,&start_iter);
 	gchar *indent_text = _get_text_with_indent(content, indent);
 	g_free(indent);
 	gtk_text_buffer_insert_at_cursor(buffer,indent_text,-1);
 	g_free(indent_text);
-	gtk_text_view_scroll_mark_onscreen(self->priv->view,end_mark);
-	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
-	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
-	   		            
+	gtk_text_view_scroll_mark_onscreen(self->priv->view,end_text_mark);
+
 	/* Searching variables */
-	SnippetVar *var;
-	GtkTextIter start_var, end_var;
-	var = search_var(self,buffer,&start_iter,&end_iter);
+	GtkSnippetsGtvVar *var;
+	var = search_var(self,buffer,start_mark,end_text_mark);
 	while(var!=NULL)
 	{
-		gtk_text_buffer_get_iter_at_mark(buffer,&start_var,var->start);
-		gtk_text_buffer_get_iter_at_mark(buffer,&end_var,var->end);
-		gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_var, &end_var);
+		end_mark = gtksnippets_gtv_var_get_end_mark(var);
 		store_var(self,var);
-		var = search_var(self,buffer,&end_var,&end_iter);
+		var = search_var(self,buffer,end_mark,end_text_mark);
 	}
+	
+	/*Sorting varables by index*/
+	self->priv->vars = g_list_sort(self->priv->vars,
+					sort_variables);
 	
 	self->priv->active = TRUE;
 	active_next_var(self);
@@ -741,7 +722,7 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	if (lista!=NULL)
 	{
 		do{
-			snippetvar_free(self,(SnippetVar*)lista->data);
+			g_object_unref(GTKSNIPPETS_GTV_VAR(lista->data));
 			lista = g_list_next(lista);
 		}while(lista!=NULL);
 	}

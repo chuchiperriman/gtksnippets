@@ -10,13 +10,14 @@
 typedef struct{
 	gint numero;
 	gchar *nombre;
+	gchar *def;
 	gchar *func;
 }Var;
 
 static gboolean
 procesar_variable(gchar* var_text, Var *var)
 {
-	gchar **parts = g_strsplit (var_text, ":", 3);
+	gchar **parts = g_strsplit (var_text, ":", 4);
 	gboolean ok = TRUE;
 	if (parts[0]==NULL || g_strcmp0(parts[0],"")==0)
 	{
@@ -26,7 +27,10 @@ procesar_variable(gchar* var_text, Var *var)
 	
 	var->nombre = g_strdup(parts[0]);
 	
-	if (ok && parts[1]!=NULL && g_strcmp0(parts[1],"")!=0)
+	if (parts[1]==NULL)
+		return ok;
+	
+	if (ok && g_strcmp0(parts[1],"")!=0)
 	{
 		if (strlen(parts[1]) != 1 || !g_ascii_isdigit(*parts[1]))
 		{
@@ -36,7 +40,15 @@ procesar_variable(gchar* var_text, Var *var)
 		var->numero = atoi(parts[1]);
 	}
 	
-	if (ok && parts[2]!=NULL)
+	if (parts[2]==NULL)
+		return ok;
+	
+	if (ok && g_strcmp0(parts[2],"")!=0)
+	{
+		var->def = g_strdup(parts[2]);
+	}
+	
+	if (ok && parts[3]!=NULL)
 	{
 		g_warning("Demasiados separadores...");
 		ok = FALSE;
@@ -59,7 +71,7 @@ test_split(const gchar *text)
 {
 	Var var = {-1,NULL,NULL};
 	g_debug("Nuevo split de %s", text);
-	
+		
 	gchar **parts = g_strsplit (text, "#", 3);
 	if (parts[0] == NULL || strlen(parts[0]) < 1)
 	{
@@ -71,8 +83,9 @@ test_split(const gchar *text)
 	if (parts[1]!=NULL)
 		procesar_funcion(parts[1],&var);
 	
-	g_debug("Var: numero=%i, nombre=%s, funcion=%s",var.numero,var.nombre,var.func);
+	g_debug("Var: numero=%i, nombre=%s, valor def=%s, funcion=%s",var.numero,var.nombre,var.def,var.func);
 	g_free(var.nombre);
+	g_free(var.def);
 	g_free(var.func);
 	g_strfreev (parts);
 }
@@ -91,7 +104,9 @@ int main( int argc, const char* argv[] )
 	test_split(":asdfasd");
 	test_split("asdfasd");
 	test_split("asdfasd:");
-	test_split("asdfasd:1:2:3:4");
+	test_split("asdfasd:1:valordef");
+	test_split("sinnumero::valordef");
+	test_split("asdfasd:1:valordef:3:4");
 	test_split("asdfasd:1#funcion");
 	test_split("asdfasd:1#funcion:arg1:arg2");
 	test_split("asdfasd:1#funcion#dsfasd#safasdf");

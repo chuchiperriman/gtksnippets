@@ -2,13 +2,22 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include "../gsnippets/gsnippets-parser.h"
+#include "../gsnippets/gsnippets-func-manager.h"
 #include "../gtksnippets/gtksnippets-varsdialog.h"
 #include "../gtksnippets/gtksnippets-inplaceparser.h"
 
-const gchar* EXAMPLE_TEXT = "${name} is very beautiful, \n${name} is the best. Lest's go \nto ${city}, ${number}!!!!!\nPosition:>${0}<---";
+//const gchar* EXAMPLE_TEXT = "${name::Nombre} is very beautiful, \n${name::Nombre222222} is the best.\n${--------\n${\n Lest's go \nto ${city}, ${number}!!!!!\nPosition:>${0}<---\n${";
+const gchar* EXAMPLE_TEXT = "dos${dos:2:Dos}\nuno${uno:1:Uno#upper}\nsinindex${sinindex}\ntres${tres:3:Tres}\ndos${dos:2:Dos}\nuno${uno:1:Uno}\ntres${tres:3:Tres}";
 
 static GtkTextView *view;
 static GtkSnippetsInPlaceParser *parser = NULL;
+
+static gchar* miupper_func (GList *args,
+				const gchar *value,
+                                GError *error)
+{
+	return g_strdup_printf("Trans: %s",value);
+}
 
 
 static void
@@ -48,6 +57,7 @@ activate_cb(GtkWidget action,gpointer user_data)
 static void
 test_inplaceparser()
 {
+
 	GtkWindow *win;
 	GtkScrolledWindow *scroll;
 	GtkWidget *box, *button;
@@ -77,7 +87,17 @@ test_inplaceparser()
  */
 int main( int argc, const char* argv[] )
 {
+
+	/*Func test*/
+	gsnippets_func_manager_register_func("miupper",miupper_func);
+	gchar *res = gsnippets_func_manager_parse_text("miupper",
+					  NULL,
+					  "un texto",
+					  NULL);
+	g_debug("Res func: %s",res);
+	g_free(res);
 	
+	/*Main test*/
 	gtk_init(&argc,&argv);
 	test_inplaceparser();
 	
