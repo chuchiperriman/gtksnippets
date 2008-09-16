@@ -19,6 +19,7 @@
  */
 
 #include "gtksnippets-gtv-var.h"
+#include "../gsnippets/gsnippets-func-manager.h"
 
 G_DEFINE_TYPE (GtkSnippetsGtvVar, gtksnippets_gtv_var, GTKSNIPPETS_TYPE_VARIABLE)
 
@@ -136,7 +137,8 @@ gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self,
 			const gchar* text,
 			const gchar* tag_name)
 {
-	/* Esto está por hacer todavía*/
+	/*Transform the text if the varable has a function*/
+	
 	GtkTextIter start_var, end_var;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,self->priv->start_mark);
@@ -154,5 +156,6 @@ gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self,
 	}
 	
 }
+
 
 

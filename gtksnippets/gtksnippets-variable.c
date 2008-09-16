@@ -201,5 +201,20 @@ gtksnippets_variable_get_default_value(GtkSnippetsVariable *self)
 	return self->priv->default_value;
 }
 
+gchar*
+gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
+				const gchar* value)
+{
+	gchar *text = g_strdup(value);
+	if (text == NULL)
+	{
+		text = g_strdup(self->priv->default_value);
+		if (text == NULL)
+			return NULL;
+	}
+	//TODO Apply the function to the variable value
+	return text;
+}
+
 
 

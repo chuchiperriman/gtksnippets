@@ -68,6 +68,10 @@ gtksnippets_variable_get_index(GtkSnippetsVariable *self);
 const gchar*
 gtksnippets_variable_get_default_value(GtkSnippetsVariable *self);
 
+gchar*
+gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
+				const gchar* value);
+
 
 G_END_DECLS
 

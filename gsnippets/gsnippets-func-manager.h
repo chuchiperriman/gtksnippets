@@ -27,7 +27,7 @@ G_BEGIN_DECLS
 
 typedef gchar* (*GSnippetsFunc) (GList *args,
 				const gchar *value,
-                                GError *error);
+                                GError **error);
 
 void
 gsnippets_func_manager_register_func(const gchar *func_name,
@@ -37,7 +37,7 @@ gchar *
 gsnippets_func_manager_parse_text(const gchar *func_name,
 				GList *args,
 				const gchar *text,
-                                GError *error);
+                                GError **error);
 
 G_END_DECLS
        

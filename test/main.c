@@ -14,7 +14,7 @@ static GtkSnippetsInPlaceParser *parser = NULL;
 
 static gchar* miupper_func (GList *args,
 				const gchar *value,
-                                GError *error)
+                                GError **error)
 {
 	return g_strdup_printf("Trans: %s",value);
 }
@@ -89,13 +89,35 @@ int main( int argc, const char* argv[] )
 {
 
 	/*Func test*/
-	gsnippets_func_manager_register_func("miupper",miupper_func);
-	gchar *res = gsnippets_func_manager_parse_text("miupper",
+	gchar *res = gsnippets_func_manager_parse_text("upper",
 					  NULL,
 					  "un texto",
 					  NULL);
-	g_debug("Res func: %s",res);
+	g_debug("Res func upper: %s",res);
 	g_free(res);
+	
+	res = gsnippets_func_manager_parse_text("lower",
+					  NULL,
+					  "MAYÚSCULAS",
+					  NULL);
+	g_debug("Res func lower: %s",res);
+	g_free(res);
+	
+	gsnippets_func_manager_register_func("miupper",miupper_func);
+	res = gsnippets_func_manager_parse_text("miupper",
+					  NULL,
+					  "un texto",
+					  NULL);
+	g_debug("Res func miupper: %s",res);
+	g_free(res);
+	GError *error = NULL;
+	res = gsnippets_func_manager_parse_text("sssss",
+					  NULL,
+					  "un texto",
+					  &error);
+	g_free(res);
+	g_debug("un error %s",error->message);
+	g_error_free(error);
 	
 	/*Main test*/
 	gtk_init(&argc,&argv);

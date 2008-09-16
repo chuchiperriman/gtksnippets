@@ -1,3 +1,12 @@
+2008-09-16  Chuchi  <perriman@homer>
+
+	* gsnippets-func-manager.h: 
+		- Sets correctly the GError
+		- Created init function
+		- Added upper y lower functions
+	* gtksnippets-variable: Added gtksnippets_variable_parse_value
+	function to get the variable value
+
 2008-09-03  Chuchi  <perriman@homer>
 
 	* gsnippets-func-manager.h: Created the skeleton of the funcions

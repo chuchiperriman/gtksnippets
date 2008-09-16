@@ -24,7 +24,6 @@
 #include "gtksnippets-gtv-var.h"
 #include "../gsnippets/gsnippets-parser.h"
 
-
 #define DELAY 300
 #define SNIPPET_START_MARK "snippet_start"
 #define SNIPPET_END_MARK "snippet_end"
@@ -632,6 +631,7 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(self->priv->view);
 	
 	GtkTextMark *insert = gtk_text_buffer_get_insert(buffer);
+	/*TODO remove this gsnippets-parser dependency*/
 	if (gsnippets_parser_count_vars(content) <= 0)
 	{
 		GtkTextIter cur;
