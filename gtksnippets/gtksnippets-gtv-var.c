@@ -137,25 +137,26 @@ gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self,
 			const gchar* text,
 			const gchar* tag_name)
 {
-	/*Transform the text if the varable has a function*/
-	
+	gchar *final = gtksnippets_variable_parse_value(GTKSNIPPETS_VARIABLE(self),
+							text);
 	GtkTextIter start_var, end_var;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,self->priv->start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,self->priv->end_mark);
 	gtk_text_buffer_delete(buffer,&start_var,&end_var);
-	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,text,-1,tag_name,NULL);
+	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,final,-1,tag_name,NULL);
+	
 	
 	GList *list = self->priv->mirrors;
 	while(list !=NULL)
 	{
 		gtksnippets_gtv_var_set_text_with_tags_by_name(GTKSNIPPETS_GTV_VAR(list->data),
-								text,
+								final,
 								tag_name);
 		list = g_list_next(list);
 	}
 	
+	g_free(final);
 }
-
 
 

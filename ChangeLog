@@ -1,3 +1,9 @@
+2008-09-30  Chuchi  <perriman@homer>
+
+	* gsnippets-func-manager.c: Added camel function using regexp!!
+	* gtksnippets-gtv-var.c: Added function support
+
+
 2008-09-16  Chuchi  <perriman@homer>
 
 	* gsnippets-func-manager.h: 

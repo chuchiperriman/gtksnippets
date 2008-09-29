@@ -90,6 +90,28 @@ test_split(const gchar *text)
 	g_strfreev (parts);
 }
 
+static void
+test_camel()
+{
+	GRegex *gr = g_regex_new ("( |-|_|\\b)(.)",
+				    0,
+				    0,
+				    NULL);
+	gchar *res = g_regex_replace(gr,
+			"gtk_source_completion @ gtk source completion @ gtk source-completion_mas",
+			-1,
+			0,
+			"\\u\\2",
+			0,
+			NULL);
+	g_debug("Res regexp camel: %s",res);
+	
+	g_free(res);
+	
+	g_regex_unref (gr);
+	
+}
+
 /*
  * 1.- Coger las variables
  * 2.- Pedir los valores al usuario
@@ -98,6 +120,7 @@ test_split(const gchar *text)
  */
 int main( int argc, const char* argv[] )
 {
+	test_camel();
 	
 	test_split("");
 	test_split("asdfasd:1");

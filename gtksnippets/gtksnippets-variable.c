@@ -21,6 +21,7 @@
 #include "gtksnippets-variable.h"
 #include <stdlib.h>
 #include <string.h>
+#include "../gsnippets/gsnippets-func-manager.h"
 
 #define DEFAULT_INDEX 100
 
@@ -31,6 +32,7 @@ struct _GtkSnippetsVariablePrivate
 	gchar *name;
 	guint index;
 	gchar *default_value;
+	gchar *func_name;
 };
 
 static void
@@ -38,10 +40,12 @@ gtksnippets_variable_clean(GtkSnippetsVariable *self)
 {
 	g_free(self->priv->name);
 	g_free(self->priv->default_value);
+	g_free(self->priv->func_name);
 	self->priv->index = DEFAULT_INDEX;
 	self->priv->name = NULL;
 	self->priv->default_value = NULL;
 	self->priv->index = DEFAULT_INDEX;
+	self->priv->func_name = NULL;
 }
 
 static void
@@ -73,12 +77,14 @@ gtksnippets_variable_init (GtkSnippetsVariable *self)
 	self->priv->name = NULL;
 	self->priv->default_value = NULL;
 	self->priv->index = DEFAULT_INDEX;
+	self->priv->func_name = NULL;
 }
 
 static gboolean
-parse_var_func_part(GtkSnippetsVariable *self, gchar* var_text)
+parse_var_func_part(GtkSnippetsVariable *self, gchar* func_text)
 {
-	/*TODO future...*/
+	/*TODO Parse function args too*/
+	self->priv->func_name = g_strdup(func_text);
 	return TRUE;
 }
 
@@ -205,15 +211,29 @@ gchar*
 gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
 				const gchar* value)
 {
-	gchar *text = g_strdup(value);
+	const gchar *text = value;
+	gchar *final;
 	if (text == NULL)
 	{
-		text = g_strdup(self->priv->default_value);
+		text = (const gchar*)self->priv->default_value;
 		if (text == NULL)
 			return NULL;
 	}
+	
+	if (self->priv->func_name!=NULL)
+	{
+		/*TODO Check error and see how to notify it*/
+		final = gsnippets_func_manager_parse_text(self->priv->func_name,
+						NULL,
+						text,
+						NULL);
+	}
+	else
+	{
+		final = g_strdup(text);
+	}
 	//TODO Apply the function to the variable value
-	return text;
+	return final;
 }
 
 

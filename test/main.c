@@ -7,7 +7,7 @@
 #include "../gtksnippets/gtksnippets-inplaceparser.h"
 
 //const gchar* EXAMPLE_TEXT = "${name::Nombre} is very beautiful, \n${name::Nombre222222} is the best.\n${--------\n${\n Lest's go \nto ${city}, ${number}!!!!!\nPosition:>${0}<---\n${";
-const gchar* EXAMPLE_TEXT = "dos${dos:2:Dos}\nuno${uno:1:Uno#upper}\nsinindex${sinindex}\ntres${tres:3:Tres}\ndos${dos:2:Dos}\nuno${uno:1:Uno}\ntres${tres:3:Tres}";
+const gchar* EXAMPLE_TEXT = "dos${dos:2:Dos}\nuno mays: ${uno:1:Uno}\nsinindex${sinindex}\ntres${tres:3:Tres}\ndos${dos:2:Dos}\nuno up: ${uno:6:Uno#upper}\ntres${tres:3:Tres}\nuno low: ${uno:6:Uno#lower}\nuno low: ${uno:6:Uno#camel}";
 
 static GtkTextView *view;
 static GtkSnippetsInPlaceParser *parser = NULL;
@@ -16,7 +16,36 @@ static gchar* miupper_func (GList *args,
 				const gchar *value,
                                 GError **error)
 {
+
 	return g_strdup_printf("Trans: %s",value);
+}
+
+static gchar* micamel_func (GList *args,
+				const gchar *value,
+                                GError **error)
+{
+	gchar *temp = g_strdup(value);
+	gchar *orig = temp;
+	gboolean found = TRUE;
+	while(temp[0] != NULL && temp[0] != '\0' )
+	{
+		g_debug("letra: [%s]",temp);
+		if (found)
+		{
+			g_debug("--");
+			found = FALSE;
+			g_debug("antes up");
+			temp[0] = g_ascii_toupper(temp[0]);
+			g_debug("des up");
+		}
+		g_debug("antes 0 ");
+		if (temp[0] == ' ' || temp[0] == '_')
+			found = TRUE;
+		g_debug("antes ++");
+		temp++;
+		g_debug("des ++");
+	}
+	return orig;
 }
 
 
@@ -102,6 +131,13 @@ int main( int argc, const char* argv[] )
 					  NULL);
 	g_debug("Res func lower: %s",res);
 	g_free(res);
+
+	res = gsnippets_func_manager_parse_text("camel",
+					  NULL,
+					  " poner    a caaaaaamel",
+					  NULL);
+	g_debug("Res func lower: %s",res);
+	g_free(res);
 	
 	gsnippets_func_manager_register_func("miupper",miupper_func);
 	res = gsnippets_func_manager_parse_text("miupper",
@@ -109,6 +145,13 @@ int main( int argc, const char* argv[] )
 					  "un texto",
 					  NULL);
 	g_debug("Res func miupper: %s",res);
+	g_free(res);
+	gsnippets_func_manager_register_func("micamel",micamel_func);
+	res = gsnippets_func_manager_parse_text("micamel",
+					  NULL,
+					  " un    texto en camel_aaa_bbbb",
+					  NULL);
+	g_debug("Res func micamel: %s",res);
 	g_free(res);
 	GError *error = NULL;
 	res = gsnippets_func_manager_parse_text("sssss",

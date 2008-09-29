@@ -52,8 +52,29 @@ gsnippets_func_lower (GList *args,
 {
 	if (value==NULL)
 		return NULL;
-	
+		
 	return g_utf8_strdown(value,-1);
+}
+
+static gchar*
+gsnippets_func_camel (GList *args,
+			const gchar *value,
+			GError **error)
+{
+	GRegex *gr = g_regex_new ("( |-|_|\\b)(.)",
+				    0,
+				    0,
+				    NULL);
+	gchar *res = g_regex_replace(gr,
+			value,
+			-1,
+			0,
+			"\\u\\2",
+			0,
+			NULL);
+	
+	g_regex_unref (gr);
+	return res;
 }
 /* **************************************** */
 
@@ -75,6 +96,8 @@ gsnippets_func_manager_init()
 					(GSnippetsFunc*)gsnippets_func_upper);
 	gsnippets_func_manager_register_func("lower",
 					(GSnippetsFunc*)gsnippets_func_lower);
+	gsnippets_func_manager_register_func("camel",
+					(GSnippetsFunc*)gsnippets_func_camel);
 }
 
 void
