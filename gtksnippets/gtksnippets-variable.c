@@ -33,7 +33,13 @@ struct _GtkSnippetsVariablePrivate
 	guint index;
 	gchar *default_value;
 	gchar *func_name;
+	GList *func_args;
 };
+
+static void free_arg(gpointer *data, gpointer *user_data)
+{
+	g_free(data);
+}
 
 static void
 gtksnippets_variable_clean(GtkSnippetsVariable *self)
@@ -46,6 +52,10 @@ gtksnippets_variable_clean(GtkSnippetsVariable *self)
 	self->priv->default_value = NULL;
 	self->priv->index = DEFAULT_INDEX;
 	self->priv->func_name = NULL;
+	g_list_foreach(self->priv->func_args,(GFunc)free_arg,NULL);
+	g_list_free(self->priv->func_args);
+	self->priv->func_args = NULL;
+	
 }
 
 static void
@@ -78,14 +88,33 @@ gtksnippets_variable_init (GtkSnippetsVariable *self)
 	self->priv->default_value = NULL;
 	self->priv->index = DEFAULT_INDEX;
 	self->priv->func_name = NULL;
+	self->priv->func_args = NULL;
 }
 
 static gboolean
 parse_var_func_part(GtkSnippetsVariable *self, gchar* func_text)
 {
-	/*TODO Parse function args too*/
-	self->priv->func_name = g_strdup(func_text);
-	return TRUE;
+	gchar **parts = g_strsplit (func_text, ":", 4);
+	gboolean ok = TRUE, next = TRUE;
+	if (parts[0]==NULL || g_strcmp0(parts[0],"")==0)
+	{
+		g_warning("Empty function name");
+		ok = FALSE;
+		next = FALSE;
+	}
+	else
+	{
+		self->priv->func_name = g_strdup(parts[0]);
+	}
+	gint i = 1;
+	while (next && parts[i]!=NULL)
+	{
+		self->priv->func_args = g_list_append(self->priv->func_args,
+						g_strdup(parts[i]));
+		i++;
+	}
+	g_strfreev (parts);
+	return ok;
 }
 
 static gboolean
@@ -224,7 +253,7 @@ gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
 	{
 		/*TODO Check error and see how to notify it*/
 		final = gsnippets_func_manager_parse_text(self->priv->func_name,
-						NULL,
+						self->priv->func_args,
 						text,
 						NULL);
 	}

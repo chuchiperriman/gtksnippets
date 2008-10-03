@@ -7,7 +7,7 @@
 #include "../gtksnippets/gtksnippets-inplaceparser.h"
 
 //const gchar* EXAMPLE_TEXT = "${name::Nombre} is very beautiful, \n${name::Nombre222222} is the best.\n${--------\n${\n Lest's go \nto ${city}, ${number}!!!!!\nPosition:>${0}<---\n${";
-const gchar* EXAMPLE_TEXT = "dos${dos:2:Dos}\nuno mays: ${uno:1:Uno}\nsinindex${sinindex}\ntres${tres:3:Tres}\ndos${dos:2:Dos}\nuno up: ${uno:6:Uno#upper}\ntres${tres:3:Tres}\nuno low: ${uno:6:Uno#lower}\nuno low: ${uno:6:Uno#camel}";
+const gchar* EXAMPLE_TEXT = "dos${dos:2:Dos}\nuno mays: ${uno:1:uno}\nsinindex${sinindex}\ntres${tres:3:Tres}\ndos${dos:2:Dos}\nuno up: ${uno:6:Uno#upper}\ntres${tres:3:Tres}\nuno low: ${uno:6:Uno#lower}\nuno camel: ${uno:6:Uno#camel}\ncon args: ${args:6:ARGUMENTOS#regexp_rep:( |-|_|\\b)(.):\\l\\2}";
 
 static GtkTextView *view;
 static GtkSnippetsInPlaceParser *parser = NULL;

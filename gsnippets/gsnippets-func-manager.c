@@ -61,7 +61,7 @@ gsnippets_func_camel (GList *args,
 			const gchar *value,
 			GError **error)
 {
-	GRegex *gr = g_regex_new ("( |-|_|\\b)(.)",
+	GRegex *gr = g_regex_new ("( +|-+|_+|\\b)(.)",
 				    0,
 				    0,
 				    NULL);
@@ -74,6 +74,37 @@ gsnippets_func_camel (GList *args,
 			NULL);
 	
 	g_regex_unref (gr);
+	return res;
+}
+
+static gchar*
+gsnippets_func_regexp_rep (GList *args,
+			const gchar *value,
+			GError **error)
+{
+	gchar *res = NULL;
+	if (g_list_length(args)==2)
+	{
+		GRegex *gr = g_regex_new ((const gchar*)g_list_nth(args,0)->data,
+					    0,
+					    0,
+					    error);
+	
+		res = g_regex_replace(gr,
+				value,
+				-1,
+				0,
+				(const gchar*)g_list_nth(args,1)->data,
+				0,
+				error);
+	
+		g_regex_unref (gr);
+	}
+	else
+	{
+		//TODO Return a GError
+		g_warning("regexp_rep needs 2 arguments: the regexp and the replacement");
+	}
 	return res;
 }
 /* **************************************** */
@@ -98,6 +129,9 @@ gsnippets_func_manager_init()
 					(GSnippetsFunc*)gsnippets_func_lower);
 	gsnippets_func_manager_register_func("camel",
 					(GSnippetsFunc*)gsnippets_func_camel);
+	gsnippets_func_manager_register_func("regexp_rep",
+					(GSnippetsFunc*)gsnippets_func_regexp_rep);
+					
 }
 
 void

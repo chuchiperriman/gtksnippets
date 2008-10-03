@@ -1,3 +1,10 @@
+2008-10-03  Chuchi  <perriman@homer>
+
+	* gtksnippets-variable: Added function arguments parsing
+	* gsnippets-func-manager.c: 
+		- Better camel function 
+		- Added regexp_rep to replace using regexp like GRegex api
+
 2008-09-30  Chuchi  <perriman@homer>
 
 	* gsnippets-func-manager.c: Added camel function using regexp!!
