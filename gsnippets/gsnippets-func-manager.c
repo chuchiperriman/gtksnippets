@@ -30,8 +30,16 @@ static gboolean initilized = FALSE;
 
 typedef enum {
 	GSNIPPETS_FUNC_MANAGER_ERROR_NO_FUNC = 0,
+	GSNIPPETS_FUNC_MANAGER_ERROR_NO_ARGS,
 	GSNIPPETS_FUNC_MANAGER_ERROR_INVALID_ARGS
 } GSnippetsFuncManagerError;
+
+
+GQuark
+gsnippets_func_manager_quark (void)
+{
+  return g_quark_from_static_string ("gsnippets-func-manager-quark");
+}
 
 /* *********** Default functions ********** */
 static gchar*
@@ -61,19 +69,29 @@ gsnippets_func_camel (GList *args,
 			const gchar *value,
 			GError **error)
 {
+	GError *tmp_error = NULL;
+	gchar *res = NULL;
 	GRegex *gr = g_regex_new ("( +|-+|_+|\\b)(.)",
 				    0,
 				    0,
-				    NULL);
-	gchar *res = g_regex_replace(gr,
+				    &tmp_error);
+	if (tmp_error!=NULL)
+	{
+		g_propagate_error(error,tmp_error);
+		return NULL;
+	}
+	res = g_regex_replace(gr,
 			value,
 			-1,
 			0,
 			"\\u\\2",
 			0,
-			NULL);
-	
+			&tmp_error);
 	g_regex_unref (gr);
+
+	if (tmp_error!=NULL)
+		g_propagate_error(error,tmp_error);
+	
 	return res;
 }
 
@@ -83,37 +101,44 @@ gsnippets_func_regexp_rep (GList *args,
 			GError **error)
 {
 	gchar *res = NULL;
-	if (g_list_length(args)==2)
+	GError *tmp_error = NULL;
+	if (g_list_length(args)!=2)
 	{
-		GRegex *gr = g_regex_new ((const gchar*)g_list_nth(args,0)->data,
-					    0,
-					    0,
-					    error);
-	
-		res = g_regex_replace(gr,
-				value,
-				-1,
-				0,
-				(const gchar*)g_list_nth(args,1)->data,
-				0,
-				error);
-	
-		g_regex_unref (gr);
+		g_set_error(error,
+			    GSNIPPETS_FUNC_MANAGER_ERROR,
+			    GSNIPPETS_FUNC_MANAGER_ERROR_NO_ARGS,
+			    "regexp_rep needs 2 arguments: the regexp and the replacement. See GRegex API."
+			    );
+		return NULL;
 	}
-	else
+	GRegex *gr = g_regex_new ((const gchar*)g_list_nth(args,0)->data,
+				    0,
+				    0,
+				    &tmp_error);
+	if (tmp_error!=NULL)
 	{
-		//TODO Return a GError
-		g_warning("regexp_rep needs 2 arguments: the regexp and the replacement");
+		g_propagate_error(error,tmp_error);
+		return NULL;
 	}
+	res = g_regex_replace(gr,
+			value,
+			-1,
+			0,
+			(const gchar*)g_list_nth(args,1)->data,
+			0,
+			&tmp_error);
+	
+	g_regex_unref (gr);
+	
+	if (tmp_error!=NULL)
+	{
+		g_propagate_error(error,tmp_error);
+		return NULL;
+	}
+	
 	return res;
 }
 /* **************************************** */
-
-GQuark
-gsnippets_func_manager_quark (void)
-{
-  return g_quark_from_static_string ("gsnippets-func-manager-quark");
-}
 
 static void
 gsnippets_func_manager_init()
@@ -164,12 +189,10 @@ gsnippets_func_manager_parse_text(const gchar *func_name,
 			    "The function %s has not been found",
 			    func_name
 			    );
-		return g_strdup(text);
+		return NULL;
 	}
 	
 	return func(args,text,error);
 }
-
-
 
 

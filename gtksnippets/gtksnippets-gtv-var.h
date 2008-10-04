@@ -24,7 +24,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include "gtksnippets-variable.h"
+#include "gsnippets-variable.h"
 
 G_BEGIN_DECLS
 
@@ -42,14 +42,14 @@ typedef struct _GtkSnippetsGtvVarPrivate	GtkSnippetsGtvVarPrivate;
 
 struct _GtkSnippetsGtvVar
 {
-	GtkSnippetsVariable parent_instance;
+	GSnippetsVariable parent_instance;
 
 	GtkSnippetsGtvVarPrivate *priv;
 };
 
 struct _GtkSnippetsGtvVarClass
 {
-	GtkSnippetsVariableClass              parent_class;
+	GSnippetsVariableClass              parent_class;
 };
 
 GType             gtksnippets_gtv_var_get_type 		(void) G_GNUC_CONST;

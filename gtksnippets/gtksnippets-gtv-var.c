@@ -21,7 +21,7 @@
 #include "gtksnippets-gtv-var.h"
 #include "../gsnippets/gsnippets-func-manager.h"
 
-G_DEFINE_TYPE (GtkSnippetsGtvVar, gtksnippets_gtv_var, GTKSNIPPETS_TYPE_VARIABLE)
+G_DEFINE_TYPE (GtkSnippetsGtvVar, gtksnippets_gtv_var, GSNIPPETS_TYPE_VARIABLE)
 
 struct _GtkSnippetsGtvVarPrivate
 {
@@ -89,7 +89,7 @@ gtksnippets_gtv_var_new(const gchar *var_def,
 {
 	GtkSnippetsGtvVar *self;
 	self = g_object_new (GTKSNIPPETS_TYPE_GTV_VAR, NULL);
-	gtksnippets_variable_rebuild(GTKSNIPPETS_VARIABLE(self),var_def);
+	gsnippets_variable_rebuild(GSNIPPETS_VARIABLE(self),var_def);
 	self->priv->view = view;
 	self->priv->start_mark = start_mark;
 	self->priv->end_mark = end_mark;
@@ -137,8 +137,10 @@ gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self,
 			const gchar* text,
 			const gchar* tag_name)
 {
-	gchar *final = gtksnippets_variable_parse_value(GTKSNIPPETS_VARIABLE(self),
-							text);
+	/*TODO Check the error*/
+	gchar *final = gsnippets_variable_parse_value(GSNIPPETS_VARIABLE(self),
+							text,
+							NULL);
 	GtkTextIter start_var, end_var;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,self->priv->start_mark);

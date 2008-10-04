@@ -20,35 +20,6 @@ static gchar* miupper_func (GList *args,
 	return g_strdup_printf("Trans: %s",value);
 }
 
-static gchar* micamel_func (GList *args,
-				const gchar *value,
-                                GError **error)
-{
-	gchar *temp = g_strdup(value);
-	gchar *orig = temp;
-	gboolean found = TRUE;
-	while(temp[0] != NULL && temp[0] != '\0' )
-	{
-		g_debug("letra: [%s]",temp);
-		if (found)
-		{
-			g_debug("--");
-			found = FALSE;
-			g_debug("antes up");
-			temp[0] = g_ascii_toupper(temp[0]);
-			g_debug("des up");
-		}
-		g_debug("antes 0 ");
-		if (temp[0] == ' ' || temp[0] == '_')
-			found = TRUE;
-		g_debug("antes ++");
-		temp++;
-		g_debug("des ++");
-	}
-	return orig;
-}
-
-
 static void
 start_cb(GtkSnippetsInPlaceParser *parser, gpointer user_data)
 {
@@ -72,29 +43,29 @@ activate_cb(GtkWidget action,gpointer user_data)
 	if (parser==NULL)
 	{
 		parser = gtksnippets_inplaceparser_new(view);
-		g_signal_connect(parser,"parser-start",start_cb,NULL);
-		g_signal_connect(parser,"parser-end",end_cb,NULL);
+		g_signal_connect(parser,"parser-start",G_CALLBACK(start_cb),NULL);
+		g_signal_connect(parser,"parser-end",G_CALLBACK(end_cb),NULL);
 	}
 
 	gtksnippets_inplaceparser_deactivate(parser);
 	g_debug("boton activado");
 	
 	gtksnippets_inplaceparser_activate(parser,EXAMPLE_TEXT);
-	gtk_widget_grab_focus(view);
+	gtk_widget_grab_focus(GTK_WIDGET(view));
 }
 
 static void
 test_inplaceparser()
 {
 
-	GtkWindow *win;
-	GtkScrolledWindow *scroll;
+	GtkWidget *win;
+	GtkWidget *scroll;
 	GtkWidget *box, *button;
 	win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_default_size(win,800,600);
+	gtk_window_set_default_size(GTK_WINDOW(win),800,600);
 	box = gtk_vbox_new(FALSE,2);
 	scroll = gtk_scrolled_window_new(NULL,NULL);
-	view = gtk_text_view_new();
+	view = GTK_TEXT_VIEW(gtk_text_view_new());
 	button = gtk_button_new_with_label("Activa");
 	gtk_container_add(GTK_CONTAINER(win),GTK_WIDGET(box));
 	gtk_box_pack_start(GTK_BOX(box),scroll,TRUE,TRUE,1);
@@ -102,8 +73,8 @@ test_inplaceparser()
 	gtk_container_add(GTK_CONTAINER(scroll),GTK_WIDGET(view));
 	gtk_widget_show_all(GTK_WIDGET(win));
 
-	g_signal_connect(button,"clicked",activate_cb,NULL);
-	g_signal_connect(win,"destroy",destroy_cb,NULL);
+	g_signal_connect(button,"clicked",G_CALLBACK(activate_cb),NULL);
+	g_signal_connect(win,"destroy",G_CALLBACK(destroy_cb),NULL);
 
 	gtk_main();
 }
@@ -139,19 +110,12 @@ int main( int argc, const char* argv[] )
 	g_debug("Res func lower: %s",res);
 	g_free(res);
 	
-	gsnippets_func_manager_register_func("miupper",miupper_func);
+	gsnippets_func_manager_register_func("miupper",(GSnippetsFunc*)miupper_func);
 	res = gsnippets_func_manager_parse_text("miupper",
 					  NULL,
 					  "un texto",
 					  NULL);
 	g_debug("Res func miupper: %s",res);
-	g_free(res);
-	gsnippets_func_manager_register_func("micamel",micamel_func);
-	res = gsnippets_func_manager_parse_text("micamel",
-					  NULL,
-					  " un    texto en camel_aaa_bbbb",
-					  NULL);
-	g_debug("Res func micamel: %s",res);
 	g_free(res);
 	GError *error = NULL;
 	res = gsnippets_func_manager_parse_text("sssss",
@@ -163,7 +127,7 @@ int main( int argc, const char* argv[] )
 	g_error_free(error);
 	
 	/*Main test*/
-	gtk_init(&argc,&argv);
+	gtk_init(&argc,NULL);
 	test_inplaceparser();
 	
 	/* Vars dialog test

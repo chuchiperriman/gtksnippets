@@ -16,6 +16,7 @@ libgsnippets_headers = 	\
 	gsnippets-item.h		\
 	gsnippets-db.h			\
 	gsnippets-func-manager.h	\
+	gsnippets-variable.h		\
 	gsnippets-parser.h
 	
 libgsnippets_1_0_la_SOURCES	= \
@@ -23,6 +24,7 @@ libgsnippets_1_0_la_SOURCES	= \
 	gsnippets-item.c		\
 	gsnippets-db.c			\
 	gsnippets-func-manager.c	\
+	gsnippets-variable.c		\
 	gsnippets-parser.c		\
 	$(libgsnippets_headers)
 

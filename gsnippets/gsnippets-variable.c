@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8; coding: utf-8 -*-
- *  gtksnippets-variable.c
+ *  gsnippets-variable.c
  *
  *  Copyright (C) 2008 - ChuchiPerriman <chuchiperriman@gmail.com>
  *
@@ -18,16 +18,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gtksnippets-variable.h"
+#include "gsnippets-variable.h"
 #include <stdlib.h>
 #include <string.h>
 #include "../gsnippets/gsnippets-func-manager.h"
 
 #define DEFAULT_INDEX 100
 
-G_DEFINE_TYPE (GtkSnippetsVariable, gtksnippets_variable, G_TYPE_OBJECT)
+G_DEFINE_TYPE (GSnippetsVariable, gsnippets_variable, G_TYPE_OBJECT)
 
-struct _GtkSnippetsVariablePrivate
+struct _GSnippetsVariablePrivate
 {
 	gchar *name;
 	guint index;
@@ -42,7 +42,7 @@ static void free_arg(gpointer *data, gpointer *user_data)
 }
 
 static void
-gtksnippets_variable_clean(GtkSnippetsVariable *self)
+gsnippets_variable_clean(GSnippetsVariable *self)
 {
 	g_free(self->priv->name);
 	g_free(self->priv->default_value);
@@ -59,31 +59,31 @@ gtksnippets_variable_clean(GtkSnippetsVariable *self)
 }
 
 static void
-gtksnippets_variable_finalize (GObject *object)
+gsnippets_variable_finalize (GObject *object)
 {
-	GtkSnippetsVariable *self;
-	self = GTKSNIPPETS_VARIABLE (object);
+	GSnippetsVariable *self;
+	self = GSNIPPETS_VARIABLE (object);
 	
-	gtksnippets_variable_clean(self);
+	gsnippets_variable_clean(self);
 	
-	G_OBJECT_CLASS (gtksnippets_variable_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gsnippets_variable_parent_class)->finalize (object);
 }
 
 static void
-gtksnippets_variable_class_init (GtkSnippetsVariableClass *klass)
+gsnippets_variable_class_init (GSnippetsVariableClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	
-	object_class->finalize = gtksnippets_variable_finalize;
+	object_class->finalize = gsnippets_variable_finalize;
 
-	g_type_class_add_private (object_class, sizeof(GtkSnippetsVariablePrivate));
+	g_type_class_add_private (object_class, sizeof(GSnippetsVariablePrivate));
 }
 
 static void
-gtksnippets_variable_init (GtkSnippetsVariable *self)
+gsnippets_variable_init (GSnippetsVariable *self)
 {
-	self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, GTKSNIPPETS_TYPE_VARIABLE,
-						  GtkSnippetsVariablePrivate);
+	self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, GSNIPPETS_TYPE_VARIABLE,
+						  GSnippetsVariablePrivate);
 	self->priv->name = NULL;
 	self->priv->default_value = NULL;
 	self->priv->index = DEFAULT_INDEX;
@@ -92,7 +92,7 @@ gtksnippets_variable_init (GtkSnippetsVariable *self)
 }
 
 static gboolean
-parse_var_func_part(GtkSnippetsVariable *self, gchar* func_text)
+parse_var_func_part(GSnippetsVariable *self, gchar* func_text)
 {
 	gchar **parts = g_strsplit (func_text, ":", 4);
 	gboolean ok = TRUE, next = TRUE;
@@ -118,7 +118,7 @@ parse_var_func_part(GtkSnippetsVariable *self, gchar* func_text)
 }
 
 static gboolean
-parse_var_def_part(GtkSnippetsVariable *self, gchar* var_text)
+parse_var_def_part(GSnippetsVariable *self, gchar* var_text)
 {
 	gchar **parts = g_strsplit (var_text, ":", 4);
 	gboolean ok = TRUE, next = TRUE;
@@ -168,7 +168,7 @@ parse_var_def_part(GtkSnippetsVariable *self, gchar* var_text)
 }
 
 static gboolean
-parse_var_definition(GtkSnippetsVariable *self, const gchar *var_def)
+parse_var_definition(GSnippetsVariable *self, const gchar *var_def)
 {
 	gchar **parts = g_strsplit (var_def, "#", 3);
 	gboolean res = FALSE;
@@ -190,11 +190,11 @@ parse_var_definition(GtkSnippetsVariable *self, const gchar *var_def)
 }
 
 /**
- * gtksnippets_variable_new:
+ * gsnippets_variable_new:
  * @var_def: variable definition without brakets (if ${xxxx}, only xxxx)
  *
  * Passing a variable definition, this function parses this definition and assign all 
- * data to a new GtkSnippetsVariable. The definition is without the brakets.
+ * data to a new GSnippetsVariable. The definition is without the brakets.
  *
  * ${varname:index:default_value#function:arg1:argn...}
  *
@@ -202,43 +202,44 @@ parse_var_definition(GtkSnippetsVariable *self, const gchar *var_def)
  *
  * Returns: A new allocated snippet variable with all the data (name, index, default value etc.)
  **/
-GtkSnippetsVariable*
-gtksnippets_variable_new(const gchar *var_def)
+GSnippetsVariable*
+gsnippets_variable_new(const gchar *var_def)
 {
-	GtkSnippetsVariable *self;
-	self = g_object_new (GTKSNIPPETS_TYPE_VARIABLE, NULL);
+	GSnippetsVariable *self;
+	self = g_object_new (GSNIPPETS_TYPE_VARIABLE, NULL);
 	parse_var_definition(self,var_def);
 	return self;
 }
 
 void
-gtksnippets_variable_rebuild(GtkSnippetsVariable *self, const gchar *var_def)
+gsnippets_variable_rebuild(GSnippetsVariable *self, const gchar *var_def)
 {
-	gtksnippets_variable_clean(self);
+	gsnippets_variable_clean(self);
 	parse_var_definition(self,var_def);
 }
 
 const gchar* 
-gtksnippets_variable_get_name(GtkSnippetsVariable *self)
+gsnippets_variable_get_name(GSnippetsVariable *self)
 {
 	return self->priv->name;
 }
 
 guint
-gtksnippets_variable_get_index(GtkSnippetsVariable *self)
+gsnippets_variable_get_index(GSnippetsVariable *self)
 {
 	return self->priv->index;
 }
 
 const gchar*
-gtksnippets_variable_get_default_value(GtkSnippetsVariable *self)
+gsnippets_variable_get_default_value(GSnippetsVariable *self)
 {
 	return self->priv->default_value;
 }
 
 gchar*
-gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
-				const gchar* value)
+gsnippets_variable_parse_value(GSnippetsVariable *self,
+				const gchar* value,
+				GError **error)
 {
 	const gchar *text = value;
 	gchar *final;
@@ -251,17 +252,15 @@ gtksnippets_variable_parse_value(GtkSnippetsVariable *self,
 	
 	if (self->priv->func_name!=NULL)
 	{
-		/*TODO Check error and see how to notify it*/
 		final = gsnippets_func_manager_parse_text(self->priv->func_name,
 						self->priv->func_args,
 						text,
-						NULL);
+						error);
 	}
 	else
 	{
 		final = g_strdup(text);
 	}
-	//TODO Apply the function to the variable value
 	return final;
 }
 

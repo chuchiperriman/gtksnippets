@@ -282,9 +282,9 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *in
 							end_mark);
 			g_free(definition);
 			
-			default_value = gtksnippets_variable_get_default_value(GTKSNIPPETS_VARIABLE(var));
+			default_value = gsnippets_variable_get_default_value(GSNIPPETS_VARIABLE(var));
 			if (default_value==NULL)
-				default_value = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(var));
+				default_value = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(var));
 				
 			gtksnippets_gtv_var_set_text_with_tags_by_name(var,
 									default_value,
@@ -573,8 +573,8 @@ store_var(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *var)
 	{
 		do{
 			temp = GTKSNIPPETS_GTV_VAR(vars->data);
-			name = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(var));
-			temp_name = gtksnippets_variable_get_name(GTKSNIPPETS_VARIABLE(temp));
+			name = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(var));
+			temp_name = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(temp));
 			if (g_utf8_collate(name,temp_name)==0)
 			{
 				parent = temp;
@@ -616,10 +616,10 @@ static gint
 sort_variables(gconstpointer a,
 		gconstpointer b)
 {
-	GtkSnippetsVariable *vara, *varb;
-	vara = GTKSNIPPETS_VARIABLE(a);
-	varb = GTKSNIPPETS_VARIABLE(b);
-	return gtksnippets_variable_get_index(vara) - gtksnippets_variable_get_index(varb);
+	GSnippetsVariable *vara, *varb;
+	vara = GSNIPPETS_VARIABLE(a);
+	varb = GSNIPPETS_VARIABLE(b);
+	return gsnippets_variable_get_index(vara) - gsnippets_variable_get_index(varb);
 }
 
 gboolean
