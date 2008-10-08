@@ -1,3 +1,7 @@
+2008-10-09  Chuchi  <perriman@homer>
+
+	* gsnippets-func-manager: Added user_data when register a function
+
 2008-10-04  Chuchi  <perriman@homer>
 
 	* gsnippets-variable: renamed gtksnipptes-variable because the

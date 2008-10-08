@@ -34,6 +34,14 @@ typedef enum {
 	GSNIPPETS_FUNC_MANAGER_ERROR_INVALID_ARGS
 } GSnippetsFuncManagerError;
 
+struct _FuncData
+{
+	gchar *func_name;
+	GSnippetsFunc func;
+	gpointer user_data;
+};
+
+typedef struct _FuncData FuncData;
 
 GQuark
 gsnippets_func_manager_quark (void)
@@ -41,10 +49,33 @@ gsnippets_func_manager_quark (void)
   return g_quark_from_static_string ("gsnippets-func-manager-quark");
 }
 
+/* ************ FuncData functions ******** */
+static FuncData*
+funcdata_new(const gchar *func_name,
+	     GSnippetsFunc func,
+	     gpointer user_data)
+{
+	FuncData *fd = g_slice_new(FuncData);
+	fd->func_name = g_strdup(func_name);
+	fd->func = func;
+	fd->user_data = user_data;
+	return fd;
+}
+
+static void
+funcdata_free(FuncData *fd)
+{
+	g_free(fd->func_name);
+	g_slice_free(FuncData,fd);
+}
+
+/* **************************************** */
+
 /* *********** Default functions ********** */
 static gchar*
 gsnippets_func_upper (GList *args,
 			const gchar *value,
+			gpointer user_data,
 			GError **error)
 {
 	if (value==NULL)
@@ -56,6 +87,7 @@ gsnippets_func_upper (GList *args,
 static gchar*
 gsnippets_func_lower (GList *args,
 			const gchar *value,
+			gpointer user_data,
 			GError **error)
 {
 	if (value==NULL)
@@ -67,6 +99,7 @@ gsnippets_func_lower (GList *args,
 static gchar*
 gsnippets_func_camel (GList *args,
 			const gchar *value,
+			gpointer user_data,
 			GError **error)
 {
 	GError *tmp_error = NULL;
@@ -98,6 +131,7 @@ gsnippets_func_camel (GList *args,
 static gchar*
 gsnippets_func_regexp_rep (GList *args,
 			const gchar *value,
+			gpointer user_data,
 			GError **error)
 {
 	gchar *res = NULL;
@@ -146,28 +180,54 @@ gsnippets_func_manager_init()
 	functions = g_hash_table_new_full(g_str_hash,
 					  g_str_equal,
 					  g_free,
-					  NULL);
+					  (GDestroyNotify)funcdata_free);
 	initilized = TRUE;
 	gsnippets_func_manager_register_func("upper",
-					(GSnippetsFunc*)gsnippets_func_upper);
+					gsnippets_func_upper,
+					NULL);
 	gsnippets_func_manager_register_func("lower",
-					(GSnippetsFunc*)gsnippets_func_lower);
+					gsnippets_func_lower,
+					NULL);
 	gsnippets_func_manager_register_func("camel",
-					(GSnippetsFunc*)gsnippets_func_camel);
+					gsnippets_func_camel,
+					NULL);
 	gsnippets_func_manager_register_func("regexp_rep",
-					(GSnippetsFunc*)gsnippets_func_regexp_rep);
+					gsnippets_func_regexp_rep,
+					NULL);
 					
 }
 
 void
 gsnippets_func_manager_register_func(const gchar *func_name,
-				     GSnippetsFunc *func)
+				     GSnippetsFunc func,
+				     gpointer user_data)
 {
 	if (!initilized) gsnippets_func_manager_init();
-		
+	
+	gpointer old_func = g_hash_table_lookup(functions,
+						func_name);
+
+	g_return_if_fail(old_func==NULL);
+	
 	g_hash_table_insert(functions,
 			    g_strdup(func_name),
-			    func);
+			    funcdata_new(func_name,func,user_data));
+}
+
+gpointer
+gsnippets_func_manager_unregister_func(const gchar *func_name)
+{
+	if (!initilized) gsnippets_func_manager_init();
+	
+	FuncData *func = (FuncData*)g_hash_table_lookup(functions,
+						func_name);
+	if (func==NULL)
+		return NULL;
+	
+	gpointer user_data = func->user_data;
+	g_hash_table_remove(functions,func_name);
+	
+	return user_data;
 }
 
 gchar *
@@ -179,9 +239,8 @@ gsnippets_func_manager_parse_text(const gchar *func_name,
 
 	if (!initilized) gsnippets_func_manager_init();
 	
-	GSnippetsFunc func;
-	func = g_hash_table_lookup(functions, func_name);
-	if (func==NULL)
+	FuncData *fd = (FuncData*)g_hash_table_lookup(functions, func_name);
+	if (fd==NULL)
 	{
 		g_set_error(error,
 			    GSNIPPETS_FUNC_MANAGER_ERROR,
@@ -192,7 +251,7 @@ gsnippets_func_manager_parse_text(const gchar *func_name,
 		return NULL;
 	}
 	
-	return func(args,text,error);
+	return (*fd->func)(args,text,fd->user_data,error);
 }
 
 

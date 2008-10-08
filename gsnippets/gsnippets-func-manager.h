@@ -27,11 +27,22 @@ G_BEGIN_DECLS
 
 typedef gchar* (*GSnippetsFunc) (GList *args,
 				const gchar *value,
+				gpointer user_data,
                                 GError **error);
 
 void
 gsnippets_func_manager_register_func(const gchar *func_name,
-				     GSnippetsFunc *func);
+				     GSnippetsFunc func,
+				     gpointer user_data);
+
+/**
+ * gsnippets_func_manager_unregister_func:
+ * @func_name: The function to be unregistered
+ *
+ * Returns: The user_data assigned when the function was registered.
+ */
+gpointer
+gsnippets_func_manager_unregister_func(const gchar *func_name);
 
 gchar *
 gsnippets_func_manager_parse_text(const gchar *func_name,
