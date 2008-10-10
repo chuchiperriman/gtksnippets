@@ -238,7 +238,7 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *in
 	GtkTextMark *start_mark, *end_mark, *temp_mark;
 	gchar *definition;
 	const gchar *default_value;
-	GtkTextIter start, end, *temp_iter;
+	GtkTextIter start, end, temp_iter;
 	GtkTextIter pos, limit;
 	gtk_text_buffer_get_iter_at_mark(buffer,&pos, init_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&limit, limit_mark);
@@ -250,14 +250,14 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *in
 				&limit);
 	if (found)
 	{
-		temp_iter = gtk_text_iter_copy(&start);
-		gtk_text_iter_forward_to_line_end(temp_iter);
+		temp_iter = start;
+		gtk_text_iter_forward_to_line_end(&temp_iter);
 		found = gtk_text_iter_forward_search(&start,
 				"}",
 				GTK_TEXT_SEARCH_VISIBLE_ONLY,
 				&end,
 				NULL,
-				temp_iter);
+				&temp_iter);
 		if (found)
 		{
 			gtk_text_iter_forward_char(&end);
