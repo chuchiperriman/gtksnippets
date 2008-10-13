@@ -1,27 +1,38 @@
-2008-10-09  Chuchi  <perriman@homer>
+2008-10-11  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksnipptes-gtv-var.c: Check errors parsing value.
+	* gtksnipptes-inplaceparser.c: 
+		- Check errors and set the variable tag to "ERROR" (red color by now).
+		- Added automatic functions!!
+	* gsnippets-func-manager:
+		- Implemented "user" function
+		- Implemented "home" function
+		- Implemented "hostname" function
+
+2008-10-09  Chuchi  <chuchiperriman@gmail.com>
 
 	* gsnippets-func-manager: Added user_data when register a function
 
-2008-10-04  Chuchi  <perriman@homer>
+2008-10-04  Chuchi  <chuchiperriman@gmail.com>
 
 	* gsnippets-variable: renamed gtksnipptes-variable because the
 	variable object does not use gtk components
 	* gsnippets-func-manager: Control the errors correctly with GError
 
-2008-10-03  Chuchi  <perriman@homer>
+2008-10-03  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-variable: Added function arguments parsing
 	* gsnippets-func-manager.c: 
 		- Better camel function 
 		- Added regexp_rep to replace using regexp like GRegex api
 
-2008-09-30  Chuchi  <perriman@homer>
+2008-09-30  Chuchi  <chuchiperriman@gmail.com>
 
 	* gsnippets-func-manager.c: Added camel function using regexp!!
 	* gtksnippets-gtv-var.c: Added function support
 
 
-2008-09-16  Chuchi  <perriman@homer>
+2008-09-16  Chuchi  <chuchiperriman@gmail.com>
 
 	* gsnippets-func-manager.h: 
 		- Sets correctly the GError
@@ -30,7 +41,7 @@
 	* gtksnippets-variable: Added gtksnippets_variable_parse_value
 	function to get the variable value
 
-2008-09-03  Chuchi  <perriman@homer>
+2008-09-03  Chuchi  <chuchiperriman@gmail.com>
 
 	* gsnippets-func-manager.h: Created the skeleton of the funcions
 	manager (for the variables replacement)
@@ -40,41 +51,41 @@
 		- Using the new GtkSnippetsGtvVar object
 	to manage the variable control (mirrors, text etc.)
 
-2008-09-02  Chuchi  <perriman@homer>
+2008-09-02  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser.c: Scroll the view when the user changes
 	the current variable
 
-2008-08-30  Chuchi  <perriman@homer>
+2008-08-30  Chuchi  <chuchiperriman@gmail.com>
 
 	* fixed #2076627, gtksnippets-inplaceparser.c: Removed timeout
 	functions. We update the mirror variables when the user inserts or
 	removes some text.
 
-2008-08-26  Chuchi  <perriman@homer>
+2008-08-26  Chuchi  <chuchiperriman@gmail.com>
 
 	* fixed #2067246,
 	gtksnippets-inplaceparser.h: Added indentation when insert the
 	snippets
 
-2008-08-23  Chuchi  <perriman@homer>
+2008-08-23  Chuchi  <chuchiperriman@gmail.com>
 
 	* Makefile: Fixed error with portable libraries. I remove all -module
 
 === version 0.1.1 ===
 
-2008-08-17  Chuchi  <perriman@homer>
+2008-08-17  Chuchi  <chuchiperriman@gmail.com>
 
 	* Release: Closed 0.1.1 version
 
 
-2008-08-10  Chuchi  <perriman@homer>
+2008-08-10  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: Added end position. Setting ${0} in a
 	snippet, the cursor will be placed here when the user finish to
 	replace all vars
 
-2008-06-28  Chuchi  <perriman@homer>
+2008-06-28  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: 
 		- Place the cursos at end when all vars have been replaced
@@ -85,25 +96,25 @@
 		- We insert the text if it has not variables
 		- Fixed deactivating problems
 
-2008-06-21  Chuchi  <perriman@homer>
+2008-06-21  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: 
 		- Catch Right, Left keys
 		- Better timeout control
 		- Fixed bugs moving with mirrors
 
-2008-06-20  Chuchi  <perriman@homer>
+2008-06-20  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser:
 		- Better cursor control
 		- Shift+home|end select from cursor to home|end
 
-2008-06-19  Chuchi  <perriman@homer>
+2008-06-19  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: Handled Home and End keys. Home goes to
 	home of the current placeholder and end to the end
 
-2008-06-18  Chuchi  <perriman@homer>
+2008-06-18  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: 
 		- Added mirror variables management
@@ -111,14 +122,14 @@
 		possition out of the snippet management, we deactivate the
 		parser.
 
-2008-06-14  Chuchi  <perriman@homer>
+2008-06-14  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: 
 		- Uses tab and shift+tab to change between placeholders
 		- Uses timeout to replace placeholders and mirror
 		placeholders. Works fine now
 
-2008-06-09  Chuchi  <perriman@homer>
+2008-06-09  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser: Created a new variable parser to replace
 	variables inplace (directly in the GtkTextView). It is not yet usable.

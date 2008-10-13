@@ -28,6 +28,9 @@ struct _GtkSnippetsGtvVarPrivate
 	GtkTextView *view;
 	GtkTextMark *start_mark;
 	GtkTextMark *end_mark;
+	const gchar* tag_name;
+	const gchar* error_tag_name;
+	const gchar* current_tag_name;
 	GList *mirrors;
 };
 
@@ -54,6 +57,7 @@ gtksnippets_gtv_var_finalize (GObject *object)
 	self->priv->view = NULL;
 	self->priv->start_mark = NULL;
 	self->priv->end_mark = NULL;
+	self->priv->tag_name = NULL;
 	
 	G_OBJECT_CLASS (gtksnippets_gtv_var_parent_class)->finalize (object);
 }
@@ -79,20 +83,28 @@ gtksnippets_gtv_var_init (GtkSnippetsGtvVar *self)
 	self->priv->start_mark = NULL;
 	self->priv->end_mark = NULL;
 	self->priv->mirrors = NULL;
+	self->priv->tag_name = NULL;
 }
 
 GtkSnippetsGtvVar*
 gtksnippets_gtv_var_new(const gchar *var_def,
 			GtkTextView *view, 
 			GtkTextMark *start_mark,
-			GtkTextMark *end_mark)
+			GtkTextMark *end_mark,
+			const gchar* tag_name,
+			const gchar* error_tag_name)
 {
+	g_assert(tag_name!=NULL);
+	g_assert(error_tag_name!=NULL);
+	
 	GtkSnippetsGtvVar *self;
 	self = g_object_new (GTKSNIPPETS_TYPE_GTV_VAR, NULL);
 	gsnippets_variable_rebuild(GSNIPPETS_VARIABLE(self),var_def);
 	self->priv->view = view;
 	self->priv->start_mark = start_mark;
 	self->priv->end_mark = end_mark;
+	self->priv->tag_name = tag_name;
+	self->priv->error_tag_name = error_tag_name;
 	return self;
 }
 
@@ -132,32 +144,83 @@ gtksnippets_gtv_var_get_text(GtkSnippetsGtvVar *self)
 	return gtk_text_buffer_get_text(buffer,&start_var,&end_var,FALSE);
 }
 
-void
-gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self, 
-			const gchar* text,
-			const gchar* tag_name)
+const gchar *
+gtksnippets_gtv_var_get_tag_name(GtkSnippetsGtvVar *self)
 {
-	/*TODO Check the error*/
-	gchar *final = gsnippets_variable_parse_value(GSNIPPETS_VARIABLE(self),
-							text,
-							NULL);
+	return self->priv->tag_name;
+}
+
+void
+gtksnippets_gtv_var_set_tag_name(GtkSnippetsGtvVar *self,
+				 const gchar * tag_name)
+{
+	self->priv->tag_name = tag_name;
+}
+
+const gchar *
+gtksnippets_gtv_var_get_error_tag_name(GtkSnippetsGtvVar *self)
+{
+	return self->priv->error_tag_name;
+}
+
+void
+gtksnippets_gtv_var_set_error_tag_name(GtkSnippetsGtvVar *self,
+				       const gchar * error_tag_name)
+{
+	self->priv->error_tag_name = error_tag_name;
+}
+
+const gchar *
+gtksnippets_gtv_var_get_current_tag_name(GtkSnippetsGtvVar *self)
+{
+	return self->priv->current_tag_name;
+}
+
+void
+gtksnippets_gtv_var_set_text(GtkSnippetsGtvVar *self, 
+			const gchar* text,
+			GError **error)
+{
+	GError *tmp_error = NULL;
 	GtkTextIter start_var, end_var;
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,self->priv->start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,self->priv->end_mark);
+	
+	g_debug("var text %s",text);
+	
+	gchar *final = gsnippets_variable_parse_value(GSNIPPETS_VARIABLE(self),
+							text,
+							&tmp_error);
+	if (tmp_error !=NULL)
+	{
+		g_assert(final == NULL);
+		gtk_text_buffer_apply_tag_by_name (buffer, 
+					   self->priv->error_tag_name,
+					   &start_var,
+					   &end_var);
+		g_propagate_error(error,tmp_error);
+		self->priv->current_tag_name = self->priv->error_tag_name;
+		return;
+	}
+	
 	gtk_text_buffer_delete(buffer,&start_var,&end_var);
-	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,final,-1,tag_name,NULL);
+	gtk_text_buffer_insert_with_tags_by_name(buffer,&start_var,final,-1,self->priv->tag_name,NULL);
 	
-	
+	self->priv->current_tag_name = self->priv->tag_name;
 	GList *list = self->priv->mirrors;
 	while(list !=NULL)
 	{
-		gtksnippets_gtv_var_set_text_with_tags_by_name(GTKSNIPPETS_GTV_VAR(list->data),
+		gtksnippets_gtv_var_set_text(GTKSNIPPETS_GTV_VAR(list->data),
 								final,
-								tag_name);
+								&tmp_error);
+		if (tmp_error !=NULL)
+		{
+			g_propagate_error(error,tmp_error);
+			break;
+		}
 		list = g_list_next(list);
 	}
-	
 	g_free(final);
 }
 

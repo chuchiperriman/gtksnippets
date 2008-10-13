@@ -91,15 +91,14 @@ gsnippets_variable_init (GSnippetsVariable *self)
 	self->priv->func_args = NULL;
 }
 
-static gboolean
+static void
 parse_var_func_part(GSnippetsVariable *self, gchar* func_text)
 {
 	gchar **parts = g_strsplit (func_text, ":", 4);
-	gboolean ok = TRUE, next = TRUE;
+	gboolean next = TRUE;
 	if (parts[0]==NULL || g_strcmp0(parts[0],"")==0)
 	{
 		g_warning("Empty function name");
-		ok = FALSE;
 		next = FALSE;
 	}
 	else
@@ -114,24 +113,17 @@ parse_var_func_part(GSnippetsVariable *self, gchar* func_text)
 		i++;
 	}
 	g_strfreev (parts);
-	return ok;
 }
 
-static gboolean
+static void
 parse_var_def_part(GSnippetsVariable *self, gchar* var_text)
 {
 	gchar **parts = g_strsplit (var_text, ":", 4);
-	gboolean ok = TRUE, next = TRUE;
-	if (parts[0]==NULL || g_strcmp0(parts[0],"")==0)
-	{
-		g_warning("Empty variable name");
-		ok = FALSE;
+	gboolean next = TRUE;
+	if (parts[0]==NULL)
 		next = FALSE;
-	}
 	else
-	{
 		self->priv->name = g_strdup(parts[0]);
-	}
 	
 	if (next && parts[1]==NULL)
 		next = FALSE;
@@ -162,9 +154,7 @@ parse_var_def_part(GSnippetsVariable *self, gchar* var_text)
 		g_warning("Too much separators...");
 		next = FALSE;
 	}
-	
 	g_strfreev (parts);
-	return ok;
 }
 
 static gboolean
@@ -172,16 +162,20 @@ parse_var_definition(GSnippetsVariable *self, const gchar *var_def)
 {
 	gchar **parts = g_strsplit (var_def, "#", 3);
 	gboolean res = FALSE;
-	if (parts[0] == NULL || strlen(parts[0]) < 1)
+	if (parts[0] == NULL)
 	{
 		g_warning("Empty variable.");
 	}
 	else
 	{
-		res = parse_var_def_part(self,parts[0]);
+		parse_var_def_part(self,parts[0]);
+		if (parts[1]!=NULL)
+			parse_var_func_part(self,parts[1]);
 		
-		if (res && parts[1]!=NULL)
-			res = parse_var_func_part(self,parts[1]);
+		/* if has not var name but has function, it is automatic*/
+		if (self->priv->name!=NULL || self->priv->func_name!=NULL)
+			res = TRUE;
+
 	}
 	
 	g_strfreev (parts);
@@ -236,19 +230,21 @@ gsnippets_variable_get_default_value(GSnippetsVariable *self)
 	return self->priv->default_value;
 }
 
+gboolean
+gsnippets_variable_is_automatic(GSnippetsVariable *self)
+{
+	return self->priv->name==NULL && self->priv->func_name!=NULL;
+}
+
 gchar*
 gsnippets_variable_parse_value(GSnippetsVariable *self,
 				const gchar* value,
 				GError **error)
 {
 	const gchar *text = value;
-	gchar *final;
+	gchar *final = NULL;
 	if (text == NULL)
-	{
 		text = (const gchar*)self->priv->default_value;
-		if (text == NULL)
-			return NULL;
-	}
 	
 	if (self->priv->func_name!=NULL)
 	{
@@ -261,6 +257,7 @@ gsnippets_variable_parse_value(GSnippetsVariable *self,
 	{
 		final = g_strdup(text);
 	}
+	
 	return final;
 }
 

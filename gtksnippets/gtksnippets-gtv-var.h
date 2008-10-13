@@ -58,7 +58,9 @@ GtkSnippetsGtvVar*
 gtksnippets_gtv_var_new(const gchar *var_def,
 			GtkTextView *view, 
 			GtkTextMark *start_mark,
-			GtkTextMark *end_mark);
+			GtkTextMark *end_mark,
+			const gchar* tag_name,
+			const gchar* error_tag_name);
 
 void
 gtksnippets_gtv_var_add_mirror(GtkSnippetsGtvVar *self, 
@@ -76,10 +78,27 @@ gtksnippets_gtv_var_get_end_mark(GtkSnippetsGtvVar *self);
 gchar*
 gtksnippets_gtv_var_get_text(GtkSnippetsGtvVar *self);
 
+const gchar *
+gtksnippets_gtv_var_get_tag_name(GtkSnippetsGtvVar *self);
+
 void
-gtksnippets_gtv_var_set_text_with_tags_by_name(GtkSnippetsGtvVar *self, 
-					const gchar* text,
-					const gchar* tag_name);
+gtksnippets_gtv_var_set_tag_name(GtkSnippetsGtvVar *self,
+				 const gchar * tag_name);
+
+const gchar *
+gtksnippets_gtv_var_get_error_tag_name(GtkSnippetsGtvVar *self);
+
+void
+gtksnippets_gtv_var_set_error_tag_name(GtkSnippetsGtvVar *self,
+				       const gchar * error_tag_name);
+
+const gchar *
+gtksnippets_gtv_var_get_current_tag_name(GtkSnippetsGtvVar *self);
+
+void
+gtksnippets_gtv_var_set_text(GtkSnippetsGtvVar *self, 
+				const gchar* text,
+				GError **error);
 
 G_END_DECLS
 

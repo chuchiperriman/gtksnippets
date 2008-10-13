@@ -43,6 +43,7 @@ struct _GtkSnippetsInPlaceParserPrivate
 	GtkTextView *view;
 	GList *vars;
 	GtkTextTag *var_tag;
+	GtkTextTag *var_tag_error;
 	gboolean active;
 	GList *active_var_pos;
 	gboolean updating;
@@ -54,6 +55,7 @@ static GObjectClass* parent_class = NULL;
 #define GTKSNIPPETS_INPLACEPARSER_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GTKSNIPPETS_TYPE_INPLACEPARSER, GtkSnippetsInPlaceParserPrivate))
 
 #define VAR_TAG_NAME "snippet_var"
+#define VAR_ERROR_TAG_NAME "snippet_var_error"
 
 /*###############indentation management############*/
 static gchar *
@@ -140,6 +142,7 @@ gtksnippets_inplaceparser_init (GtkSnippetsInPlaceParser *self)
 	self->priv->view = NULL;
 	self->priv->vars = NULL;
 	self->priv->var_tag = NULL;
+	self->priv->var_tag_error = NULL;
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
 	self->priv->moving = FALSE;
@@ -227,6 +230,8 @@ gtksnippets_inplaceparser_new(GtkTextView *view)
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(view);
 	self->priv->var_tag = gtk_text_buffer_create_tag (buffer, VAR_TAG_NAME,
 	   		            "background", "yellow", NULL);
+	self->priv->var_tag_error = gtk_text_buffer_create_tag (buffer, VAR_ERROR_TAG_NAME,
+	   		            "background", "red", NULL);
 	
 	return self;
 }
@@ -240,6 +245,7 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *in
 	const gchar *default_value;
 	GtkTextIter start, end, temp_iter;
 	GtkTextIter pos, limit;
+	GError *error = NULL;
 	gtk_text_buffer_get_iter_at_mark(buffer,&pos, init_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&limit, limit_mark);
 	gboolean found = gtk_text_iter_forward_search(&pos,
@@ -279,16 +285,23 @@ search_var(GtkSnippetsInPlaceParser *self, GtkTextBuffer *buffer,GtkTextMark *in
 			var = gtksnippets_gtv_var_new(definition,
 							self->priv->view,
 							start_mark,
-							end_mark);
+							end_mark,
+							VAR_TAG_NAME,
+							VAR_ERROR_TAG_NAME);
 			g_free(definition);
 			
 			default_value = gsnippets_variable_get_default_value(GSNIPPETS_VARIABLE(var));
 			if (default_value==NULL)
 				default_value = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(var));
-				
-			gtksnippets_gtv_var_set_text_with_tags_by_name(var,
-									default_value,
-									VAR_TAG_NAME);
+
+			gtksnippets_gtv_var_set_text(var,
+							default_value,
+							&error);
+			if (error != NULL)
+			{
+				g_warning("Error parsing variable: %s",error->message);
+				g_error_free(error);
+			}
 		}
 		else
 		{
@@ -339,6 +352,12 @@ active_prev_var(GtkSnippetsInPlaceParser *self)
 	if (self->priv->active_var_pos==NULL)
 		return FALSE;
 	
+	if (gsnippets_variable_is_automatic(GSNIPPETS_VARIABLE(self->priv->active_var_pos->data)))
+	{
+		if (!active_prev_var(self))
+			return FALSE;
+	}
+	
 	set_active_var(self);
 	return TRUE;
 }
@@ -354,6 +373,11 @@ active_next_var(GtkSnippetsInPlaceParser *self)
 	if (self->priv->active_var_pos==NULL)
 		return FALSE;
 	
+	if (gsnippets_variable_is_automatic(GSNIPPETS_VARIABLE(self->priv->active_var_pos->data)))
+	{
+		if (!active_next_var(self))
+			return FALSE;
+	}
 	set_active_var(self);
 	
 	return TRUE;
@@ -365,6 +389,7 @@ update_mirrors(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *actual_var)
 	if (self->priv->updating)
 		return;
 	
+	GError *error = NULL;
 	self->priv->updating = TRUE;
 	
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
@@ -378,9 +403,16 @@ update_mirrors(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *actual_var)
 	
 	gchar* text = gtksnippets_gtv_var_get_text(actual_var);
 	
-	gtksnippets_gtv_var_set_text_with_tags_by_name(actual_var,
-							text,
-							VAR_TAG_NAME);
+	gtksnippets_gtv_var_set_text(actual_var,
+					text,
+					&error);
+	
+	if (error != NULL)
+	{
+		g_warning("Error parsing variable: %s",error->message);
+		g_error_free(error);
+	}
+	
 	g_free(text);
 	gtk_text_buffer_end_user_action(buffer);
 	self->priv->updating = FALSE;
@@ -393,6 +425,8 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 		    gint len,
 		    gpointer user_data)
 {
+	g_debug("insertando: %s",text);
+	
 	GtkTextMark *start_mark, *end_mark;
 	GtkSnippetsInPlaceParser *self = GTKSNIPPETS_INPLACEPARSER(user_data);
 	
@@ -405,7 +439,11 @@ view_insert_text_cb(GtkTextBuffer *buffer,
 	GtkTextIter start_iter,end_iter;
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_iter,start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_iter,end_mark);
-	gtk_text_buffer_apply_tag_by_name (buffer, VAR_TAG_NAME, &start_iter, &end_iter);
+
+	gtk_text_buffer_apply_tag_by_name (buffer, 
+					   gtksnippets_gtv_var_get_current_tag_name(var),
+					   &start_iter,
+					   &end_iter);
 	
 	update_mirrors(self, var);
 }
@@ -420,6 +458,8 @@ buffer_delete_range_cb(GtkTextBuffer *textbuffer,
 	
 	if(self->priv->active_var_pos == NULL)
 		return;
+	
+	g_debug("Delete event");
 	
 	GtkSnippetsGtvVar *var = GTKSNIPPETS_GTV_VAR(self->priv->active_var_pos->data);
 	update_mirrors(self, var);
@@ -575,7 +615,7 @@ store_var(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *var)
 			temp = GTKSNIPPETS_GTV_VAR(vars->data);
 			name = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(var));
 			temp_name = gsnippets_variable_get_name(GSNIPPETS_VARIABLE(temp));
-			if (g_utf8_collate(name,temp_name)==0)
+			if (name != NULL && temp_name != NULL && g_utf8_collate(name,temp_name)==0)
 			{
 				parent = temp;
 				break;
@@ -703,20 +743,29 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	g_signal_handlers_disconnect_by_func(buffer,view_insert_text_cb,self);
 	g_signal_handlers_disconnect_by_func(buffer,buffer_mark_set_cb,self);
+	GtkTextIter start,end;
+	gtk_text_buffer_get_start_iter(buffer,&start);
+	gtk_text_buffer_get_end_iter(buffer,&end);
 	if (self->priv->var_tag!=NULL)
 	{
-		GtkTextIter start,end;
-		gtk_text_buffer_get_start_iter(buffer,&start);
-		gtk_text_buffer_get_end_iter(buffer,&end);
 		gtk_text_buffer_remove_tag_by_name(buffer,
 						VAR_TAG_NAME,
 						&start,
 						&end);
-		/*
-		GtkTextTagTable *table = gtk_text_buffer_get_tag_table(buffer);
-		gtk_text_tag_table_remove(table,self->priv->var_tag);
-		*/
 	}
+	if (self->priv->var_tag_error != NULL)
+	{
+		gtk_text_buffer_remove_tag_by_name(buffer,
+						VAR_ERROR_TAG_NAME,
+						&start,
+						&end);
+	}
+		
+	/*
+	If we set the vars to NULL they don't disappear in the GtkTextView
+	self->priv->var_tag = NULL;
+	self->priv->var_tag_error = NULL;
+	*/
 		
 	GList *lista = self->priv->vars;
 	if (lista!=NULL)

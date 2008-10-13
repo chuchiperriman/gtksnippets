@@ -1,11 +1,13 @@
 TODO (last update: 2008-10-07)
 =================================
 
+[X] Add automatic functions. If a variable has not name but has an 
+    associated function, it will be automatic.
 [ ] Add .desktop and install an icon on development section to launch
     GtkSnippetsManager dialog.
 [X] Pass user_data to snippets functions.
 [ ] Implement "date" function with format
-[ ] Implement "user" function
-[ ] Implement "home" function
-[ ] Implement "hostname" function
+[X] Implement "user" function
+[X] Implement "home" function
+[X] Implement "hostname" function
 [ ] Implement xdg dirs functions (user_config, user_cache etc.)

@@ -22,9 +22,7 @@
 
 static GHashTable *functions = NULL;
 static gboolean initilized = FALSE;
-/*TODO:
-	These static objects must be freed!!!. When??
-*/
+/*TODO:	These static objects must be freed!!!. When?? */
 
 #define GSNIPPETS_FUNC_MANAGER_ERROR gsnippets_func_manager_quark ()
 
@@ -172,6 +170,38 @@ gsnippets_func_regexp_rep (GList *args,
 	
 	return res;
 }
+
+static gchar*
+gsnippets_func_home (GList *args,
+			const gchar *value,
+			gpointer user_data,
+			GError **error)
+{
+	const gchar *homedir = g_getenv ("HOME");
+	if (!homedir)
+     		homedir = g_get_home_dir();
+     	
+     	return g_strdup(homedir);
+
+}
+
+static gchar*
+gsnippets_func_user (GList *args,
+			const gchar *value,
+			gpointer user_data,
+			GError **error)
+{
+     	return g_strdup(g_get_user_name());
+}
+
+static gchar*
+gsnippets_func_hostname (GList *args,
+			const gchar *value,
+			gpointer user_data,
+			GError **error)
+{
+     	return g_strdup(g_get_host_name());
+}
 /* **************************************** */
 
 static void
@@ -193,6 +223,15 @@ gsnippets_func_manager_init()
 					NULL);
 	gsnippets_func_manager_register_func("regexp_rep",
 					gsnippets_func_regexp_rep,
+					NULL);
+	gsnippets_func_manager_register_func("username",
+					gsnippets_func_user,
+					NULL);
+	gsnippets_func_manager_register_func("home",
+					gsnippets_func_home,
+					NULL);
+	gsnippets_func_manager_register_func("hostname",
+					gsnippets_func_hostname,
 					NULL);
 					
 }
