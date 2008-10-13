@@ -1,4 +1,4 @@
-TODO (last update: 2008-10-07)
+TODO (last update: 2008-10-14)
 =================================
 
 [X] Add automatic functions. If a variable has not name but has an 
@@ -11,3 +11,6 @@ TODO (last update: 2008-10-07)
 [X] Implement "home" function
 [X] Implement "hostname" function
 [ ] Implement xdg dirs functions (user_config, user_cache etc.)
+[ ] Implement "cursor" function to set where we put the cursor when 
+    the user finish the snippet.
+[ ] Set down/up keys to next/previous variable

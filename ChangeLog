@@ -1,7 +1,12 @@
+2008-10-14  Chuchi  <perriman@homer>
+
+	* gtksnippets-inplaceparser.c: Added begin/end_user_action. It is
+	better and fix problems with completion
+
 2008-10-11  Chuchi  <chuchiperriman@gmail.com>
 
-	* gtksnipptes-gtv-var.c: Check errors parsing value.
-	* gtksnipptes-inplaceparser.c: 
+	* gtksnippets-gtv-var.c: Check errors parsing value.
+	* gtksnippets-inplaceparser.c: 
 		- Check errors and set the variable tag to "ERROR" (red color by now).
 		- Added automatic functions!!
 	* gsnippets-func-manager:

@@ -37,7 +37,6 @@ struct _GtkSnippetsGtvVarPrivate
 static void
 gtksnippets_gtv_var_finalize (GObject *object)
 {
-	g_debug("GtkSnippetsGtvVar finalize");
 	GtkSnippetsGtvVar *self;
 
 	self = GTKSNIPPETS_GTV_VAR (object);
@@ -75,7 +74,6 @@ gtksnippets_gtv_var_class_init (GtkSnippetsGtvVarClass *klass)
 static void
 gtksnippets_gtv_var_init (GtkSnippetsGtvVar *self)
 {
-	g_debug("GtkSnippetsGtvVar init");
 	self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, GTKSNIPPETS_TYPE_GTV_VAR,
 						  GtkSnippetsGtvVarPrivate);
 
@@ -186,8 +184,6 @@ gtksnippets_gtv_var_set_text(GtkSnippetsGtvVar *self,
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(self->priv->view);
 	gtk_text_buffer_get_iter_at_mark(buffer,&start_var,self->priv->start_mark);
 	gtk_text_buffer_get_iter_at_mark(buffer,&end_var,self->priv->end_mark);
-	
-	g_debug("var text %s",text);
 	
 	gchar *final = gsnippets_variable_parse_value(GSNIPPETS_VARIABLE(self),
 							text,
