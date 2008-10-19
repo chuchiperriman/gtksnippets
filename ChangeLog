@@ -1,4 +1,13 @@
-2008-10-14  Chuchi  <perriman@homer>
+2008-10-20  Chuchi  <chuchiperriman@gmail.com>
+
+	* gsnippets-func-manager.c: Added date function with format!!
+
+2008-10-18  Chuchi  <chuchiperriman@gmail.com>
+
+	* gtksnippets-inplaceparser.c: Implement "cursor" function to set
+	where we put the cursor when the user finish the snippet.
+	
+2008-10-14  Chuchi  <chuchiperriman@gmail.com>
 
 	* gtksnippets-inplaceparser.c: Added begin/end_user_action. It is
 	better and fix problems with completion

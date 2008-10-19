@@ -23,6 +23,7 @@ PKG_CHECK_MODULES(GTKSOURCECOMPLETION,[gtksourcecompletion-1.0 >= 0.5.0],have_co
 ################################################
 
 PKG_CHECK_MODULES(GTKSNIPPETS, [
+glib-2.0 >= 2.16
 gtk+-2.0
 libglade-2.0
 sqlite3 >= 3.0

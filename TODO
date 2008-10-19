@@ -1,4 +1,4 @@
-TODO (last update: 2008-10-14)
+TODO (last update: 2008-10-20)
 =================================
 
 [X] Add automatic functions. If a variable has not name but has an 
@@ -6,11 +6,12 @@ TODO (last update: 2008-10-14)
 [ ] Add .desktop and install an icon on development section to launch
     GtkSnippetsManager dialog.
 [X] Pass user_data to snippets functions.
-[ ] Implement "date" function with format
+[X] Implement "date" function with format
 [X] Implement "user" function
 [X] Implement "home" function
 [X] Implement "hostname" function
 [ ] Implement xdg dirs functions (user_config, user_cache etc.)
-[ ] Implement "cursor" function to set where we put the cursor when 
+[X] Implement "cursor" function to set where we put the cursor when 
     the user finish the snippet.
 [ ] Set down/up keys to next/previous variable
+[ ] Add scaping control for characters ":" and "#"

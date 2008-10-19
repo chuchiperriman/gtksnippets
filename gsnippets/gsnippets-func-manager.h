@@ -50,6 +50,27 @@ gsnippets_func_manager_parse_text(const gchar *func_name,
 				const gchar *text,
                                 GError **error);
 
+/* ***************** Util functions **************** */
+
+/**
+ * gsnippets_func_empty:
+ * 
+ * This function may be used to clear a variable with an
+ * empty string.
+ *
+ * @args: No needs args
+ * @value: Ignore this arg
+ * @user_data: Ignore this arg
+ * @error: Never fails
+ * Returns: New allocated empty string ("")
+ */
+gchar* 
+gsnippets_func_empty (GList *args,
+			const gchar *value,
+			gpointer user_data,
+                        GError **error);
+
+
 G_END_DECLS
        
 #endif /* __GSNIPPETS_FUNC_MANAGER_H__ */

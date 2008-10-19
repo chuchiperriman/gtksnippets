@@ -202,6 +202,65 @@ gsnippets_func_hostname (GList *args,
 {
      	return g_strdup(g_get_host_name());
 }
+
+static gchar*
+gsnippets_func_date (GList *args,
+			const gchar *value,
+			gpointer user_data,
+			GError **error)
+{
+	gchar *out = NULL;
+	gchar *out_utf8 = NULL;
+  	time_t clock;
+  	struct tm *now;
+  	size_t out_length = 0;
+	gchar *locale_format = NULL;
+	
+	if (args != NULL)
+	{
+		locale_format = g_locale_from_utf8((gchar*)args->data,-1,NULL,NULL,NULL);
+	}
+	
+	if (locale_format == NULL)
+		locale_format = g_locale_from_utf8("%c",-1,NULL,NULL,NULL);
+
+  	clock = time (NULL);
+  	now = localtime (&clock);
+
+	do
+	{
+		out_length += 255;
+		out = g_realloc (out, out_length);
+	}
+  	while (strftime (out, out_length, locale_format, now) == 0);
+
+	g_free (locale_format);
+
+	if (g_utf8_validate (out, -1, NULL))
+	{
+		out_utf8 = out;
+	}
+	else
+	{
+		out_utf8 = g_locale_to_utf8 (out, -1, NULL, NULL, NULL);
+		g_free (out);
+
+		if (out_utf8 == NULL)
+			out_utf8 = g_strdup (" ");
+	}
+
+  	return out_utf8;
+}
+
+gchar* 
+gsnippets_func_empty (GList *args,
+			const gchar *value,
+			gpointer user_data,
+                        GError **error)
+{
+	return g_strdup("");
+	
+}
 /* **************************************** */
 
 static void
@@ -232,6 +291,9 @@ gsnippets_func_manager_init()
 					NULL);
 	gsnippets_func_manager_register_func("hostname",
 					gsnippets_func_hostname,
+					NULL);
+	gsnippets_func_manager_register_func("date",
+					gsnippets_func_date,
 					NULL);
 					
 }

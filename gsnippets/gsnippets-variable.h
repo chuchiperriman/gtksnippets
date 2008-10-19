@@ -68,6 +68,9 @@ gsnippets_variable_get_index(GSnippetsVariable *self);
 const gchar*
 gsnippets_variable_get_default_value(GSnippetsVariable *self);
 
+const gchar* 
+gsnippets_variable_get_func_name(GSnippetsVariable *self);
+
 gboolean
 gsnippets_variable_is_automatic(GSnippetsVariable *self);
 

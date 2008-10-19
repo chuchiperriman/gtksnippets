@@ -23,6 +23,7 @@
 #include "gtksnippets-inplaceparser.h"
 #include "gtksnippets-gtv-var.h"
 #include "../gsnippets/gsnippets-parser.h"
+#include "../gsnippets/gsnippets-func-manager.h"
 
 #define DELAY 300
 #define SNIPPET_START_MARK "snippet_start"
@@ -605,6 +606,14 @@ store_var(GtkSnippetsInPlaceParser *self, GtkSnippetsGtvVar *var)
 	GList *vars = self->priv->vars;
 	GtkSnippetsGtvVar *parent = NULL, *temp;
 	const gchar *name, *temp_name;
+	
+	g_debug("func: %s",gsnippets_variable_get_func_name(GSNIPPETS_VARIABLE(var)));
+	/*Check The cursor variable*/
+	if (g_strcmp0("cursor",gsnippets_variable_get_func_name(GSNIPPETS_VARIABLE(var)))==0)
+	{
+		self->priv->end_position_mark = gtksnippets_gtv_var_get_start_mark(var);
+	}
+	
 	if (vars!=NULL)
 	{
 		do{
@@ -699,6 +708,10 @@ gtksnippets_inplaceparser_activate(GtkSnippetsInPlaceParser *self, const gchar* 
 	g_free(indent_text);
 	gtk_text_view_scroll_mark_onscreen(self->priv->view,end_text_mark);
 
+	gsnippets_func_manager_register_func("cursor",
+					     gsnippets_func_empty,
+					     self);
+
 	/* Searching variables */
 	GtkSnippetsGtvVar *var;
 	var = search_var(self,buffer,start_mark,end_text_mark);
@@ -777,11 +790,10 @@ gtksnippets_inplaceparser_deactivate(GtkSnippetsInPlaceParser *self)
 	self->priv->active = FALSE;
 	self->priv->active_var_pos = NULL;
 	self->priv->moving = FALSE;
-	if (self->priv->end_position_mark!=NULL)
-	{
-		gtk_text_buffer_delete_mark(buffer,self->priv->end_position_mark);
-		self->priv->end_position_mark = NULL;
-	}
+	/*The cursor variable frees its mark*/
+	self->priv->end_position_mark = NULL;
+	
+	gsnippets_func_manager_unregister_func("cursor");
 	
 	g_signal_emit (G_OBJECT (self), signals[PARSER_END], 0);
 	

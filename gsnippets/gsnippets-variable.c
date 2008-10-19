@@ -32,7 +32,7 @@ struct _GSnippetsVariablePrivate
 	gchar *name;
 	guint index;
 	gchar *default_value;
-	gchar *func_name;
+	gchar* func_name;
 	GList *func_args;
 };
 
@@ -228,6 +228,12 @@ const gchar*
 gsnippets_variable_get_default_value(GSnippetsVariable *self)
 {
 	return self->priv->default_value;
+}
+
+const gchar* 
+gsnippets_variable_get_func_name(GSnippetsVariable *self)
+{
+	return self->priv->func_name;
 }
 
 gboolean
